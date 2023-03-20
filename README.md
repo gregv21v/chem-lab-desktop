@@ -1,14 +1,16 @@
 # Chem-Lab
 An chemical engineering game about designing the chemicals. <br>
 
+<strong>Objective:</strong>
+Create your own lab using pipes and tanks
+
 
 # Getting Started 
 To run the game, first install it, by running the command `npm install` in your command line. Once you've 
 install the game, type `npm run dev` to run the game.
 
 
-<strong>Objective:</strong>
-Create your own lab using pipes and tanks
+
 
 This game is in early alpha, so expect bugs
 
