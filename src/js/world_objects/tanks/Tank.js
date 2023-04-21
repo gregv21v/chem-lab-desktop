@@ -17,7 +17,8 @@
 
 import * as d3 from "d3"
 import Snappable from "../Snappable";
-import Pipe from "../Pipe";
+import Pipe from "../pipes/Pipe";
+//import Valve from "../Valve";
 import Drop from "../fluids/Drop";
 import Fluid from "../fluids/Fluid";
 import EmptyFluid from "../fluids/EmptyFluid";
@@ -269,7 +270,11 @@ export default class Tank extends Snappable {
 	transferLiquid() {
 		for(const side of Object.keys(this.attachments)) {
 			for(const pipe of this.attachments[side]) {
-				if(pipe instanceof Pipe) {
+
+				// check for a pipe or an opened valve
+
+				if(pipe instanceof Pipe && pipe.opened) {
+
 					let drop = null;
 					let firstFluid = this.getFirstAccessibleFluid(pipe);
 					

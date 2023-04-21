@@ -16,8 +16,9 @@
 import Slot from "./Slot";
 import Rect from "../shapes/Rect";
 import * as d3 from "d3"
+import ScrollableContainer from "./ScrollableContainer";
 
-export default class Inventory {
+export default class Inventory extends ScrollableContainer {
 
 
 	/**
@@ -28,19 +29,13 @@ export default class Inventory {
 	 * @param {Number} width the width of the inventory
 	 * @param {Number} height the height of the inventory
 	 */
-	constructor(player, position, width, height) {
+	constructor(layer, player, position, width, height) {
+		super(layer, position, width, height)
+
 		this.player = player; // the player the inventory belongs to 
 		this.slotHeight = 60; // the height of the slots 
 
-		// a rect that borders the inventory
-		this.rect = new Rect();
-		this.rect.position = position;
-		this.rect.width = width;
-		this.rect.height = height;
-		this.rect.stroke.width = 10;
-		this.rect.stroke.color = "black";
-		this.rect.fill.color = "blue";
-
+	
 
 		this.objs = []; // the GameObjects in the inventory
 		this.slots = []; // the Slots that the GameObjects fit in
@@ -51,14 +46,9 @@ export default class Inventory {
 	 * create() 
 	 * @description creates the graphics
 	 */
-	create(parent) {
-		this.rect.create(parent);
-		this.rect.update()
+	create() {
+		super.create();
 	}
-
-	
-
-
 
 	/**
 	 * destroy()
@@ -90,9 +80,9 @@ export default class Inventory {
 		@param {Number} index the index of the new slot
 	*/
 	createSlot(index) {
-		let newSlot = new Slot(this, index, this.rect.width, this.slotHeight)
+		let newSlot = new Slot(this, index, this._width, this.slotHeight)
 
-		newSlot.create(d3.select("svg")); // creates the graphics for the slot
+		newSlot.create(this._content); // creates the graphics for the slot
 
 		// style the slot
 		newSlot.styling = {
@@ -142,6 +132,9 @@ export default class Inventory {
 
 		let newSlot = this.createSlot(this.slots.length);
 		this.slots.push(newSlot)
+
+		this._contentHeight = this.slots.length * this.slotHeight;
+        this.calculateScrollBarProperties();
 	}
 
 	/**
@@ -158,13 +151,50 @@ export default class Inventory {
 	}
 
 	/**
+     * drag() 
+     * @description drag the container
+     * @param {Pointer} pointer the pointer that started the drag
+     * @param {GameObject} gameObject the object that is being dragged
+     * @param {Number} dragX the x position of the drag
+     * @param {Number} dragY the y position of the drag
+     */
+    drag(event) {
+        let newGripPosition = event.y;
+
+        if (newGripPosition < 0) {
+            newGripPosition = 0;
+        }
+
+        if (newGripPosition > this._trackScrollAreaSize) {
+            newGripPosition = this._trackScrollAreaSize;
+        }
+
+        let newGripPositionRatio = newGripPosition / this._trackScrollAreaSize;
+        this._grip.attr("y", this._position.y + newGripPosition)
+
+        this._windowY = newGripPositionRatio * this._windowScrollAreaSize;
+
+		// move all the content int the container
+		for (const slot of this.slots) {
+			slot.offsetY(this._position.y - this._windowY)	
+		}
+
+    }
+
+	/**
 	 * contains()
-	 * @description checks whether a point is contained within the inventory
+	 * @description checks whether the specifed point is contained within the inventory
 	 * @param {Point} point the point to check for 
-	 * @returns true if the point is contained within the inventory
+	 * @returns true if the point is contained within the rect 
+	 * 			false otherwise
 	 */
-	contains(point) {
-		return this.rect.contains(point);
+	contains (point) {
+		return (
+				(this._position.x <= point.x
+				&& this._position.x + this._width >= point.x)
+				&& (this._position.y <= point.y
+				&& this._position.y + this._height >= point.y)
+		);
 	}
 
 	/**
@@ -173,7 +203,7 @@ export default class Inventory {
 	 * @returns the width of the inventory
 	 */
 	get width() {
-		return this.rect.width + 20
+		return this._width + 20
 	}
 
 	/**
@@ -182,7 +212,16 @@ export default class Inventory {
 	 * @returns the width of the inventory
 	 */
 	get height() {
-		return this.rect.height + 20;
+		return this._height + 20;
+	}
+
+	/**
+	 * get position()
+	 * @description gets the position of the inventory
+	 * @returns the position of the inventory
+	 */
+	get position() {
+		return this._position;
 	}
 
 }

@@ -6,12 +6,14 @@
 import World from "./World"
 import Inventory from "./gui/Inventory"
 import ValueBox from "./gui/ValueBox"
-import Valve from "./world_objects/Valve"
-import Pipe from "./world_objects/Pipe"
+import Valve from "./world_objects/pipes/Valve"
+import Pipe from "./world_objects/pipes/Pipe"
 import Tank from "./world_objects/tanks/Tank"
 import Pump from "./world_objects/Pump"
 import * as d3 from "d3"
 import GameObject from "./world_objects/GameObject"
+import ElbowPipe from "./world_objects/pipes/ElbowPipe"
+import CrossPipe from "./world_objects/pipes/CrossPipe"
 
 export default class Player {
 
@@ -25,16 +27,15 @@ export default class Player {
 
     this._hand = null;
 
-    
-
     this.world = new World(this, {x: 270, y: 20}, svg.attr("width") - (270 + 400), height);
     this.world.create()
 
-    this.inventory = new Inventory(this, {x: 20, y: 45}, 250, height - 25);
-    this.inventory.create(svg);
+    this.inventory = new Inventory(svg, this, {x: 20, y: 45}, 250, height - 25);
+    this.inventory.create();
 
     this.credits = new ValueBox({x: 20, y: 20}, 250, 25);
     this.credits.create(svg)
+    this.credits.update()
 
     this.credits.styling = {
       color: "red",
@@ -57,10 +58,16 @@ export default class Player {
     ));
     this.inventory.add(new Tank({x: 475, y: 540}, {width: 40, height: 100}, 5));
     this.inventory.add(new Tank({x: 475, y: 540}, {width: 50, height: 50}, 5));
-    this.inventory.add(new Tank({x: 0, y: 0}, {width: 50, height: 50}, 5, false, false, false, false))
+    this.inventory.add(new CrossPipe({x: 475, y: 540}, 10, 100, 5));
+    //this.inventory.add(new Tank({x: 0, y: 0}, {width: 50, height: 50}, 5, false, false, false, false))
     this.inventory.add(new Tank({x: 0, y: 0}, {width: 50, height: 100}, 5, false, false, false, false))
     this.inventory.add(new Pipe({x: 500, y: 500}, 50, 10, 5));
     this.inventory.add(new Pipe({x: 500, y: 500}, 50, 10, 5));
+    this.inventory.add(new Pump(this.world, {x: 0, y: 0}, 5));
+    this.inventory.add(new Tank({x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
+    this.inventory.add(new Tank({x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
+    this.inventory.add(new Tank({x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
+    this.inventory.add(new Tank({x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
 
     //this.inventory.createSlots();
 

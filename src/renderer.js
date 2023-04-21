@@ -38,28 +38,27 @@ let app = d3.select("#app")
 let loadingScreen = app.html(LoadingScreenTemplate);
 let game = null;
 
-/** Remove this code to put back loading screen */
+/** Comment out this code to put back the loading screen */
 app.html(TestModeScreenTemplate)
 game = new Game(0);
 game.render()
 
 loadingScreen.select("[name='test']").on("click", () => {
     app.html(TestModeScreenTemplate)
-    //game = new Game(0);
-    //game.render()
-
+    game = new Game(0);
+    game.render()
 })
 
 loadingScreen.select("[name='creative']").on("click", () => {
     app.html(CreativeModeScreenTemplate)
-    //game = new Game(1);
-    //game.render()
+    game = new Game(1);
+    game.render()
 })
 
 loadingScreen.select("[name='normal']").on("click", () => {
     app.html(NormalModeScreenTemplate)
-    //game = new Game(2);
-    //game.render()
+    game = new Game(2);
+    game.render()
 })
 
 

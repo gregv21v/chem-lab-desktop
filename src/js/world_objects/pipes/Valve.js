@@ -17,8 +17,8 @@ export default class Valve extends Pipe {
     super(center)
 
     this._width = width;
-    this.opened = false;
-    this.pipe = null; // the pipe that this valve is connected to.
+    this._opened = false;
+    //this.pipe = null; // the pipe that this valve is connected to.
     this.position = center;
 
     this.interiorHeight = interiorHeight;
@@ -99,12 +99,12 @@ export default class Valve extends Pipe {
    * @description toggle the valve opened and closed
    */
   toggle() {
-    if(this.opened) {
-      this.opened = false;
-      this.svg.latch.attr("height", 0);
-    } else {
-      this.opened = true;
+    if(this._opened) {
+      this._opened = false;
       this.svg.latch.attr("height", this.interiorHeight);
+    } else {
+      this._opened = true;
+      this.svg.latch.attr("height", 0);
     }
   };
 
@@ -139,5 +139,8 @@ export default class Valve extends Pipe {
   get name() {
     return "Valve";
   }
+
+
+  
 
 }

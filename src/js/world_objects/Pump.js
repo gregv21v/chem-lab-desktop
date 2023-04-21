@@ -23,7 +23,8 @@ import FluidRegistry from "./fluids/FluidRegistry";
 
 export default class Pump extends GameObject {
 	/**
-	 * 
+	 * constructor()
+	 * @description constructs the pump game object
 	 * @param {World} world the world that the pump is in
 	 * @param {Point} position the position of the pump
 	 * @param {Number} production 
@@ -46,8 +47,12 @@ export default class Pump extends GameObject {
 
 
 		var self = this;
+		this._world = world;
 		this.svg.button.on("mousedown", function() {
-			self.produceDrop(world)
+			if(self._world)
+				self.produceDrop(world)
+			else 
+				console.log("You need to set the world for this pump to produce a drop.")
 		})
 
 		this._possibleFluids = [
@@ -106,6 +111,25 @@ export default class Pump extends GameObject {
 
 	updateTooltip() {
 	  this.tooltip.position = this._position;
+	}
+
+	/**
+	 * moveRelativeToCenter()
+	 * @description moves the Snappable relative to it's center
+	 * @param point point to move to
+	 */
+	moveRelativeToCenter(point) {
+		this._position.x = point.x - this.production
+		this._position.y = point.y - this.production
+	}
+
+	/**
+	 * set world()
+	 * @description sets the world that this pump is assigned to 
+	 * @param {World} world the world that this pump is assigned to
+	 */
+	set world(value) {
+		this._world = value;
 	}
 
 	/**

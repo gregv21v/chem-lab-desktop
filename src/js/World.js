@@ -1,7 +1,7 @@
 /*
 	The world contains all the game objects.
 */
-import Pipe from "./world_objects/Pipe";
+import Pipe from "./world_objects/pipes/Pipe";
 import Snappable from "./world_objects/Snappable";
 import Rect from "./shapes/Rect";
 import Tank from "./world_objects/tanks/Tank";
@@ -28,13 +28,14 @@ export default class World {
 		this.drops = [];
 		this.objs = [];
 		this.lines = []
+		
 
 
 
 		let mainSVG = d3.select("svg");
 		let self = this;
 		/*****************************************************
-											 Mouse Interactions
+				 Mouse Interactions
 		*****************************************************/
 		/*
 			Mouse Movement
@@ -106,7 +107,7 @@ export default class World {
 			this.player.hand.moveRelativeToCenter(mousePos)
 			let closestSnappable = this.findClosestSnappable(mousePos)
 			//console.log(closestSnappable);
-			if(closestSnappable != null) {
+			if(this.player.hand instanceof Snappable && closestSnappable != null) {
 				this.snapSide = this.player.hand.snapTo(closestSnappable, mousePos);
 				if(this.snapSide !== "")
 					this.snappingTo = closestSnappable;

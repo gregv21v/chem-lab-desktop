@@ -78,7 +78,7 @@ export default class Drop extends FluidBody {
 
     this.position = {
       x: this.position.x + this._velocity.x,
-      y: this.position.y + this._velocity.y
+      y: this.position.y + this._velocity.y * this.fluid.density
     }
 
 
@@ -90,7 +90,12 @@ export default class Drop extends FluidBody {
   		// if in tank, remove drop and fill tank with size of drop
   		world.objs.forEach(function(obj) {
 
-  			if(obj instanceof Tank && obj.containsDrop(self) && obj.upOpened) {
+  			if (
+          obj instanceof Tank && 
+          obj.containsDrop(self) &&  
+          ((obj.upOpened && self.fluid.density > 0) || // tank for liquids
+          (obj.downOpened && self.fluid.density < 0)) // tank for gases
+        ) {
           // add the drop to the tank
   				obj.addDrop(self);  
 

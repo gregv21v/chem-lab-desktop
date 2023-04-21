@@ -2,10 +2,10 @@
  * Pipe - a pipe
  */
 
-import Snappable from "./Snappable"
-import Tank from "./tanks/Tank"
+import Snappable from "../Snappable";
+import Tank from "../tanks/Tank"
 import * as d3 from "d3"
-import Rect from "../shapes/Rect";
+import Rect from "../../shapes/Rect";
 
 export default class Pipe extends Snappable {
 
@@ -25,6 +25,7 @@ export default class Pipe extends Snappable {
 		this._position = center
 		//this.center = center; // position of pipe
 		this._width = width;
+		this._opened = true;
 
 		this._drops = [];
 
@@ -68,8 +69,8 @@ export default class Pipe extends Snappable {
 			// flowing, give it is at its spout, and ready to leak.
 			if(!drop.canFlow(this) && side === drop.direction) {
 				exitingDrops.push(drop);
-				console.log("Direction: " + drop.direction)
-				console.log("Exiting");
+				//console.log("Direction: " + drop.direction)
+				//console.log("Exiting");
 			} else {
 				keptDrops.push(drop);
 			}
@@ -110,7 +111,7 @@ export default class Pipe extends Snappable {
 
 
 			// interior
-			this._svg.interior.attr("width", this._width + extraWidth);
+			this._svg.interior.attr("width", this._width);
 			this._svg.interior.attr("height", this._interiorHeight);
 			this._svg.interior.attr("x", this._position.x);
 			this._svg.interior.attr("y", this._position.y + this._wallWidth);
@@ -258,6 +259,15 @@ export default class Pipe extends Snappable {
 		} else {
 			return this._interiorHeight + this._wallWidth * 2;
 		}
+	}
+
+
+	/**
+   	 * get opened()
+   	 * @returns whether or not the pipe is open
+   	 */
+	get opened() {
+		return this._opened;
 	}
 
 

@@ -58,6 +58,8 @@ export default class ValueBox extends Drawable {
 		this._svg.rect.attr("y", this._position.y);
 		this._svg.rect.attr("width", this._width);
 		this._svg.rect.attr("height", this._height);
+		this._svg.rect.style("stroke", "black");
+		this._svg.rect.style("stroke-width", 5);
 		this._svg.rect.attr("class", "ValueBox");
 
 		this._svg.label.attr("x", this._position.x + this._width/2 - ((this.label.length + ("" + this.value).length) * 6)/2);
