@@ -18,6 +18,7 @@ import Tank from "./world_objects/tanks/Tank"
 import Pipe from "./world_objects/pipes/Pipe"
 import CrossPipe from "./world_objects/pipes/CrossPipe"
 import Pump from "./world_objects/Pump"
+import ElbowPipe from "./world_objects/pipes/ElbowPipe"
 
 
 export default class Game {
@@ -43,10 +44,12 @@ export default class Game {
     this._layers.push(svg.append("g")) // gui
     this._layers.push(svg.append("g")) // containers
     this._layers.push(svg.append("g")) // fluids
+    this._layers.push(svg.append("g")) // debug
 
     this._layers[0].attr("name", "gui")
     this._layers[1].attr("name", "containers")
     this._layers[2].attr("name", "fluids")
+    this._layers[3].attr("name", "debug")
 
     // add fluids to the fluid registery for use later
     FluidRegistry.register(new Fluid("Water", 2, {red: 0, green: 0, blue: 200}))
@@ -67,9 +70,6 @@ export default class Game {
     this._world = new World(this, this._player, {x: 270, y: 20}, this._width - (270 + 400), this._height - 30)
     this._world.create()
 
-    
-
-
     // add example items to the players inventory
 
     /*this._hud.inventory.add(new Valve(
@@ -80,19 +80,47 @@ export default class Game {
         },
         20, 10, 5
     ));*/
-    //this._hud.inventory.add(new Tank(this._layers[1], {x: 475, y: 540}, {width: 40, height: 100}, 5));
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 475, y: 540}, {width: 40, height: 100}, 5));
     this._hud.inventory.add(new Tank(this._layers[1], {x: 475, y: 540}, {width: 50, height: 50}, 5));
     //this._hud.inventory.add(new CrossPipe(this._layers[1], {x: 475, y: 540}, 10, 100, 5));
     this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 50, height: 50}, 5, true, false, false, false))
     this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 50, height: 100}, 5, false, false, false, false))
     this._hud.inventory.add(new Pipe(this._layers[1], {x: 500, y: 500}, 50, 10, 5));
-    //this._hud.inventory.add(new Pipe(this._layers[1], {x: 500, y: 500}, 50, 10, 5));
+    this._hud.inventory.add(new Pipe(this._layers[1], {x: 500, y: 500}, 50, 10, 5));
     this._hud.inventory.add(new Pump(this._layers[1], this._world, {x: 0, y: 0}, 15));
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, false))
+    //this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
+    //this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
     this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
-    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
-    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
-    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
-
+    this._hud.inventory.add(new ElbowPipe(
+      this._layers[1],
+      {x: 0, y: 0},
+      5,
+      50,
+      5
+    ))
+    this._hud.inventory.add(new ElbowPipe(
+      this._layers[1],
+      {x: 0, y: 0},
+      5,
+      50,
+      5
+    ))
+    this._hud.inventory.add(new ElbowPipe(
+      this._layers[1],
+      {x: 0, y: 0},
+      5,
+      50,
+      5
+    ))
+    this._hud.inventory.add(new ElbowPipe(
+      this._layers[1],
+      {x: 0, y: 0},
+      5,
+      50,
+      5
+    ))
+        
     // setup some starting tanks
     /*var sellTank = new Tank(
       svg, 
@@ -143,6 +171,7 @@ export default class Game {
   }
 
 
+
   /**
    * create() 
    * @description creates the game 
@@ -170,7 +199,14 @@ export default class Game {
    * @description called when key is pressed
    */
   onKeyPress(event) {
-    this._player.onKeyPress(event) 
+    this._hud.inventory.onKeyPress(event);
+
+    //console.log(event.key);
+    if(event.key === 'r' && this._player.hand instanceof Pipe) {
+      console.log(this._player.hand);
+      this._player.hand.rotate();
+      this._player.hand.updateSVG();
+    }
   }
 
 

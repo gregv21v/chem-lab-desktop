@@ -12,7 +12,8 @@ export default class Rect {
 	 * @param {Number} width the width of the rect
 	 * @param {Number} height the height of the rect
 	 */
-	constructor(position={x: 0, y: 0}, width=0, height=0) {
+	constructor(layer=d3.select('[name="debug"]'), position={x: 0, y: 0}, width=0, height=0) {
+		this._layer = layer;
 		this._width = width;
 		this._height = height;
 		this._position = position; // top left corner
@@ -126,16 +127,16 @@ export default class Rect {
 
 	/**
 	 * create()
-	 * @param {SVG} parent the parent SVG to append this rect to
+	 * @description creates the rect
 	 */
-	create(parent) {
+	create() {
 		this._group = d3.create("svg:g")
 
 		this._svg = {
 			rect: this._group.append("rect")
 		}
 
-		parent.append(() => this._group.node())
+		this._layer.append(() => this._group.node())
 	}
 
 	/**

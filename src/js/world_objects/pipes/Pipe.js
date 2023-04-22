@@ -72,9 +72,10 @@ export default class Pipe extends Snappable {
 
 	/**
 	 * updateDrops()
-	 * @description update the drops
+	 * @description update the drops within the pipe
 	 */
-	updateDrops () {
+	updateDrops() {
+		// check if 
 		for(const x in this._drops) {
 			if(this._drops[x].canFlow(this)) {
 				this._drops[x].flow();
@@ -179,6 +180,11 @@ export default class Pipe extends Snappable {
 		return this._interiorHeight;
 	};
 
+	/**
+	 * getSnapAreas()
+	 * @description gets the snap areas of the pipe
+	 * @returns the snap areas of the pipe
+	 */
 	getSnapAreas() {
 		if(this.orientation === "horizontal") {
 			return {
@@ -195,7 +201,37 @@ export default class Pipe extends Snappable {
 	}
 
 
-  
+	/**
+	 * getDropStartPosition()
+	 * @description gets the start position of the drop in the pipe
+	 * @param {Side} side the side of the tank the pipe is on
+	 */
+	getDropStartPosition(side, drop) {
+		// position drop at front of pipe
+		if(side === "left") {
+			return {
+				x: this.position.x + this.width - drop.size/2,
+				y: this.center.y - drop.size/2
+			}
+		} else if(side === "right") {
+			return {
+				x: this.position.x,
+				y: this.center.y - drop.size/2
+			}
+		} else if(side === "up") {
+			return {
+				x: this.position.x + drop.size/2,
+				y: this.position.y
+			}
+		} else if(side === "down") {
+			return {
+				x: this.position.x + this.width / 2 - drop.size/2,
+				y: this.position.y
+			}
+		} else {
+			console.warn("No Side Chosen for Drop Start")
+		}
+	}
 
   	/***
    	 * transferLiquid()

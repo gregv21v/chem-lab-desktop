@@ -2,6 +2,8 @@
  * ElbowPipe - a pipe with a bend in it
  */
 
+import { Distance } from "../../shapes/Point"
+import Rect from "../../shapes/Rect"
 import Pipe from "./Pipe"
 import * as d3 from "d3"
 
@@ -25,6 +27,85 @@ export default class ElbowPipe extends Pipe {
   
         this.drops = [];
     }
+
+
+    /**
+     * getSnapAreas()
+     * @description gets the snap areas of the pipe
+     * @returns the snap areas of the pipe
+     */
+    getSnapAreas() {
+      if(this.rotation === 0) {
+        return {
+          left: this.getStartSnapArea(),
+          down: this.getEndSnapArea()
+        }
+      } else if(this.rotation === 90) {
+        return {
+          left: this.getStartSnapArea(),
+          up: this.getEndSnapArea()
+        }
+      } else if(this.rotation === 180) {
+        return {
+          right: this.getStartSnapArea(),
+          up: this.getEndSnapArea()
+        }
+      } else if(this.rotation === 270) {
+        return {
+          right: this.getStartSnapArea(),
+          down: this.getEndSnapArea()
+        }
+      }
+    }
+
+
+    /**
+     * getStartSnapArea()
+     * @description gets the snap area for the start of the pipe
+     * @returns the snap area at the start of the pipe
+     */
+    getStartSnapArea() {
+      var area = new Rect()
+      area.fill.color = "blue"
+      area.width = this.snapRadius
+      area.height = this.diameter + this.wallWidth * 2 + 10
+      area.position.x = this._position.x - this.snapRadius
+      area.position.y = this._position.y - 5
+
+      if(this.rotation === 0 || this.rotation === 90) {
+        area.position.x = this._position.x - this.snapRadius
+        area.position.y = this._position.y - 5
+      } else {
+        area.position.y = this._position.y - 5
+        area.position.x = this._position.x + this._length * 2 + this.diameter + this.wallWidth*2
+      }
+
+      return area
+    }
+
+    /**
+     * getStartSnapArea()
+     * @description gets the snap area for the start of the pipe
+     */
+    getEndSnapArea() {
+      var area = new Rect()
+      area.fill.color = "orange"
+      area.width = this.diameter + this.wallWidth * 2 + 10
+      area.height = this.snapRadius
+
+      if(this.rotation === 90 || this.rotation === 180) {
+        area.position.y = this._position.y - this._length - this.snapRadius - this.wallWidth
+        area.position.x = this._position.x + this._length - 5
+      } else {
+        area.position.y = this._position.y + this._length + this.diameter + this.wallWidth * 2
+        area.position.x = this._position.x + this._length - 5
+      }
+
+      return area
+    }
+
+
+ 
   
   
     /**
@@ -41,6 +122,38 @@ export default class ElbowPipe extends Pipe {
             interior2: this._group.append("rect")
         }
     }
+
+    /**
+     * getDropStartPosition()
+     * @description gets the start position of the drop in the pipe
+     * @param {Side} side the side of the tank the pipe is on
+     */
+    getDropStartPosition(side, drop) {
+      // position drop at front of pipe
+      if(side === "left") {
+        return {
+          x: this._position.x + this.width - drop.size/2,
+          y: this._center.y - drop.size/2
+        }
+      } else if(side === "right") {
+        return {
+          x: this._position.x,
+          y: this._center.y
+        }
+      } else if(side === "up") {
+        return {
+          x: this._position.x + drop.size/2,
+          y: this._position.y
+        }
+      } else if(side === "down") {
+        return {
+          x: this._position.x + this.width / 2 - drop.size/2,
+          y: this._position.y
+        }
+      } else {
+        console.warn("No Side Chosen for Drop Start")
+      }
+    }
   
   
     /**
@@ -48,39 +161,46 @@ export default class ElbowPipe extends Pipe {
       @description updates the attributes of the svg graphic
     */
     updateSVG() {
-      let xRotation = this.position.x + this._length / 2
-      let yRotation = this.position.y + this._length / 2
-      let transformStr = "rotate(" + this.rotation + "," + xRotation + "," + yRotation + ")"
+      //let xRotation = this.position.x + this._length / 2
+      //let yRotation = this.position.y + this._length / 2
+      //let transformStr = "rotate(" + this.rotation + "," + xRotation + "," + yRotation + ")"
 
-      this._group
-        .attr("transform", transformStr)
+      //this._group
+        //.attr("transform", transformStr)
+
+      let wallLength = this._length + this.diameter + this.wallWidth*2;
+      let wallDiameter = this.diameter + this.wallWidth * 2
+
+      let interiorLength = this._length + this.diameter + this.wallWidth
+
+
 
       this._svg.walls1
-                .attr("x", this.position.x)
+                .attr("x", this.position.x + ((this.rotation === 0 || this.rotation === 90) ? 0 : this._length))
                 .attr("y", this.position.y)
-                .attr("width", this._length)
-                .attr("height", this.diameter + this.wallWidth * 2)
+                .attr("width", wallLength)
+                .attr("height", wallDiameter)
                 .style("fill", "black")
   
       this._svg.walls2
                 .attr("x", this.position.x + this._length)
-                .attr("y", this.position.y)
-                .attr("width", this.diameter + this.wallWidth * 2)
-                .attr("height", this._length + this.diameter + this.wallWidth*2)
+                .attr("y", this.position.y - ((this.rotation === 0 || this.rotation === 270) ? 0 : this._length + this.wallWidth))
+                .attr("width", wallDiameter)
+                .attr("height", wallLength)
                 .style("fill", "black")
   
       this._svg.interior1
-                .attr("x", this.position.x)
+                .attr("x", this.position.x + ((this.rotation === 0 || this.rotation === 90) ? 0 : this._length + this.wallWidth))
                 .attr("y", this.position.y + this.wallWidth)
-                .attr("width", this._length + this.wallWidth)
+                .attr("width", interiorLength)
                 .attr("height", this.diameter)
                 .style("fill", "white")
   
       this._svg.interior2
                 .attr("x", this.position.x + this._length + this.wallWidth)
-                .attr("y", this.position.y + this.wallWidth)
+                .attr("y", this.position.y - ((this.rotation === 0 || this.rotation === 270) ? -this.wallWidth : this._length + this.wallWidth))
                 .attr("width", this.diameter)
-                .attr("height", this._length + this.diameter + this.wallWidth)
+                .attr("height", interiorLength)
                 .style("fill", "white")
     }
 
@@ -91,7 +211,8 @@ export default class ElbowPipe extends Pipe {
      *  sides.
      */
     rotate() {
-      this.rotation += 90;
+      this.rotation = (this.rotation + 90) % 360;
+      console.log("Rotated");
     };
 
     /**
@@ -102,21 +223,15 @@ export default class ElbowPipe extends Pipe {
       let path = [];
       if(this.orientation === "vertical") {
         path.push({
-          x: this.position.x + this.diameter / 2, 
-          y: this.position.y
-        })
-        path.push({
           x: this.position.x + this.diameter / 2,
-          y: this.position.y + this._length
+          y: this.position.y + this._length,
+          turn: "right"
         })
       } else {
         path.push({
-          x: this.position.x, 
-          y: this.position.y + this.diameter / 2
-        })
-        path.push({
           x: this.position.x + this._length,
-          y: this.position.y +  this.diameter / 2
+          y: this.position.y +  this.diameter / 2,
+          turn: "right"
         })
       }
       return path;
@@ -152,11 +267,29 @@ export default class ElbowPipe extends Pipe {
      * @description update the drops in the elbow pipe
      */
     updateDrops() {
-        for(var x in this.drops) {
-            if(this.drops[x].drop.canFlow(this, this.drops[x].direction)) {
-                this.drops[x].drop.flow(this, this.drops[x].direction);
-            }
+      // move the drops along the path of the pipe
+      // move the drops to the first node 
+      // once they encounter the first node, 
+      // move to the next node 
+      for(const x in this._drops) {
+        // if can flow
+        // move drop in its travelling direction
+        // else if reached node 
+        // turn 
+        // else 
+        // stop do nothing
+        this._drops[x].flow();
+        let path = this.getPath();
+        let node = path[this._drops[x].stepAlongPath];
+        let dist = Distance(node, this._drops[x].center)
+        if(dist <= 3) {
+          console.log("Turning");
+          this._drops[x].turn(node.turn)
+          this._drops[x].stepAlongPath += 1; 
+        } else {
+          this._drops[x].flow();
         }
+      }
     }
   }
   

@@ -24,6 +24,7 @@ export default class Drop extends FluidBody {
      * Will be removed in favor of velocity
      */
     this.direction = "" // the direction that the drop is traveling in
+    this._stepAlongPath = -1;
   }
 
   /**
@@ -49,22 +50,7 @@ export default class Drop extends FluidBody {
 
 
 
-  /**
-   * getVolume()
-   * @returns the volume of the drop
-   * @deprecated in favor of get volume()
-   */
-  getVolume() {
-    return this._size * this._size;
-  }
-
-  /**
-   * get volume()
-   * @returns the volume of the drop
-   */
-  get volume() {
-    return this._size * this._size;
-  }
+  
 
 
 
@@ -168,6 +154,24 @@ export default class Drop extends FluidBody {
 
 
   /**
+   * turn()
+   * @description turns the drop
+   * @param {Direction} direction direction to turn the drop
+   */
+  turn(direction) {
+    let directions = ["up", "left", "down", "right"]
+
+    let index = directions.indexOf(this.direction);
+    console.log(directions[index]);
+    if(direction === "left") {
+      this.direction = directions[(index + 1) % directions.length]
+    } else {
+      this.direction = directions[(index - 1) % directions.length]
+    }
+  }
+
+
+  /**
    * set size()
    * @description sets the size of the drop
    * @param {Number} size the size to set the drop to
@@ -189,5 +193,42 @@ export default class Drop extends FluidBody {
     return this._size;
   }
 
+
+  /**
+   * get stepAlongPath()
+   * @description gets the stop along the path that the drop is currently taking
+   * @returns step along path
+   */
+  get stepAlongPath() {
+    return this._stepAlongPath;
+  }
+
+
+  /**
+   * set stepAlongPath()
+   * @description sets the step along the path that the drop is currently taking
+   * @param {Integer} value the step along the path
+   */
+  set stepAlongPath(value) {
+    this._stepAlongPath = value;
+  }
+
+
+  /**
+   * getVolume()
+   * @returns the volume of the drop
+   * @deprecated in favor of get volume()
+   */
+  getVolume() {
+    return this._size * this._size;
+  }
+
+  /**
+   * get volume()
+   * @returns the volume of the drop
+   */
+  get volume() {
+    return this._size * this._size;
+  }
 
 }

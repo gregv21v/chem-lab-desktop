@@ -271,15 +271,19 @@ export default class Tank extends Snappable {
 	 *	@description transfers liquid from the tank to its connecting pipes
 	 */
 	transferLiquid() {
-		for(const side of Object.keys(this.attachments)) {
+		let order = ["down", "left", "right"]
+
+		for(const side of order) {
+			
 			for(const pipe of this.attachments[side]) {
+
 
 				// check for a pipe or an opened valve
 
 				if(pipe instanceof Pipe && pipe.opened) {
 
 					let drop = null;
-					let firstFluid = this.getFirstAccessibleFluid(pipe);
+					let firstFluid = this.getFirstAccessibleFluid(pipe, side);
 					
 
 					// get a drop from the tank
@@ -297,28 +301,8 @@ export default class Tank extends Snappable {
 
 					// if pipe is there, move the drop to the pipe
 					if(drop) {
-						// position drop at front of pipe
-						if(side === "left") {
-							drop.position = {
-								x: pipe.position.x + pipe.width - drop.size/2,
-								y: pipe.center.y - drop.size/2
-							}
-						} else if(side === "right") {
-							drop.position = {
-								x: pipe.position.x,
-								y: pipe.center.y - drop.size/2
-							}
-						} else if(side === "up") {
-							drop.position = {
-								x: pipe.position.x + drop.size/2,
-								y: pipe.position.y
-							}
-						} else if(side === "down") {
-							drop.position = {
-								x: pipe.position.x + drop.size/2,
-								y: pipe.position.y
-							}
-						}
+						drop.position = pipe.getDropStartPosition(side, drop);
+						drop.stepAlongPath = 0;
 
 						// create the drop in the world and add it to the respective pipe
 						drop.direction = side;
@@ -354,15 +338,24 @@ export default class Tank extends Snappable {
 	 * getFirstAccessibleFluid()	
 	 * @description Gets the fluid in the tank that the pipe can first access	
 	 * @param {Pipe} pipe the pipe find 
+	 * @param {Side} side the side of the tank the pipe is on
 	 * @returns true if the pipe has access to the fluid
 	 * 			false if the pipe does not have access to the fluid
 	 */
-	getFirstAccessibleFluid(pipe) {
+	getFirstAccessibleFluid(pipe, side) {
+
+		let lastFluid = this._fluidBodies[this._fluidBodies.length - 1];
+		if(side === "down" && !(lastFluid.fluid instanceof EmptyFluid)) {
+			return lastFluid;
+		}
 
 		// search throught the list of fluids to find the first 
 		// accessible one by the pipe
 		for (const fluidBody of this._fluidBodies) {
-			if(!(fluidBody.fluid instanceof EmptyFluid) && pipe.rect.withinYRange(fluidBody.rect)) {
+			if(
+				!(fluidBody.fluid instanceof EmptyFluid) && 
+				pipe.rect.withinYRange(fluidBody.rect) 
+			) {
 				return fluidBody;
 			}
 		}

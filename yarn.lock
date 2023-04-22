@@ -4603,6 +4603,11 @@
     "commander" "^2.20.0"
     "source-map-support" "~0.5.20"
 
+"textures@^1.2.3":
+  "integrity" "sha512-Ehg2adOcyfCR5DPOzBauXERJN4cXF1Bh4dITY2pPQ3+CvBBU0SZAep6pq5cCWp8K+k3OlXYh5dc2stgEQlqAWg=="
+  "resolved" "https://registry.npmjs.org/textures/-/textures-1.2.3.tgz"
+  "version" "1.2.3"
+
 "through@^2.3.8":
   "integrity" "sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg=="
   "resolved" "https://registry.npmjs.org/through/-/through-2.3.8.tgz"

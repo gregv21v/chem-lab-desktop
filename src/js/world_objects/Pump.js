@@ -35,25 +35,12 @@ export default class Pump extends GameObject {
 		this._production = production;
 		this._position = position;
 
-		this._svg = {
-			spout: this._layer.append("rect"), // where the liquid comes out
-			button: this._layer.append("circle") // pressed to get liquid
-		}
-
 		this._tooltip = new ToolTip(
 	    	this._position,
 	    	"Click to produce liquid"
 		);
-
-
-		var self = this;
 		this._world = world;
-		this._svg.button.on("mousedown", function() {
-			if(self._world)
-				self.produceDrop(world)
-			else 
-				console.log("You need to set the world for this pump to produce a drop.")
-		})
+		
 
 		this._possibleFluids = [
 			new Fluid("Water", 2, this._production * this._production, {red: 0, green: 0, blue: 200}),
@@ -64,6 +51,19 @@ export default class Pump extends GameObject {
 	}
 
 	create() {
+		this._svg = {
+			spout: this._layer.append("rect"), // where the liquid comes out
+			button: this._layer.append("circle") // pressed to get liquid
+		}
+
+		var self = this;
+		this._svg.button.on("mousedown", function() {
+			if(self._world)
+				self.produceDrop(self._world)
+			else 
+				console.log("You need to set the world for this pump to produce a drop.")
+		})
+
 		this.updateSVG();
 	};
 

@@ -61,16 +61,6 @@ export default class GameObject {
     this._position.x += this._velocity.x;
     this._position.y += this._velocity.y;
   } 
-
-
-  /**
-   * updateSVG()
-   * @description updates the svg graphic for this GameObject
-   */
-  updateSVG() {
-
-  }
-
   
   /**
    * get id()

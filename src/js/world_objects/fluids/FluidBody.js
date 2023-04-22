@@ -40,7 +40,6 @@ export default class FluidBody extends GameObject {
         this.width = this._width;
         this.height = this._height;
 
-
         this._layer.append(() => this._group.node())
     }
 

@@ -33,6 +33,7 @@ import CreativeModeScreenTemplate from "./templates/CreativeModeScreen.html"
 import NormalModeScreenTemplate from "./templates/NormalModeScreen.html"
 import * as d3 from "d3"
 import "./css/style.css"
+import textures from "textures"
 
 let app = d3.select("#app")
 let loadingScreen = app.html(LoadingScreenTemplate);

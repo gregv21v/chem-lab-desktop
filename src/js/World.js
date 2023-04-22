@@ -20,7 +20,7 @@ export default class World {
 		// The side that the given object (snappingTo) is on.
 		this.objectOn = ""
 		this.mouseObj = null; // the object centered on the mouse
-		this.rect = new Rect();
+		this.rect = new Rect(this._game.layers[1]);
 		this.rect.position = position;
 		this.rect.width = width;
 		this.rect.height = height;
@@ -75,7 +75,9 @@ export default class World {
 					this.player.hand.attachTo(this.snappingTo, getOpposite(this.snapSide));
 					this.snappingTo.attachTo(this.player.hand, this.snapSide);
 				}
+				//this.player.hand.showSnapAreas()
 				this.add(this.player.hand);
+				
 				this.player.hand = null; // empty hand
 				this.snappingTo = null;
 				this.snapSide = "";
@@ -196,13 +198,20 @@ export default class World {
 		let pipes = this.findPipes();
 
 		// Move fluid drops through pipes
-		for(const pipe of pipes) {
+		/*for(const pipe of pipes) {
 			pipe.updateDrops();
-		}
+		}*/
 
 		for(const obj of this.objs) {
-			if(obj instanceof Pipe || obj instanceof Tank)
+			if(obj instanceof Pipe || obj instanceof Tank) {
+				if(obj instanceof Pipe) {
+					obj.updateDrops();
+				}
 				obj.transferLiquid();
+			}
+
+			
+				
 		}
 
 	};

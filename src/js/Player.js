@@ -114,27 +114,6 @@ export default class Player {
     
   }
 
-  update() {
-    var self = this;
-    setInterval(() => {
-      self.world.update();
-    }, 20);
-  };
-
-  /**
-   * onKeyPress()
-   * @description called when a key is pressed
-   */
-  onKeyPress(event) {
-    this.inventory.onKeyPress(event);
-
-    console.log(event.key)
-    if(event.key === 'r' && this._hand instanceof Pipe) {
-      this._hand.rotate();
-      this._hand.updateSVG();
-    }
-  }
-
   /**
    * get hand()
    * @returns the object in the players hand
