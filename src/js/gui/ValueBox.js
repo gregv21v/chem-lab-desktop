@@ -15,8 +15,8 @@ export default class ValueBox extends Drawable {
 	 * @param {Number} width the width of the value box
 	 * @param {Number} height the height of the value box
 	 */
-	constructor(position, width, height) {
-		super(position)
+	constructor(layer, position, width, height) {
+		super(layer, position)
 		this._width = width;
 		this._height = height;
 		this._label = "";
@@ -28,7 +28,7 @@ export default class ValueBox extends Drawable {
 	 * create() 
 	 * @description creates the graphics
 	 */
-	create(parent) {
+	create() {
 		this._group = d3.create("svg:g")
 	
 		this._svg = {

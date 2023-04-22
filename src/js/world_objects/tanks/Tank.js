@@ -39,10 +39,10 @@ export default class Tank extends Snappable {
 	 * @param {Boolean} downOpen indicates whether the down side is opened
 	 */
 	constructor(
-		center, interior, wallWidth, 
+		layer, center, interior, wallWidth, 
 		leftOpened=false, rightOpened=false, upOpened=true, downOpened=false
 	) {
-		super(center, {x: 0, y: 0}) 
+		super(layer, center) 
 
 		// the open and closes sides
 		this._leftOpened = leftOpened;
@@ -60,6 +60,7 @@ export default class Tank extends Snappable {
 		this._text = "";
 
 		this._emptyFluid = new ContainerFluidBody(
+			layer,
 			{x: this._position.x + this._wallWidth, y: this._position.y + this._wallWidth}, // position
 			interior.height * interior.width, // volume 
 			new EmptyFluid() // fluid
@@ -79,8 +80,8 @@ export default class Tank extends Snappable {
 	 * create()
 	 * @description creates the Tank
 	 */
-	createSVG() {
-		this._group = d3.select("body").select("svg").append("g")
+	create() {
+		this._group = this._layer.append("g")
 		this._svg = {
 			walls: this._group.append("rect"),
 			interiorVertical: this._group.append("rect"),
@@ -199,6 +200,8 @@ export default class Tank extends Snappable {
 
 		this._fluidBodies = newFluidBodies;
 	}
+
+
 
 	/**
 	 * addFluid()
@@ -391,10 +394,8 @@ export default class Tank extends Snappable {
 
 			// if it doesn't exist add it
 			if(i >= this._fluidBodies.length) {
-				let newFluid = new ContainerFluidBody({x: 0, y: 0}, drop.volume, drop.fluid);
-				console.log("New Fluid")
-				console.log(newFluid)
-				newFluid.create(this._svg.fluids);
+				let newFluid = new ContainerFluidBody(this._svg.fluids, {x: 0, y: 0}, drop.volume, drop.fluid);
+				newFluid.create();
 				newFluid.container = this;
 				this._fluidBodies.push(newFluid);
 				this._fluidBodies = this._fluidBodies.sort((a, b) => a.fluid.density - b.fluid.density) 

@@ -17,8 +17,8 @@ export default class Pipe extends Snappable {
 	 * @param {Number} interiorHeight the interior height of the pipe
 	 * @param {Number} wallWidth the wall width of the pipe
 	 */
-	constructor(center, width, interiorHeight, wallWidth) {
-		super(center)
+	constructor(layer, center, width, interiorHeight, wallWidth) {
+		super(layer, center)
 
 		this._wallWidth = wallWidth;
 		this._interiorHeight = interiorHeight;
@@ -29,19 +29,9 @@ export default class Pipe extends Snappable {
 
 		this._drops = [];
 
-		this._group = d3.select("body").select("svg").append("g")
-		this._svg = {
-			walls: this._group.append("rect"),
-			interior: this._group.append("rect")
-		}
-
-		this._svg.walls.attr("name", "pipeWalls")
-		this._svg.interior.attr("name", "pipeInterior")
-
 		this._rect = new Rect(this.position, this.width, this.height);
 
 		//this.updatePosition();
-
   	}
 
 	
@@ -95,7 +85,16 @@ export default class Pipe extends Snappable {
 	/*
 		=============Drawing the Pipe=============
 	*/
-	createSVG() {
+	create() {
+		this._group = this._layer.append("g")
+		this._svg = {
+			walls: this._group.append("rect"),
+			interior: this._group.append("rect")
+		}
+
+		this._svg.walls.attr("name", "pipeWalls")
+		this._svg.interior.attr("name", "pipeInterior")
+
 		this.updateSVG();
 	}
 
@@ -103,7 +102,6 @@ export default class Pipe extends Snappable {
 
 	updateSVG() {
 		//this.updatePosition();
-
 	
 		if(this.orientation === "horizontal") {
 			//let extraWidth = (this.attachments.right && this.attachments.right[0].wallWidth) ? this.attachments.right[0].wallWidth : 0

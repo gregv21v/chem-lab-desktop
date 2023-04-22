@@ -21,103 +21,58 @@ export default class Player {
    * constructor()
    * @description constructs the Player
    */
-  constructor() {
+  constructor(game) {
+    this._game = game;
     let svg = d3.select("svg");
     let height = svg.attr("height") - 30;
 
     this._hand = null;
 
-    this.world = new World(this, {x: 270, y: 20}, svg.attr("width") - (270 + 400), height);
-    this.world.create()
-
-    this.inventory = new Inventory(svg, this, {x: 20, y: 45}, 250, height - 25);
-    this.inventory.create();
-
-    this.credits = new ValueBox({x: 20, y: 20}, 250, 25);
-    this.credits.create(svg)
-    this.credits.update()
-
-    this.credits.styling = {
-      color: "red",
-      textColor: "black",
-      strokeColor: "black",
-      strokeWidth: 10
-    }
-
-    this.credits.label = "Coins";
-    this.credits.value = 0;
-
-    // add example items to the players inventory
-
-    this.inventory.add(new Valve(
-      {
-        x: this.inventory.width + this.world.width/2,
-        y: this.world.height/2
-      },
-      20, 10, 5
-    ));
-    this.inventory.add(new Tank({x: 475, y: 540}, {width: 40, height: 100}, 5));
-    this.inventory.add(new Tank({x: 475, y: 540}, {width: 50, height: 50}, 5));
-    this.inventory.add(new CrossPipe({x: 475, y: 540}, 10, 100, 5));
-    //this.inventory.add(new Tank({x: 0, y: 0}, {width: 50, height: 50}, 5, false, false, false, false))
-    this.inventory.add(new Tank({x: 0, y: 0}, {width: 50, height: 100}, 5, false, false, false, false))
-    this.inventory.add(new Pipe({x: 500, y: 500}, 50, 10, 5));
-    this.inventory.add(new Pipe({x: 500, y: 500}, 50, 10, 5));
-    this.inventory.add(new Pump(this.world, {x: 0, y: 0}, 5));
-    this.inventory.add(new Tank({x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
-    this.inventory.add(new Tank({x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
-    this.inventory.add(new Tank({x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
-    this.inventory.add(new Tank({x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
-
+    
     //this.inventory.createSlots();
 
     /**
      * Test Tanks
      */
-    let startX = 300;
-    let startY = 100;
+    //let startX = 300;
+    //let startY = 100;
     
-    let testTanks = [
+    /*let testTanks = [
       new Tank(
+        game.layers[1],
         {x: startX + 100, y: startY}, {width: 40, height: 40}, 5, 
         true, true, true, true 
       ),
       new Tank(
+        game.layers[1],
         {x: startX + 200, y: startY}, {width: 40, height: 40}, 5, 
         true, false, true, true 
       ),
       new Tank(
+        game.layers[1],
         {x: startX + 300, y: startY}, {width: 40, height: 40}, 5, 
         true, true, false, true 
       ),
       new Tank(
+        game.layers[1],
         {x: startX + 400, y: startY}, {width: 40, height: 40}, 5, 
         true, true, true, false 
       ),
       new Tank(
+        game.layers[1],
         {x: startX + 500, y: startY}, {width: 40, height: 40}, 5, 
         true, false, false, true 
       ),
       new Tank(
+        game.layers[1],
         {x: startX + 600, y: startY}, {width: 40, height: 40}, 5, 
         false, false, false, false 
       )
-    ]
+    ]*/
 
 
     // positioned sell tank at center of world.
-    var sellTank = new Tank(
-      {
-        x: this.inventory.width + this.world.width/2 - 100, /* border width of sell button */
-        y: this.inventory.height - 50 - 6 // Space for the button
-      },
-      {
-        width: 200,
-        height: 40
-      },
-      5
-    );
-    sellTank.wallColor = "red";
+    
 
 
     /*this.sellBtn.setOnClick(function() {
@@ -136,16 +91,6 @@ export default class Player {
 
     })*/
 
-    var startPump = new Pump(this.world, {x: 0, y: 0}, 10);
-    startPump.position.x = this.inventory.width + this.world.width/2 - startPump.width/2;
-    startPump.position.y = startPump.width + startPump.production;
-
-    var testValve = new Valve(
-      {x: this.world.width / 2, y: this.world.height / 2},
-      100, // width
-      10, // interiorHeight
-      5  // wallWidth
-    )
     //testValve.showSnapAreas();
 
     /*var testFaucet = new Faucet({
@@ -155,8 +100,8 @@ export default class Player {
 
 
 
-    this.world.add(sellTank);
-    this.world.add(startPump);
+    //this.world.add(sellTank);
+    //this.world.add(startPump);
     //this.world.add(testValve)
     //this.world.add(testFaucet);
   }

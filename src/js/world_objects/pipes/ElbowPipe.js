@@ -14,8 +14,8 @@ export default class ElbowPipe extends Pipe {
      * @param {Number} lengthFromCorner the length of the pipe starting from its corner
      * @param {Number} wallWidth the width of the walls of the pipe
      */
-    constructor(position, diameter, lengthFromCorner, wallWidth) {
-        super(position, diameter, lengthFromCorner, wallWidth)
+    constructor(layer, position, diameter, lengthFromCorner, wallWidth) {
+        super(layer, position, diameter, lengthFromCorner, wallWidth)
   
         this.diameter = diameter
         this._length = lengthFromCorner
@@ -31,10 +31,9 @@ export default class ElbowPipe extends Pipe {
       createSVG()
       @description creates the svg graphic
     */
-    createSVG() {
-        var mainSVG = d3.select("body").select("svg")
+    create() {
     
-        this._group = mainSVG.append("g")
+        this._group = this._layer.append("g")
         this._svg = {
             walls1: this._group.append("rect"),
             walls2: this._group.append("rect"),

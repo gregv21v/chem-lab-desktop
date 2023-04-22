@@ -5,7 +5,7 @@
   *Snappable* is an trait that indicates that a object can be snapped to.
     Includes: Pipes, Tanks, and Valves
 
-  *Sidded* is an trait that indicates that an object has one or more entrences that
+  *Sided* is an trait that indicates that an object has one or more entrences that
     liquid can be entered through.
       Includes: Pipes, and Tanks
 
@@ -15,8 +15,8 @@ import Rect from "../shapes/Rect"
 import { Distance } from "../shapes/Point"
 
 export default class Snappable extends GameObject {
-  constructor(center) {
-    super(center)
+  constructor(layer, center) {
+    super(layer, center, {x: 0, y: 0})
 
     this._position = {x: 0, y: 0}
     this.orientation = "horizontal"

@@ -64,5 +64,7 @@ This game is in early alpha, so expect bugs
 - Switch to using Snap.SVG
   - make the change with easier to switch componets first then do the hard ones last
 - Add fluid "shaders" that make lower density fluids appear more like smoke, and vis versa for denser fluids 
+- Make it so that you can move game objects
+- Add the ability to rotate tanks
 
 

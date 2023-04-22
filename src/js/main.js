@@ -13,25 +13,25 @@ let game = null;
 /** Remove this code to put back loading screen */
 app.html(TestModeScreenTemplate)
 game = new Game(0);
-game.render()
+game.create()
 
 loadingScreen.select("[name='test']").on("click", () => {
     app.html(TestModeScreenTemplate)
     game = new Game(0);
-    game.render()
+    game.create()
 
 })
 
 loadingScreen.select("[name='creative']").on("click", () => {
     app.html(CreativeModeScreenTemplate)
     game = new Game(1);
-    game.render()
+    game.create()
 })
 
 loadingScreen.select("[name='normal']").on("click", () => {
     app.html(NormalModeScreenTemplate)
     game = new Game(2);
-    game.render()
+    game.create()
 })
 
 

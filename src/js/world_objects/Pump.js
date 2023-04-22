@@ -29,26 +29,26 @@ export default class Pump extends GameObject {
 	 * @param {Point} position the position of the pump
 	 * @param {Number} production 
 	 */
-	constructor(world, position, production) {
-		super(position, {x: 0, y: 0})
+	constructor(layer, world, position, production) {
+		super(layer, position, {x: 0, y: 0})
 
-		this.production = production;
+		this._production = production;
 		this._position = position;
 
-		let mainSVG = d3.select("body").select("svg")
-		this.svg = {
-			spout: mainSVG.append("rect"), // where the liquid comes out
-			button: mainSVG.append("circle") // pressed to get liquid
+		this._svg = {
+			spout: this._layer.append("rect"), // where the liquid comes out
+			button: this._layer.append("circle") // pressed to get liquid
 		}
 
-		this.tooltip = new ToolTip(
-	    this._position,
-	    "Click to produce liquid");
+		this._tooltip = new ToolTip(
+	    	this._position,
+	    	"Click to produce liquid"
+		);
 
 
 		var self = this;
 		this._world = world;
-		this.svg.button.on("mousedown", function() {
+		this._svg.button.on("mousedown", function() {
 			if(self._world)
 				self.produceDrop(world)
 			else 
@@ -56,36 +56,36 @@ export default class Pump extends GameObject {
 		})
 
 		this._possibleFluids = [
-			new Fluid("Water", 2, this.production * this.production, {red: 0, green: 0, blue: 200}),
-			new Fluid("Smoke", -1, this.production * this.production, {red: 142, green: 140, blue: 145}),
-			new Fluid("Dust", 5, this.production * this.production, {red: 173, green: 161, blue: 113}),
-			new Fluid("Fire", 1, this.production * this.production, {red: 255, green: 0, blue: 0})
+			new Fluid("Water", 2, this._production * this._production, {red: 0, green: 0, blue: 200}),
+			new Fluid("Smoke", -1, this._production * this._production, {red: 142, green: 140, blue: 145}),
+			new Fluid("Dust", 5, this._production * this._production, {red: 173, green: 161, blue: 113}),
+			new Fluid("Lava", 1, this._production * this._production, {red: 255, green: 0, blue: 0})
 		]
 	}
 
-	createSVG() {
+	create() {
 		this.updateSVG();
 	};
 
 	updateSVG() {
 		var self = this;
-		//this.tooltip.createSVG();
+		//this._tooltip.createSVG();
 
-		this.svg.button.attr("r", this.production * 2);
-		this.svg.button.attr("cx", this._position.x);
-		this.svg.button.attr("cy", this._position.y);
-		this.svg.button.style("fill", "red")
+		this._svg.button.attr("r", this._production);
+		this._svg.button.attr("cx", this._position.x);
+		this._svg.button.attr("cy", this._position.y + this._production);
+		this._svg.button.style("fill", "red")
 			.on("mouseenter", function() {
-				self.tooltip.show();
+				self._tooltip.show();
 			})
 			.on("mouseout", function() {
-				self.tooltip.hide();
+				self._tooltip.hide();
 			});
 
-		this.svg.spout.attr("width", this.production);
-		this.svg.spout.attr("height", this.production * 2);
-		this.svg.spout.attr("x", this._position.x - this.production/2);
-		this.svg.spout.attr("y", this._position.y + this.production);
+		this._svg.spout.attr("width", this._production);
+		this._svg.spout.attr("height", this._production * 2);
+		this._svg.spout.attr("x", this._position.x - this._production/2);
+		this._svg.spout.attr("y", this._position.y + this._production);
 	}
 
 
@@ -96,21 +96,22 @@ export default class Pump extends GameObject {
 	 */
 	produceDrop(world) {
 		let fluid = FluidRegistry.getRandom();
-		let size = getRandomInt(5, 15)
+		let size = getRandomInt(5, this._production)
 
 		let drop = new Drop(
-			{x: this._position.x - this.production/2, y: this._position.y + this.production * 3}, // position
+			d3.select("svg"),
+			{x: this._position.x - this._production/2, y: this._position.y + this._production * 3}, // position
 			{x: 0, y: 1}, // velocity
 			size,
 			fluid
 		)
 		
-		drop.create(d3.select("svg"));
+		drop.create();
 		world.addDrop(drop);
 	}
 
 	updateTooltip() {
-	  this.tooltip.position = this._position;
+	  this._tooltip.position = this._position;
 	}
 
 	/**
@@ -119,8 +120,17 @@ export default class Pump extends GameObject {
 	 * @param point point to move to
 	 */
 	moveRelativeToCenter(point) {
-		this._position.x = point.x - this.production
-		this._position.y = point.y - this.production
+		this._position.x = point.x - this._production
+		this._position.y = point.y - this._production
+	}
+
+	/**
+	 * get production()
+	 * @description gets how much this pump produces
+	 * @returns the amount this pump produces
+	 */
+	get production() {
+		return this._production;
 	}
 
 	/**
@@ -137,7 +147,7 @@ export default class Pump extends GameObject {
 	 * @returns the width of the pump
 	 */
 	get width() {
-		return this.production * 4;
+		return this._production * 4;
 	}
 
 
@@ -146,7 +156,7 @@ export default class Pump extends GameObject {
 	 * @returns the height of the Pump
 	 */
 	get height() {
-		return this.production * 4;
+		return this._production * 4;
 	}
 
 	/**
@@ -154,7 +164,7 @@ export default class Pump extends GameObject {
 	 * @description A info used for creating a tooltip
 	*/
 	get name() {
-		return this.production;
+		return this._production;
 	}
 
 	/**

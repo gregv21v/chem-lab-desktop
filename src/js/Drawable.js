@@ -9,11 +9,13 @@ export default class Drawable {
      * @description constructs the Drawable
      * @param {Point} position the location of the drawable on the canvas
      */
-    constructor(position) {
+    constructor(layer, position) {
         // an object containing all the styling that describe the graphics
         // of the Drawable, such as fill stroke, color, etc...
         this._styling = {};  
         this._position = position; // the location of the drawable on the canvas
+
+		this._layer = layer;
     }
 
 
@@ -29,7 +31,7 @@ export default class Drawable {
 	 * create() 
 	 * @description creates the svg graphics
 	 */
-	create(parent) {
+	create() {
         // each create function should start with an object that contains 
         // a list of svg that make up the graphic.
         // all those graphics should be attached to a group
@@ -45,7 +47,7 @@ export default class Drawable {
        this._group = d3.create("svg:g")
        this._svg = {};
 
-	   parent.append(() => this._group.node());
+	   this._layer.append(() => this._group.node());
 	}
 
     /**

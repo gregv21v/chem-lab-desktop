@@ -15,27 +15,19 @@ export default class FluidBody extends GameObject {
      * @param {Number} volume the volume of the fluid
      * @param {Fluid} fluid the fluid that this mass is made of 
      */
-    constructor(position, velocity, volume, fluid) {
-        super(position, velocity)
+    constructor(layer, position, velocity, volume, fluid) {
+        super(layer, position, velocity)
         this._volume = volume;
         this._fluid = fluid;
         this._rect = new Rect();
     }
 
-    
-
-
-    
-
-    
-
-    
 
     /**
      * create()
      * @description renders the svg for the fluid
      */
-    create(parent) {
+    create() {
         this._group = d3.create("svg:g")
 
         this._svg = {
@@ -49,7 +41,7 @@ export default class FluidBody extends GameObject {
         this.height = this._height;
 
 
-        parent.append(() => this._group.node())
+        this._layer.append(() => this._group.node())
     }
 
     /**

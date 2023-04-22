@@ -14,8 +14,8 @@ export default class CrossPipe extends Pipe {
      * @param {Number} size the size of the pipe
      * @param {Number} wallWidth the width of the walls of the pipe
      */
-    constructor(position, diameter, size, wallWidth) {
-        super(position, diameter, wallWidth)
+    constructor(layer, position, diameter, size, wallWidth) {
+        super(layer, position, diameter, wallWidth)
   
         this._diameter = diameter
         this._size = size
@@ -31,10 +31,8 @@ export default class CrossPipe extends Pipe {
       createSVG()
       @description creates the svg graphic
     */
-    createSVG() {
-        let mainSVG = d3.select("body").select("svg")
-    
-        this._group = mainSVG.append("g")
+    create() {  
+        this._group = this._layer.append("g")
         this._svg = {
             walls1: this._group.append("rect"),
             walls2: this._group.append("rect"),

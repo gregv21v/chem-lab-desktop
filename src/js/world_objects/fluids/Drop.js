@@ -16,8 +16,8 @@ export default class Drop extends FluidBody {
    * @param {Point} position the position of the drop in the world
    * @param {Point} velocity the velocity of the drop
    */
-  constructor(position, velocity, size, fluid) {
-    super(position, velocity, size * size, fluid)
+  constructor(layer, position, velocity, size, fluid) {
+    super(layer, position, velocity, size * size, fluid)
     this._size = size;
 
     /**
@@ -31,7 +31,7 @@ export default class Drop extends FluidBody {
    * @description creates the graphics for the game object
    * @param {SVG} parent the parent svg
    */
-  create(parent) {
+  create() {
     this._group = d3.create("svg:g")
 
     this._svg = {
@@ -44,8 +44,7 @@ export default class Drop extends FluidBody {
     this.position = this._position;
     this.size = this._size
 
-
-    parent.append(() => this._group.node())
+    this._layer.append(() => this._group.node())
   }
 
 

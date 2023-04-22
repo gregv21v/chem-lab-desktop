@@ -35,8 +35,6 @@ export default class Inventory extends ScrollableContainer {
 		this.player = player; // the player the inventory belongs to 
 		this.slotHeight = 60; // the height of the slots 
 
-	
-
 		this.objs = []; // the GameObjects in the inventory
 		this.slots = []; // the Slots that the GameObjects fit in
 	}
@@ -80,9 +78,9 @@ export default class Inventory extends ScrollableContainer {
 		@param {Number} index the index of the new slot
 	*/
 	createSlot(index) {
-		let newSlot = new Slot(this, index, this._width, this.slotHeight)
+		let newSlot = new Slot(this._content, this, index, this._width, this.slotHeight)
 
-		newSlot.create(this._content); // creates the graphics for the slot
+		newSlot.create(); // creates the graphics for the slot
 
 		// style the slot
 		newSlot.styling = {
@@ -145,7 +143,7 @@ export default class Inventory extends ScrollableContainer {
 	pickItem(index) {
 		// put the item in the players hand
 		this.player.hand = this.objs[index];
-		this.player.hand.createSVG();
+		this.player.hand.create();
 
 		this.remove(index);
 	}

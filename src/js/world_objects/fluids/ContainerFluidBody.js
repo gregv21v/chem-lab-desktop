@@ -13,15 +13,15 @@ export default class ContainerFluidBody extends FluidBody {
      * @param {Number} volume the volume of the fluid
      * @param {Fluid} fluid the fluid that this mass is made of 
      */
-    constructor(position, volume, fluid) {
-        super(position, {x: 0, y: 0}, volume, fluid)
+    constructor(layer, position, volume, fluid) {
+        super(layer, position, {x: 0, y: 0}, volume, fluid)
     }
 
     /**
      * create()
      * @description creates the svg for the fluid
      */
-    create(parent) {
+    create() {
         this._group = d3.create("svg:g")
 
         this._svg = {
@@ -33,7 +33,7 @@ export default class ContainerFluidBody extends FluidBody {
 
         this.position = this._position
 
-        parent.append(() => this._group.node())
+        this._layer.append(() => this._group.node())
     }
 
     /**
@@ -47,14 +47,14 @@ export default class ContainerFluidBody extends FluidBody {
             return null;
         } else if(size * size <= this.volume) {
 			this.volume -= size * size;
-            let newDrop = new Drop({x: 0, y: 0}, {x: 0, y: 0}, size, this.fluid);
-            newDrop.create(d3.select("svg"))
+            let newDrop = new Drop(d3.select("svg"), {x: 0, y: 0}, {x: 0, y: 0}, size, this.fluid);
+            newDrop.create()
 			return newDrop;
 		} else {
             let dropSize = Math.round(Math.sqrt(this.volume))
             this.volume -= dropSize * dropSize
-            let newDrop = new Drop({x: 0, y: 0}, {x: 0, y: 0}, dropSize, this.fluid);
-            newDrop.create(d3.select("svg"))
+            let newDrop = new Drop(d3.select("svg"), {x: 0, y: 0}, {x: 0, y: 0}, dropSize, this.fluid);
+            newDrop.create()
             return newDrop;
         }
 	}

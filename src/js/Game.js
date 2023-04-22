@@ -11,6 +11,13 @@ import FluidRegistry from "./world_objects/fluids/FluidRegistry"
 import Fluid from "./world_objects/fluids/Fluid"
 import EmptyFluid from "./world_objects/fluids/EmptyFluid"
 import ScrollableContainer from "./gui/ScrollableContainer"
+import World from "./World"
+import { HUD } from "./HUD"
+import Valve from "./world_objects/pipes/Valve"
+import Tank from "./world_objects/tanks/Tank"
+import Pipe from "./world_objects/pipes/Pipe"
+import CrossPipe from "./world_objects/pipes/CrossPipe"
+import Pump from "./world_objects/Pump"
 
 
 export default class Game {
@@ -26,13 +33,16 @@ export default class Game {
    */
   constructor(mode=0) {
     this._mode = mode;
-    let mainSVG = d3.select("svg")
+    let svg = d3.select("svg")
+
+    this._width = svg.attr("width")
+    this._height = svg.attr("height")
 
     this._layers = []
 
-    this._layers.push(mainSVG.append("g")) // gui
-    this._layers.push(mainSVG.append("g")) // containers
-    this._layers.push(mainSVG.append("g")) // fluids
+    this._layers.push(svg.append("g")) // gui
+    this._layers.push(svg.append("g")) // containers
+    this._layers.push(svg.append("g")) // fluids
 
     this._layers[0].attr("name", "gui")
     this._layers[1].attr("name", "containers")
@@ -45,10 +55,73 @@ export default class Game {
     FluidRegistry.register(new Fluid("Magma", 1, {red: 255, green: 0, blue: 0}))
     FluidRegistry.register(new Fluid("Nitrogen Gas", -2, {red: 0, green: 0, blue: 100}))
 
-    this._player = new Player(); // contains inventory
+    // setup the player 
+    this._player = new Player(this); // contains inventory
+    this._player.create()
 
-    //this.world = new World(this._player);
-    this._shop = new Shop();
+    // setup the HUD
+    this._hud = new HUD(this, this._player);
+    this._hud.create()
+
+    // setup the world
+    this._world = new World(this, this._player, {x: 270, y: 20}, this._width - (270 + 400), this._height - 30)
+    this._world.create()
+
+    
+
+
+    // add example items to the players inventory
+
+    /*this._hud.inventory.add(new Valve(
+      this._layers[1], 
+        {
+            x: this._hud.inventory.width + this.world.width/2,
+            y: this.world.height/2
+        },
+        20, 10, 5
+    ));*/
+    //this._hud.inventory.add(new Tank(this._layers[1], {x: 475, y: 540}, {width: 40, height: 100}, 5));
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 475, y: 540}, {width: 50, height: 50}, 5));
+    //this._hud.inventory.add(new CrossPipe(this._layers[1], {x: 475, y: 540}, 10, 100, 5));
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 50, height: 50}, 5, true, false, false, false))
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 50, height: 100}, 5, false, false, false, false))
+    this._hud.inventory.add(new Pipe(this._layers[1], {x: 500, y: 500}, 50, 10, 5));
+    //this._hud.inventory.add(new Pipe(this._layers[1], {x: 500, y: 500}, 50, 10, 5));
+    this._hud.inventory.add(new Pump(this._layers[1], this._world, {x: 0, y: 0}, 15));
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
+
+    // setup some starting tanks
+    /*var sellTank = new Tank(
+      svg, 
+      {
+        x: this.inventory.width + this.world.width/2 - 100, /* border width of sell button */
+        /*y: this.inventory.height - 50 - 6 // Space for the button
+      },
+      {
+        width: 200,
+        height: 40
+      },
+      5
+    );
+    sellTank.wallColor = "red";*/
+
+
+    //var startPump = new Pump(this._world, {x: 0, y: 0}, 10);
+    //startPump.position.x = this.inventory.width + this.world.width/2 - startPump.width/2;
+    //startPump.position.y = startPump.width + startPump.production;
+
+    //var testValve = new Valve(
+      //{x: this.world.width / 2, y: this.world.height / 2},
+      //100, // width
+      //10, // interiorHeight
+      //5  // wallWidth
+    //)
+
+
+    //this._shop = new Shop();
 
 
     /*this._testTradeItem = new TradeItem(
@@ -57,26 +130,11 @@ export default class Game {
     this._testTradeItem.create(d3.select("svg"))*/
     
 
-    this._testBtn = new BorderedButton(
+    /*this._testBtn = new BorderedButton(
       {x: 100, y: 100},
       50, 50, 2
-    )
+    )*/
 
- 
-    //this.gui = new GUI();
-
-
-    // setup the player
-
-
-    // setup the world
-
-
-    // setup the shop
-
-
-
-    // setup the gui
 
     let self = this;
     d3.select("body").on("keydown", (event) => {
@@ -86,15 +144,25 @@ export default class Game {
 
 
   /**
-   * render() 
-   * @description renders the game 
+   * create() 
+   * @description creates the game 
    */
-  render() {
-    this._player.create();
-    this._player.update()
+  create() {
+    this._player.create()
+    this._world.create()
+    this._hud.create()
+    //this._shop.create()
+  }
 
-    //this._testBtn.createSVG();
-    //this._testTradeItem.createSVG();
+  /**
+   * update()
+   * @description updates the game
+   */
+  update() {
+    var self = this;
+    setInterval(() => {
+      self._world.update();
+    }, 20);
   }
 
   /**
@@ -103,5 +171,53 @@ export default class Game {
    */
   onKeyPress(event) {
     this._player.onKeyPress(event) 
+  }
+
+
+  /**
+   * get layers()
+   * @description gets the graphic layers of the game 
+   * @returns the graphic layers of the game
+   */
+  get layers() {
+    return this._layers;
+  }
+
+
+  /**
+   * get world()
+   * @description gets the currently active world
+   * @returns the currently active world
+   */
+  get world() {
+    return this._world;
+  }
+
+  /**
+   * get hud()
+   * @description gets the hud
+   * @returns the hud
+   */
+  get hud() {
+    return this._hud;
+  }
+
+
+  /**
+   * get height()
+   * @description gets the height of the game
+   * @returns the height of the game
+   */
+  get height() {
+    return this._height;
+  }
+
+  /**
+   * get width()
+   * @description gets the width of the game
+   * @returns the width of the game
+   */
+  get width() {
+    return this._width;
   }
 }

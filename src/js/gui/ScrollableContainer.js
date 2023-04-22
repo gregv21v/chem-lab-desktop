@@ -100,6 +100,9 @@ export default class ScrollableContainer {
 	 * @description creates the inventory
 	 */
 	create() {
+        this._content = this._layer
+            .append("g")
+
         let border = this._layer
             .append("rect")
                 .attr("width", this._width)
@@ -107,14 +110,11 @@ export default class ScrollableContainer {
                 .attr("x", this._position.x)
                 .attr("y", this._position.y)
                 .style("stroke-width", 5)
-                .style("fill", "orange")
+                .style("fill", "none")
                 .style("stroke", "black")
 
         let trackWidth = 10;
 
-        this._content = this._layer
-            .append("g")
-        
         
 
         this._track = this._layer

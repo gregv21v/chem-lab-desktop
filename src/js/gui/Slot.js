@@ -12,8 +12,8 @@ export default class Slot extends ItemButton {
    * @param {Number} width the width of the slot
    * @param {Number} height the height of the slot
    */
-  constructor(inventory, index, width, height) {
-      super({
+  constructor(layer, inventory, index, width, height) {
+      super(layer, {
 				x: inventory.position.x,
 				y: inventory.position.y + index * inventory.slotHeight
 			}, width, height)

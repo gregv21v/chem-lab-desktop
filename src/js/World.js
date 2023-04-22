@@ -11,7 +11,8 @@ import * as d3 from "d3"
 import GameObject from "./world_objects/GameObject";
 
 export default class World {
-	constructor(player, position, width, height) {
+	constructor(game, player, position, width, height) {
+		this._game = game;
 		this.player = player;
 		this.snapSide = "";
 		this.snappingTo = null;
@@ -63,7 +64,7 @@ export default class World {
 		// place the object in the world
 		// when you are not in the inventory, and have selected a button
 		if(this.player.hand != null &&
-			!this.player.inventory.contains({x: evnt.clientX, y: evnt.clientY}))
+			!this._game.hud.inventory.contains({x: evnt.clientX, y: evnt.clientY}))
 		{
 			//this.player.hand.updateTooltip();
 			//console.log(this.player.hand);
@@ -138,25 +139,26 @@ export default class World {
 		}
 		return closestSnappable;
 	}
+
 	/**
 		createSVG()
 		@description create svg's for all the world objects
 	*/
 	create() {
-		this.rect.create(d3.select("svg"));
+		this.rect.create(this._game.layers[0]);
 		this.rect.update()
 	}
 
 
 	/**
-		add()
-		@description Add an object (pump, tank... etc) to the world.
-		@param obj the GameObject to add to the world
+	 * add()
+	 * @description Add an object (pump, tank... etc) to the world.
+	 * @param obj the GameObject to add to the world
 	*/
 	add (obj) {
 		this.objs.push(obj);
 
-		obj.createSVG();
+		obj.create();
 
 		// for debugging purposes
 		//var mainSVG = d3.select("body").select("svg")

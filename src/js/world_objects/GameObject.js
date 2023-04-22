@@ -10,7 +10,6 @@
 */
 import Rect from "../shapes/Rect";
 import * as d3 from "d3"
-import ToolTip from "../gui/ToolTip"
 
 export default class GameObject {
 
@@ -21,7 +20,8 @@ export default class GameObject {
    * @param {Vector} center the center of the game object
    * @param {Vector} velocity the velocity of the game object
    */
-  constructor(center, velocity) {
+  constructor(layer, center, velocity) {
+    this._layer = layer; // the layer that the graphic for this game object will be attached to
     this._center = center;
     this._position = center;
     this._velocity = velocity;
@@ -37,12 +37,12 @@ export default class GameObject {
    * @description creates the graphics for the game object
    * @param {SVG} parent the parent svg
    */
-  create(parent) {
+  create() {
     this._group = d3.create("svg:g")
 
     this._svg = {};
-
-    parent.append(() => this._group.node())
+    
+    this._layer.append(() => this._group.node())
   }
 
   /**

@@ -12,8 +12,8 @@ export default class Button extends Drawable {
 	 * @param {Number} width the width of the button
 	 * @param {Number} height the height of the button
 	 */
-	constructor(position, width, height) {
-		super(position)
+	constructor(layer, position, width, height) {
+		super(layer, position)
 		this._width = width;
 		this._height = height;
 		this._text = "";
@@ -26,7 +26,7 @@ export default class Button extends Drawable {
 	 */
 	create(parent) {
 		this._group = d3.create("svg:g")
-		parent.append(() => this._group.node())
+		this._layer.append(() => this._group.node())
 		let self = this;
 	
 		this._svg = {
