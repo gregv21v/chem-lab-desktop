@@ -20,7 +20,7 @@ export default class World {
 		// The side that the given object (snappingTo) is on.
 		this.objectOn = ""
 		this.mouseObj = null; // the object centered on the mouse
-		this.rect = new Rect(this._game.layers[1]);
+		this.rect = new Rect(this._game.layers[0]);
 		this.rect.position = position;
 		this.rect.width = width;
 		this.rect.height = height;
@@ -147,7 +147,7 @@ export default class World {
 		@description create svg's for all the world objects
 	*/
 	create() {
-		this.rect.create(this._game.layers[0]);
+		this.rect.create();
 		this.rect.update()
 	}
 

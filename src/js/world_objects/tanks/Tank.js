@@ -18,7 +18,6 @@
 import * as d3 from "d3"
 import Snappable from "../Snappable";
 import Pipe from "../pipes/Pipe";
-//import Valve from "../Valve";
 import Drop from "../fluids/Drop";
 import Fluid from "../fluids/Fluid";
 import EmptyFluid from "../fluids/EmptyFluid";
@@ -53,7 +52,7 @@ export default class Tank extends Snappable {
 		this._interior = interior;
 		this._wallWidth = wallWidth;
 		this._position = center;
-		this._orientation = "vertical"
+		this._rotation = 90
 
 		this._wallColor = "green";
 		this._active = false;
@@ -265,6 +264,8 @@ export default class Tank extends Snappable {
 		}
 	}
 
+	
+
 
   	/**
 	 *	transferLiquid()
@@ -461,25 +462,7 @@ export default class Tank extends Snappable {
 	};
 
 
-    /**
-		topSnapBehaviour()
-		@description determines what happens when an Snappable snaps to
-			the top of another snappable
-		@param snappable the Snappable being snapped to
-		@param mousePos the current position of the mouse
-	*/
-	upSnapBehaviour(snappable, mousePos) {
-		if(!this._upOpened) {
-			let thisRect = this.rect
-			//let otherRect = snappable.rect
-
-			this.orientation = "vertical"
-			this.moveRelativeToCenter({
-				y: snappable._center.y - thisRect.height / 2,
-				x: mousePos.x
-			})
-		}
-	}
+    
 
 
 	/**
@@ -533,13 +516,33 @@ export default class Tank extends Snappable {
 			let thisRect = this.rect
 			let otherRect = snappable.rect
 
-			this.orientation = "vertical"
+			this._rotation = 90
 			this.moveRelativeToCenter({
 				y: snappable._center.y + otherRect.height + thisRect.height / 2,
 				x: mousePos.x
 			})
 		}
   	}
+
+	/**
+	 * topSnapBehaviour()
+	 * @description determines what happens when an Snappable snaps to
+	 * 	the top of another snappable
+	 * @param snappable the Snappable being snapped to
+	 * @param mousePos the current position of the mouse
+	*/
+	upSnapBehaviour(snappable, mousePos) {
+		if(!this._upOpened) {
+			let thisRect = this.rect
+			//let otherRect = snappable.rect
+
+			this._rotation = 90
+			this.moveRelativeToCenter({
+				y: snappable._center.y - thisRect.height / 2,
+				x: mousePos.x
+			})
+		}
+	}
 
 	/**
 	 * getUpY()

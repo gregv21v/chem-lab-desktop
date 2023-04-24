@@ -164,7 +164,7 @@ export default class Pump extends GameObject {
 	 * @description A info used for creating a tooltip
 	*/
 	get name() {
-		return this._production;
+		return "Pump: " + this._production;
 	}
 
 	/**

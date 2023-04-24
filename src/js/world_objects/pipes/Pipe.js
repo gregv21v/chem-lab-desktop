@@ -30,6 +30,7 @@ export default class Pipe extends Snappable {
 		this._drops = [];
 
 		this._rect = new Rect(this.position, this.width, this.height);
+		this._rotation = 0;
 
 		//this.updatePosition();
   	}
@@ -104,7 +105,7 @@ export default class Pipe extends Snappable {
 	updateSVG() {
 		//this.updatePosition();
 	
-		if(this.orientation === "horizontal") {
+		if(this.rotation == 0) {
 			//let extraWidth = (this.attachments.right && this.attachments.right[0].wallWidth) ? this.attachments.right[0].wallWidth : 0
 			//console.log(extraWidth);
 
@@ -145,20 +146,28 @@ export default class Pipe extends Snappable {
 	*/
 
 	/**
-	 * set orientation()
-	 * @description sets the orientation of the pipe
+	 * rotate() 
+	 * @description rotates the pipe
 	 */
-	set orientation(value) {
-		this._orientation = value;
+	rotate() {
+		this._rotation = (this._rotation + 90) % 180
 	}
 
 	/**
-	 * get orientation()
-	 * @description gets the orientation of the pipe
-	 * @returns orientation of the pipe
+	 * set rotation()
+	 * @description sets the rotation of the pipe
 	 */
-	get orientation() {
-		return this._orientation;
+	set rotation(value) {
+		this._rotation = value;
+	}
+
+	/**
+	 * get rotation()
+	 * @description gets the rotation of the pipe
+	 * @returns rotation of the pipe
+	 */
+	get rotation() {
+		return this._rotation;
 	}
 
 
@@ -186,12 +195,12 @@ export default class Pipe extends Snappable {
 	 * @returns the snap areas of the pipe
 	 */
 	getSnapAreas() {
-		if(this.orientation === "horizontal") {
+		if(this.rotation === 0) {
 			return {
 				left: this.getLeftArea(),
 				right: this.getRightArea()
 			}
-		} else if(this.orientation === "vertical") {
+		} else if(this.rotation === 90) {
 			return {
 				up: this.getUpArea(),
 				down: this.getDownArea()
@@ -276,7 +285,7 @@ export default class Pipe extends Snappable {
 	 * @returns the height of the pipe
 	 */
 	get height() {
-		if(this.orientation === "horizontal") {
+		if(this.rotation === 0) {
 			return this._interiorHeight + this._wallWidth * 2;
 		} else {
 			return this._width;
@@ -288,7 +297,7 @@ export default class Pipe extends Snappable {
 	 * @returns the width of the pipe
 	 */
 	get width() {
-		if(this.orientation === "horizontal") {
+		if(this.rotation === 0) {
 			return this._width;
 		} else {
 			return this._interiorHeight + this._wallWidth * 2;

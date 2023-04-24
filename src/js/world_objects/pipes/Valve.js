@@ -59,7 +59,7 @@ export default class Valve extends Pipe {
       self.toggle();
     });
 
-  	if(this.orientation === "horizontal") {
+  	if(this._rotation == 0) {
   		// interior
   		this._svg.interior.attr("width", this.width);
   		this._svg.interior.attr("height", this.interiorHeight);
@@ -113,7 +113,7 @@ export default class Valve extends Pipe {
    * @description referes to height of the actual object in the world
    */
   get height() {
-  	if(this.orientation === "horizontal") {
+  	if(this._rotation === 0) {
   		return this._interiorHeight + this._wallWidth * 2;
   	} else {
   		return this._width;
@@ -125,7 +125,7 @@ export default class Valve extends Pipe {
    * @description referes to width of the actual object in the world
    */
   get width() {
-  	if(this.orientation === "horizontal") {
+  	if(this._rotation === 0) {
   		return this._width;
   	} else {
   		return this._interiorHeight + this._wallWidth * 2;

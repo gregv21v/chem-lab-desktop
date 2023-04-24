@@ -62,13 +62,15 @@ export default class Game {
     this._player = new Player(this); // contains inventory
     this._player.create()
 
-    // setup the HUD
-    this._hud = new HUD(this, this._player);
-    this._hud.create()
+    
 
     // setup the world
     this._world = new World(this, this._player, {x: 270, y: 20}, this._width - (270 + 400), this._height - 30)
     this._world.create()
+
+    // setup the HUD
+    this._hud = new HUD(this, this._player);
+    this._hud.create()
 
     // add example items to the players inventory
 
@@ -102,9 +104,9 @@ export default class Game {
     this._hud.inventory.add(new ElbowPipe(
       this._layers[1],
       {x: 0, y: 0},
-      5,
-      50,
-      5
+      10,
+      60,
+      2
     ))
     this._hud.inventory.add(new ElbowPipe(
       this._layers[1],

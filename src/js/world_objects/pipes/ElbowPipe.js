@@ -4,8 +4,8 @@
 
 import { Distance } from "../../shapes/Point"
 import Rect from "../../shapes/Rect"
-import Pipe from "./Pipe"
 import * as d3 from "d3"
+import Pipe from "./Pipe"
 
 export default class ElbowPipe extends Pipe {
     /**
@@ -59,6 +59,8 @@ export default class ElbowPipe extends Pipe {
     }
 
 
+
+
     /**
      * getStartSnapArea()
      * @description gets the snap area for the start of the pipe
@@ -84,8 +86,8 @@ export default class ElbowPipe extends Pipe {
     }
 
     /**
-     * getStartSnapArea()
-     * @description gets the snap area for the start of the pipe
+     * getEndSnapArea()
+     * @description gets the snap area for the end of the pipe
      */
     getEndSnapArea() {
       var area = new Rect()
@@ -102,6 +104,82 @@ export default class ElbowPipe extends Pipe {
       }
 
       return area
+    }
+
+    /**
+     * leftSnapBehaviour()
+     * @description determines what happens when an Snappable snaps to
+     *  the left of another snappable
+     * @param snappable the Snappable being snapped to
+     * @param mousePos the current position of the mouse
+     */
+    leftSnapBehaviour(snappable, mousePos) {
+      var thisRect = this.rect
+      //var otherRect = snappable.rect
+      // match this object with the left edge of
+      // the other object
+      this.rotation = 0
+      this.moveRelativeToCenter({
+        x: snappable._center.x - thisRect.width / 2,
+        y: mousePos.y
+      })
+    }
+
+    /**
+     * rightSnapBehaviour()
+     * @description determines what happens when an Snappable snaps to
+     *  the right of another snappable
+     * @param snappable the Snappable being snapped to
+     * @param mousePos the current position of the mouse
+     */
+    rightSnapBehaviour(snappable, mousePos) {
+      var thisRect = this.rect
+      var otherRect = snappable.rect
+
+      this.rotation = 0
+      // match the right edge
+      this.moveRelativeToCenter({
+        x: snappable._center.x + otherRect.width + thisRect.width / 2,
+        y: mousePos.y
+      })
+    }
+
+    /**
+     * upSnapBehaviour()
+     * @description determines what happens when an Snappable snaps to
+     *  the top of another snappable
+     * @param snappable the Snappable being snapped to
+     * @param mousePos the current position of the mouse
+     */
+    upSnapBehaviour(snappable, mousePos) {
+      var thisRect = this.rect
+      var otherRect = snappable.rect
+
+      this.rotation = 90
+      this.moveRelativeToCenter({
+        y: snappable._center.y - thisRect.height / 2,
+        x: mousePos.x
+      })
+    }
+
+
+
+    /**
+     * downSnapBehaviour()
+     * @description determines what happens when an Snappable snaps to
+     *  the botttom of another snappable
+     * @param snappable the Snappable being snapped to
+     * @param mousePos the current position of the mouse
+     */
+    downSnapBehaviour(snappable, mousePos) {
+      var thisRect = this.rect
+      var otherRect = snappable.rect
+
+      this.rotation = 90
+      this.moveRelativeToCenter({
+        y: snappable._center.y + otherRect.height + thisRect.height / 2,
+        x: mousePos.x
+      })
     }
 
 
@@ -173,8 +251,6 @@ export default class ElbowPipe extends Pipe {
 
       let interiorLength = this._length + this.diameter + this.wallWidth
 
-
-
       this._svg.walls1
                 .attr("x", this.position.x + ((this.rotation === 0 || this.rotation === 90) ? 0 : this._length))
                 .attr("y", this.position.y)
@@ -212,56 +288,9 @@ export default class ElbowPipe extends Pipe {
      */
     rotate() {
       this.rotation = (this.rotation + 90) % 360;
-      console.log("Rotated");
-    };
+    }
 
-    /**
-     * getPath()
-     * @description get the path that a fluid will follow through the pipe
-     */
-    getPath() {
-      let path = [];
-      if(this.orientation === "vertical") {
-        path.push({
-          x: this.position.x + this.diameter / 2,
-          y: this.position.y + this._length,
-          turn: "right"
-        })
-      } else {
-        path.push({
-          x: this.position.x + this._length,
-          y: this.position.y +  this.diameter / 2,
-          turn: "right"
-        })
-      }
-      return path;
-    }
-  
-  
-    /**
-     * get width()
-     * @description gets the width of the elbow pipe
-     */
-    get width() {
-      return this._length + this.diameter + this.wallWidth
-    }
-  
-    /**
-     * get height()
-     * @description gets the height of the elbow pipe
-     */
-    get height() {
-      return this._length + this.diameter + this.wallWidth
-    }
-  
-    /**
-     * get name()
-     * @description gets the name of the elbow pipe
-     */
-    get name() {
-      return "Elbow Pipe"
-    }
-  
+
     /**
      * updateDrops()
      * @description update the drops in the elbow pipe
@@ -291,5 +320,105 @@ export default class ElbowPipe extends Pipe {
         }
       }
     }
+
+
+    /**
+     * getStartOpening()
+     * @description gets the start opening of the pipe. This would be the 
+     *  point at the top left corning of the start of the pipe
+     * @returns {Point} the start opening of the pipe
+     */
+    getStartOpening() {
+      if(this.rotation === 0 || this.rotation === 90) {
+        return {
+          ...this._position
+        }
+      } else {
+        return {
+          x: this._position.x + this._length * 2 + this.diameter + this.wallWidth*2,
+          y: this._position.y 
+        }
+      }
+    }
+
+    /**
+     * getStartOpening()
+     * @description gets the start opening of the pipe. This would be the 
+     *  point at the top left corning of the start of the pipe
+     * @returns {Point} the start opening of the pipe
+     */
+    getEndOpening() {
+      if(this.rotation === 90 || this.rotation === 180) {
+        return {
+          x: this._position.x + this._length,
+          y: this._position.y - this._length - this.wallWidth
+        }
+      } else {
+        return {
+          x: this._position.x + this._length,
+          y: this._position.y + this._length + this.diameter + this.wallWidth * 2
+        }
+      }
+    }
+
+    /**
+     * getPath()
+     * @description get the path that a fluid will follow through the pipe
+     */
+    getPath() {
+      let path = [];
+      if(this.rotation === 0) {
+        path.push({
+          x: this.position.x + this.diameter / 2,
+          y: this.position.y + this._length,
+          turn: "right"
+        })
+      } else {
+        path.push({
+          x: this.position.x + this._length,
+          y: this.position.y +  this.diameter / 2,
+          turn: "right"
+        })
+      }
+      return path;
+    }
+
+    /**
+     * get rect()
+     * @description gets the rect for this pipe
+     */
+    get rect() {
+      this._rect.position = this.position;
+      this._rect.width = this.width
+      this._rect.height = this.height
+      return this._rect
+    }
+  
+  
+    /**
+     * get width()
+     * @description gets the width of the elbow pipe
+     */
+    get width() {
+      return this._length + this.diameter + this.wallWidth * 2
+    }
+  
+    /**
+     * get height()
+     * @description gets the height of the elbow pipe
+     */
+    get height() {
+      return this._length + this.diameter + this.wallWidth * 2
+    }
+  
+    /**
+     * get name()
+     * @description gets the name of the elbow pipe
+     */
+    get name() {
+      return "Elbow Pipe"
+    }
+  
+    
   }
   
