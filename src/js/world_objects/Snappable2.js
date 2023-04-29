@@ -5,6 +5,9 @@
 import GameObject from "./GameObject"
 import Rect from "../shapes/Rect"
 import { Distance } from "../shapes/Point"
+import * as d3 from "d3"
+import Group from "../shapes/Group"
+import SnapPoint from "./SnapPoint"
 
 export default class Snappable2 extends GameObject {
   constructor(layer, center) {
@@ -12,20 +15,15 @@ export default class Snappable2 extends GameObject {
 
     this._position = { x: 0, y: 0 }
     this._rotation = 0;
-    this.attachmentPoints = {
-      "down": [],
-      "left": [],
-      "right": [],
-      "up": []
-    }
+    this._objectGroup = new Group(); // the place where all the graphic objects are stored
 
     // snap areas are the regions around a given game object
     // that will cause a another object to snap with this object
 
     // snap parts
     this.snapCenter = { x: 0, y: 0 }
-    this.snapping = false; // determines if the object is currently snapping
-    this.snapRadius = 20
+    this._snapping = false; // determines if the object is currently snapping
+    this._snapRadius = 20
   }
 
 
@@ -54,88 +52,6 @@ export default class Snappable2 extends GameObject {
   };
 
   /**
-   * getUpArea()
-   * @description gets the up area of the snappable
-   * @returns the up area of the snappable
-   */
-  getUpArea() {
-    var upArea = new Rect()
-    upArea.fill.color = "red"
-    upArea.width = this.width
-    upArea.height = this.snapRadius
-    upArea.position.x = this._position.x
-    upArea.position.y = this._position.y - this.snapRadius
-
-    return upArea
-  };
-
-  /**
-   * getDownArea()
-   * @description gets the down area of the snappable
-   * @returns the snap area facing downwards
-   */
-  getDownArea() {
-    var downArea = new Rect()
-    downArea.fill.color = "green"
-    downArea.width = this.width
-    downArea.height = this.snapRadius
-    downArea.position.x = this._position.x
-    downArea.position.y = this._position.y + this.height
-
-    return downArea
-  };
-
-
-  /**
-   * getLeftArea()
-   * @description gets the left area
-   * @returns the left snap area 
-   */
-  getLeftArea() {
-    var leftArea = new Rect()
-    leftArea.fill.color = "blue"
-    leftArea.width = this.snapRadius
-    leftArea.height = this.height
-    leftArea.position.x = this._position.x - this.snapRadius
-    leftArea.position.y = this._position.y
-
-    return leftArea
-  };
-
-  /**
-   * getRightArea()
-   * @description get the right snap area
-   * @returns right snap area 
-   */
-  getRightArea() {
-    var rightArea = new Rect()
-    rightArea.fill.color = "yellow"
-    rightArea.width = this.snapRadius
-    rightArea.height = this.height
-    rightArea.position.x = this._position.x + this.width
-    rightArea.position.y = this._position.y
-
-    //console.log("Right Area: " + JSON.stringify(rightArea));
-
-    return rightArea
-  };
-
-  /**
-   * getSnapAreas()
-   * @description get the snap areas 
-   * @returns the snap areas
-   */
-  getSnapAreas() {
-    //this.updatePosition()
-    return {
-      up: this.getUpArea(),
-      down: this.getBottomArea(),
-      left: this.getLeftArea(),
-      right: this.getRightArea()
-    }
-  }
-
-  /**
     moveTo()
     @description moves to a given point, where the center of the Snappable is
       fixed at the given point
@@ -152,8 +68,16 @@ export default class Snappable2 extends GameObject {
    * @param point point to move to
    */
   moveRelativeToCenter(point) {
-    this._position.x = point.x - this.width / 2
-    this._position.y = point.y - this.height / 2
+    let lastPosition = {...this._position};
+		this._position.x = point.x - this.width / 2
+		this._position.y = point.y - this.height / 2
+
+		let delta = {
+			x: this._position.x - lastPosition.x,
+			y: this._position.y - lastPosition.y
+		}
+
+    this._objectGroup.move(delta.x, delta.y)
   }
 
 
@@ -162,13 +86,8 @@ export default class Snappable2 extends GameObject {
    * @description shows the snap areas
    */
   showSnapAreas() {
-    let snapAreas = this.getSnapAreas()
-    for (const key of Object.keys(snapAreas)) {
-      //console.log(key)
-      snapAreas[key].fill.opacity = 0.5
-      snapAreas[key].create()
-      snapAreas[key].update()
-    }
+    this._objectGroup.create();
+    this._objectGroup.update();
   };
 
   /**
@@ -182,134 +101,67 @@ export default class Snappable2 extends GameObject {
     }
   };
 
+  
+
+ 
+
   /**
-   * snapBehaviour()
-   * @description determines what happens when a Snappable snaps 
-   *  to a specific snap region
-   * @param {Snappable} snappable the Snappable being snapped to
-   * @param {Point} mousePos the current position of the mouse
-   * @param {Rect} area the area to snap to
-   * @param {String} axis the axis to snap to; either x or y
+   * findClosestSnapArea()
+   * @description finds the closest snap area to a given point that intersects with this snappable
+   * @param mousePos position of mouse
    */
-  snapBehaviour(mousePos, area, axis) {
-    let newPoint = {
-      x: 0, y: 0
-    }
-
-    if(axis === "x") {
-      newPoint.y = mousePos.y 
-      newPoint.x = area.position.x 
-    } else {
-      newPoint.x = mousePos.x
-      newPoint.y = area.position.y
-    }
-
-    this.moveRelativeToCenter(newPoint)
-  }
-
-  /**
-   * leftSnapBehaviour()
-   * @description determines what happens when an Snappable snaps to
-   *  the left of another snappable
-   * @param snappable the Snappable being snapped to
-   * @param mousePos the current position of the mouse
-  */
-  leftSnapBehaviour(snappable, mousePos) {
-    var thisRect = this.rect
-    //var otherRect = snappable.rect
-    // match this object with the left edge of
-    // the other object
-    this.rotation = 0
-    this.moveRelativeToCenter({
-      x: snappable._center.x - thisRect.width / 2,
-      y: mousePos.y
-    })
-  }
-
-  /**
-   * rightSnapBehaviour()
-   * @description determines what happens when an Snappable snaps to
-   *  the right of another snappable
-   * @param snappable the Snappable being snapped to
-   * @param mousePos the current position of the mouse
-   */
-  rightSnapBehaviour(snappable, mousePos) {
-    var thisRect = this.rect
-    var otherRect = snappable.rect
-
-    this.rotation = 0
-    // match the right edge
-    this.moveRelativeToCenter({
-      x: snappable._center.x + otherRect.width + thisRect.width / 2,
-      y: mousePos.y
-    })
-  }
-
-  /**
-   * upSnapBehaviour()
-   * @description determines what happens when an Snappable snaps to
-   *  the top of another snappable
-   * @param snappable the Snappable being snapped to
-   * @param mousePos the current position of the mouse
-   */
-  upSnapBehaviour(snappable, mousePos) {
-    var thisRect = this.rect
-    var otherRect = snappable.rect
-
-    this.rotation = 90
-    this.moveRelativeToCenter({
-      y: snappable._center.y - thisRect.height / 2,
-      x: mousePos.x
-    })
-  }
-
-
-
-  /**
-   * downSnapBehaviour()
-   * @description determines what happens when an Snappable snaps to
-   *  the botttom of another snappable
-   * @param snappable the Snappable being snapped to
-   * @param mousePos the current position of the mouse
-   */
-  downSnapBehaviour(snappable, mousePos) {
-    var thisRect = this.rect
-    var otherRect = snappable.rect
-
-    this.rotation = 90
-    this.moveRelativeToCenter({
-      y: snappable._center.y + otherRect.height + thisRect.height / 2,
-      x: mousePos.x
-    })
-  }
-
-  /**
-    findClosestSnapArea()
-    @description find the closest snap area to the mouse position
-    @param mousePos position of mouse
-  */
-  findClosestSnapArea(snappable, mousePos) {
+  findClosestSnapPoint(snappable, mousePos) {
     // find the closest snappable region that
     // intersects
 
-    var closestSide = "";
-    var closestDistance = 2000;
-    var snapAreas = snappable.getSnapAreas()
-    //snappable.showSnapAreas();
+    var closestSnapPoint = null;
+    var closestDistance = Infinity;
     var thisRect = this.rect
-    var otherRect = snappable.rect
 
-    for (var side of Object.keys(snapAreas)) {
-      var distance = Distance(snapAreas[side].getCenter(), mousePos)
-      // find the closest intersecting snap area
-      if (distance < closestDistance && thisRect.intersects(snapAreas[side])) {
-        closestDistance = distance
-        closestSide = side
-        this.snapping = true;
+    for (let i = 0; i < snappable.snapGroup.objects.length; i++) {
+      let snapPoint = snappable.snapGroup.objects[i]
+
+      if(snapPoint instanceof SnapPoint) {
+        var distance = Distance(snapPoint.center, mousePos)
+        // find the closest intersecting snap area
+        if (distance < closestDistance && thisRect.intersects(snapPoint)) {
+          closestDistance = distance
+          closestSnapPoint = i
+          this._snapping = true;
+        }
       }
     }
 
-    return closestSide;
+    return snappable.snapGroup.objects[closestSnapPoint];
+  }
+
+  /**
+   * findSnapPointNearPoint()
+   * @description find the closest snap point to another snap point
+   * @param {Point} point the point the snap point should be near
+   * @returns the index of the nearest snap point
+   */
+  findSnapPointNearPoint(point) {
+    // find the closest snappable region that
+    // intersects
+    var index = 0;
+    var closestDistance = Infinity;
+
+    for (let i = 0; i < this._objectGroup.objects.length; i++) {
+      let obj = this._objectGroup.objects[i];
+      if(obj instanceof SnapPoint) {
+        let center = obj.center
+        let distance = Distance(center, point)
+
+        // find the closest intersecting snap area
+        if (distance < closestDistance && this.rect.intersects(obj)) {
+          closestDistance = distance
+          index = i
+        }
+      }
+    }
+
+    return this._objectGroup.objects[index];
   }
 
 
@@ -322,42 +174,58 @@ export default class Snappable2 extends GameObject {
    */
   snapTo(snappable, mousePos) {
 
-    let closestSide = this.findClosestSnapArea(snappable, mousePos);
+    let snapPoint = this.findClosestSnapPoint(snappable, mousePos);
 
-    //let axis = (closestSide === "left" || closestSide === "right") ? "x" : "y";
-    //console.log(snappable.getSnapAreas());
-    //console.log(closestSide);
-    //let area = snappable.getSnapAreas()[closestSide];
+    if(snapPoint) {
+      
+      let point = {
+        x: mousePos.x,
+        y: mousePos.y
+      }
 
-    //console.log(area);
-    //this.snapBehaviour(mousePos, area, axis);
+      // based on the axis set the x or y position
+      if(snapPoint.axis === "x") {
+        if(snapPoint.value < this.position.x) { // on the right
+          point.x = snapPoint.value + this.width / 2
+        } else { // on the right
+          point.x = snapPoint.value - this.width / 2
+        }
+      } else {
+        if(snapPoint.value < this.position.y) { // on the bottom
+          point.y = snapPoint.value + this.height / 2
+        } else { // on the top
+          point.y = snapPoint.value - this.height / 2
+        }
+      }
 
-    if (closestSide === "left") {
-      this.leftSnapBehaviour(snappable, mousePos)
-    } else if (closestSide === "right") {
-      this.rightSnapBehaviour(snappable, mousePos)
-    } else if (closestSide === "up") {
-      this.upSnapBehaviour(snappable, mousePos)
-    } else if (closestSide === "down") {
-      this.downSnapBehaviour(snappable, mousePos)
+      this.moveRelativeToCenter(point)
+      return snapPoint;
+    } else {
+      return null;
     }
 
-    return closestSide;
+
   }
 
-  /** 
-   * attachTo()
-   * @description attaches to snappables together on a particular side
-   * @param side the side to attach to
-   * @param snappable the snappable to attach this one to
+  /**
+   * getSnapPointCenter() 
+   * @description gets the center of a snap point. This is the point along the 
+   *  edge of a snappable where two points snap
    */
-  attachTo(snappable, side) {
-    if (this.attachments[side] === undefined) {
-      this.attachments[side] = [snappable]
-      //console.log(this.attachments);
-    } else {
-      this.attachments[side].push(snappable)
+  getDropStartPoint(snapPoint, drop) {
+    let point = {
+      x: this.position.x + drop.size / 2,
+      y: this.position.y + drop.size / 2
     }
+
+    // based on the axis set the x or y position
+    if(snapPoint.axis === "x") {
+      point.x = snapPoint.value - drop.size / 2
+    } else {
+      point.y = snapPoint.value - drop.size / 2
+    }
+
+    return point;
   }
 
 
@@ -378,5 +246,15 @@ export default class Snappable2 extends GameObject {
   get height() {
     return -1;
   };
+
+
+  /**
+   * get snapGroup()
+   * @description gets the snap group of the snappable
+   * @returns {Array[SnapPoint]} the snap group of the snappable
+   */
+  get snapGroup() {
+    return this._objectGroup;
+  }
 
 }

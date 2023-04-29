@@ -6,8 +6,11 @@ import Snappable from "../Snappable";
 import Tank from "../tanks/Tank"
 import * as d3 from "d3"
 import Rect from "../../shapes/Rect";
+import Snappable2 from "../Snappable2";
+import SnapPoint from "../SnapPoint";
+import Group from "../../shapes/Group";
 
-export default class Pipe extends Snappable {
+export default class Pipe extends Snappable2 {
 
 	/**
 	 * constructor()
@@ -31,8 +34,86 @@ export default class Pipe extends Snappable {
 
 		this._rect = new Rect(this.position, this.width, this.height);
 		this._rotation = 0;
+		this._direction = "right"
 
 		//this.updatePosition();
+
+		this.createSnapPoints();
+  	}
+
+	/**
+	 * createSnapPoint() 
+	 * @description creates the snap points of the tank
+	 */ 
+	createSnapPoints() {
+		this._snapWidth = 20;
+
+		// start
+		let start = new SnapPoint(
+			{
+				x: this.position.x + this.width,
+				y: 0
+			},
+			this._snapWidth,
+			this.height,
+			this.position.x + this.width,
+			"x"
+		)
+		this._objectGroup.add(start);
+
+		let boundingBox = new Rect(
+			d3.select('[name="debug"]'),
+			{...this.position},
+			this.width,
+			this.height
+		)
+		this._objectGroup.add(boundingBox);
+
+		// end
+		let end = new SnapPoint(
+			{
+				x: this.position.x - this._snapWidth,
+				y: 0
+			},
+			this._snapWidth,
+			this.height,
+			this.position.x,
+			"x"
+		)
+		this._objectGroup.add(end);
+
+		this._objectGroup.create();
+	}
+
+	/**
+	 * getDropStartPosition()
+	 * @description gets the start position of the drop in the pipe
+	 * @param {Side} side the side of the tank the pipe is on
+	 */
+	getDropStartPosition(snapPoint) {
+		return this.getSnapPointCenter(snapPoint);
+	}
+
+  	/***
+   	 * transferLiquid()
+   	 * @description transfers liquid to connected tanks
+  	 */
+  	transferLiquid() {
+		for (const snapPoint of this._objectGroup.objects) {
+			if(snapPoint instanceof SnapPoint) {
+				for (const snappable of snapPoint.snappables) {
+					if(snappable instanceof Tank) {
+						let exitingDrops = this.takeExitingDrops(snapPoint); // take the exiting drops
+						console.log(exitingDrops);
+						for(const drop of exitingDrops) {
+							snappable.addDrop(drop);
+							drop.destroy()
+							snappable.updateFluidBodies()
+						}
+					}
+				}
+			}
+		}
   	}
 
 	
@@ -46,10 +127,11 @@ export default class Pipe extends Snappable {
 	};
 
 	/**
-		takeExitingDrops()
-		@description takes the exiting drops from the pipe
-	*/
-	takeExitingDrops(side) {
+	 * takeExitingDrops()
+	 * @description takes the exiting drops from the pipe
+	 */
+	takeExitingDrops(snapPoint) {
+
 		// search for available drops
 		var exitingDrops = []; // drops at their exit.
 		var keptDrops = []; // drops that are not about to exit
@@ -58,7 +140,7 @@ export default class Pipe extends Snappable {
 			//console.log(drop);
 			// if a drop can no longer flow in the direction it was
 			// flowing, give it is at its spout, and ready to leak.
-			if(!drop.canFlow(this) && side === drop.direction) {
+			if(!drop.canFlow(this) /*&& side === drop.direction*/) {
 				exitingDrops.push(drop);
 				//console.log("Direction: " + drop.direction)
 				//console.log("Exiting");
@@ -91,13 +173,46 @@ export default class Pipe extends Snappable {
 		this._group = this._layer.append("g")
 		this._svg = {
 			walls: this._group.append("rect"),
-			interior: this._group.append("rect")
+			interior: this._group.append("rect"),
+			direction: this._group.append("path")
 		}
 
 		this._svg.walls.attr("name", "pipeWalls")
 		this._svg.interior.attr("name", "pipeInterior")
 
 		this.updateSVG();
+	}
+
+
+	/**
+	 * createDirectionalArrow()
+	 * @description creates the directional arrow that shows what direction the fluid is going
+	 */
+	createDirectionalArrow(rotation = 0) {
+		let path = d3.path() 
+		let radius = this._interiorHeight / 2
+		let angle = 360 / 3
+		let center = {
+			x: this.position.x + this.width / 2,
+			y: this.position.y + this.height / 2
+		}
+
+		path.moveTo(
+			center.x + radius * Math.cos((rotation + 0) * Math.PI / 180), 
+			center.y + radius * Math.sin((rotation + 0) * Math.PI / 180)
+		)
+
+		for (let i = 0; i < 4; i++) {
+			path.lineTo(
+				center.x + radius * Math.cos((rotation + i * angle) * Math.PI / 180), 
+				center.y + radius * Math.sin((rotation + i * angle) * Math.PI / 180)
+			)
+		}
+
+		this._svg.direction
+			.attr("d", path)
+			.style("stroke", "red")
+			.style("fill", "rgba(0, 0, 0, 0)")
 	}
 
 
@@ -109,6 +224,9 @@ export default class Pipe extends Snappable {
 			//let extraWidth = (this.attachments.right && this.attachments.right[0].wallWidth) ? this.attachments.right[0].wallWidth : 0
 			//console.log(extraWidth);
 
+			// draw the directional arrow
+			this.createDirectionalArrow();
+
 
 			// interior
 			this._svg.interior.attr("width", this._width);
@@ -116,6 +234,8 @@ export default class Pipe extends Snappable {
 			this._svg.interior.attr("x", this._position.x);
 			this._svg.interior.attr("y", this._position.y + this._wallWidth);
 		} else {
+			this.createDirectionalArrow(this.rotation)
+
 			// interior
 			this._svg.interior.attr("width", this._interiorHeight);
 			this._svg.interior.attr("height", this._width);
@@ -151,6 +271,14 @@ export default class Pipe extends Snappable {
 	 */
 	rotate() {
 		this._rotation = (this._rotation + 90) % 180
+
+		if(this._rotation === 0) {
+			this._direction = "right"
+		} else { 
+			this._direction = "down"
+		}
+
+		this._objectGroup.rotateAroundCenter(90)
 	}
 
 	/**
@@ -210,56 +338,7 @@ export default class Pipe extends Snappable {
 	}
 
 
-	/**
-	 * getDropStartPosition()
-	 * @description gets the start position of the drop in the pipe
-	 * @param {Side} side the side of the tank the pipe is on
-	 */
-	getDropStartPosition(side, drop) {
-		// position drop at front of pipe
-		if(side === "left") {
-			return {
-				x: this.position.x + this.width - drop.size/2,
-				y: this.center.y - drop.size/2
-			}
-		} else if(side === "right") {
-			return {
-				x: this.position.x,
-				y: this.center.y - drop.size/2
-			}
-		} else if(side === "up") {
-			return {
-				x: this.position.x + drop.size/2,
-				y: this.position.y
-			}
-		} else if(side === "down") {
-			return {
-				x: this.position.x + this.width / 2 - drop.size/2,
-				y: this.position.y
-			}
-		} else {
-			console.warn("No Side Chosen for Drop Start")
-		}
-	}
-
-  	/***
-   	 * transferLiquid()
-   	 * @description transfers liquid to connected tanks
-  	 */
-  	transferLiquid() {
-		for(const side of Object.keys(this.attachments)) {
-			for(const tank of this.attachments[side]) { // for each tank attached to this pipe
-				if(tank instanceof Tank) {
-					let exitingDrops = this.takeExitingDrops(side); // take the exiting drops
-					for(const drop of exitingDrops) {
-						tank.addDrop(drop);
-						drop.destroy()
-						tank.updateFluidBodies()
-					}
-				}
-			}
-		}
-  	}
+	
 
   	/**
 	 * get rect()
@@ -311,6 +390,15 @@ export default class Pipe extends Snappable {
    	 */
 	get opened() {
 		return this._opened;
+	}
+
+
+	/**
+	 * get direction
+	 * @description gets the direction drops flow through this Pipe
+	 */
+	get direction() {
+		return this._direction;	
 	}
 
 

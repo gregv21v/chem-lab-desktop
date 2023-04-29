@@ -15,16 +15,15 @@
 		objects.
 */
 
-import * as d3 from "d3"
-import Snappable from "../Snappable";
 import Pipe from "../pipes/Pipe";
 import Drop from "../fluids/Drop";
 import Fluid from "../fluids/Fluid";
 import EmptyFluid from "../fluids/EmptyFluid";
-import FluidBody from "../fluids/FluidBody";
 import ContainerFluidBody from "../fluids/ContainerFluidBody";
+import SnapPoint from "../SnapPoint";
+import Snappable2 from "../Snappable2";
 
-export default class Tank extends Snappable {
+export default class Tank extends Snappable2 {
 
 	/**
 	 * constructor()
@@ -42,6 +41,8 @@ export default class Tank extends Snappable {
 		leftOpened=false, rightOpened=false, upOpened=true, downOpened=false
 	) {
 		super(layer, center) 
+
+		
 
 		// the open and closes sides
 		this._leftOpened = leftOpened;
@@ -69,6 +70,74 @@ export default class Tank extends Snappable {
 		this._fluidBodies = [
 			this._emptyFluid	
 		] 
+
+		
+		this.createSnapPoints();
+		
+
+	}
+
+
+	/**
+	 * createSnapPoint() 
+	 * @description creates the snap points of the tank
+	 */ 
+	createSnapPoints() {
+		this._snapWidth = 20;
+		let snapPoints = [
+
+			// right
+			new SnapPoint(
+				{
+					x: this.position.x + this.width,
+					y: 0
+				},
+				this._snapWidth,
+				this.height,
+				this.position.x + this.width,
+				"x"
+			),
+
+			// left
+			new SnapPoint(
+				{
+					x: this.position.x - this._snapWidth,
+					y: 0
+				},
+				this._snapWidth,
+				this.height,
+				this.position.x,
+				"x"
+			),
+
+			// top
+			new SnapPoint(
+				{
+					x: 0,
+					y: this.position.y - this._snapWidth
+				},
+				this.width,
+				this._snapWidth,
+				this.position.y,
+				"y"
+			),
+
+			// bottom
+			new SnapPoint(
+				{
+					x: 0,
+					y: this.position.y + this.height
+				},
+				this.width,
+				this._snapWidth,
+				this.position.y + this.height,
+				"y"
+			),
+		]
+
+		for (const point of snapPoints) {
+			this._objectGroup.add(point);
+		}
 
 	}
 
@@ -272,43 +341,41 @@ export default class Tank extends Snappable {
 	 *	@description transfers liquid from the tank to its connecting pipes
 	 */
 	transferLiquid() {
-		let order = ["down", "left", "right"]
+		for (const snapPoint of this._snapGroup.objects) {
+			if(snapPoint instanceof SnapPoint) {
+				for (const snappable of snapPoint.snappables) {
+					// snappable.opened is for valves
+					if(snappable instanceof Pipe && snappable.opened) {
 
-		for(const side of order) {
-			
-			for(const pipe of this.attachments[side]) {
+						let drop = null;
+						let firstFluid = this.getFirstAccessibleFluid(snappable, snapPoint);
 
+						// get a drop from the tank
+						if(firstFluid) {
+							console.log(firstFluid);
 
-				// check for a pipe or an opened valve
+							let dropSize = snappable.getDropSize()
+							//console.log(dropSize);
+							drop = firstFluid.removeDrop(dropSize)
 
-				if(pipe instanceof Pipe && pipe.opened) {
-
-					let drop = null;
-					let firstFluid = this.getFirstAccessibleFluid(pipe, side);
-					
-
-					// get a drop from the tank
-					if(firstFluid) {
-						let dropSize = pipe.getDropSize()
-						//console.log(dropSize);
-						drop = firstFluid.removeDrop(dropSize)
-
-						if(drop) {
-							this.removeVolumelessFluids()
-							this._emptyFluid.addDrop(drop.size)
-							this.updateFluidBodies();
+							if(drop) {
+								this.removeVolumelessFluids()
+								this._emptyFluid.addDrop(drop.size)
+								this.updateFluidBodies();
+							}
 						}
-					}
 
-					// if pipe is there, move the drop to the pipe
-					if(drop) {
-						drop.position = pipe.getDropStartPosition(side, drop);
-						drop.stepAlongPath = 0;
+						// if pipe is there, move the drop to the pipe
+						if(drop) {
+							console.log(snappable);
+							console.log(snapPoint);
+							drop.position = snappable.getDropStartPoint(snapPoint, drop);
+							drop.stepAlongPath = 0;
 
-						// create the drop in the world and add it to the respective pipe
-						drop.direction = side;
-						pipe.addDrop(drop);
-
+							// create the drop in the world and add it to the respective pipe
+							drop.direction = snappable.direction;
+							snappable.addDrop(drop);
+						}
 					}
 				}
 			}
@@ -339,14 +406,16 @@ export default class Tank extends Snappable {
 	 * getFirstAccessibleFluid()	
 	 * @description Gets the fluid in the tank that the pipe can first access	
 	 * @param {Pipe} pipe the pipe find 
-	 * @param {Side} side the side of the tank the pipe is on
+	 * @param {SnapPoint} snapPoint the SnapPoint of the tank the pipe is on
 	 * @returns true if the pipe has access to the fluid
 	 * 			false if the pipe does not have access to the fluid
 	 */
-	getFirstAccessibleFluid(pipe, side) {
+	getFirstAccessibleFluid(pipe, snapPoint) {
+		let isDown = (snapPoint.axis === "y" && (snapPoint.value > this.position.y))
 
 		let lastFluid = this._fluidBodies[this._fluidBodies.length - 1];
-		if(side === "down" && !(lastFluid.fluid instanceof EmptyFluid)) {
+		// get the last 
+		if(isDown && !(lastFluid.fluid instanceof EmptyFluid)) {
 			return lastFluid;
 		}
 
@@ -545,6 +614,17 @@ export default class Tank extends Snappable {
 	}
 
 	/**
+	 * moveRelativeToCenter()
+	 * @description moves the Snappable relative to it's center
+	 * @param point point to move to
+	 */
+	moveRelativeToCenter(point) {
+		super.moveRelativeToCenter(point)
+
+		this.updateFluidBodies()
+	}
+
+	/**
 	 * getUpY()
 	 * @description get the y value for the top of the tank, below the inner wall
 	 */
@@ -649,16 +729,6 @@ export default class Tank extends Snappable {
 		return this._downOpened;
 	}
 
-	/**
-	 * moveRelativeToCenter()
-	 * @description moves the Snappable relative to it's center
-	 * @param point point to move to
-	 */
-	moveRelativeToCenter(point) {
-		this._position.x = point.x - this.width / 2
-		this._position.y = point.y - this.height / 2
-
-		this.updateFluidBodies()
-	}
+	
 
 }

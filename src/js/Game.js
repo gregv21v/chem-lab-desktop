@@ -19,6 +19,9 @@ import Pipe from "./world_objects/pipes/Pipe"
 import CrossPipe from "./world_objects/pipes/CrossPipe"
 import Pump from "./world_objects/Pump"
 import ElbowPipe from "./world_objects/pipes/ElbowPipe"
+import Rect from "./shapes/Rect"
+import { rotatePoints } from "./shapes/Point"
+import Group from "./shapes/Group"
 
 
 export default class Game {
@@ -51,6 +54,43 @@ export default class Game {
     this._layers[2].attr("name", "fluids")
     this._layers[3].attr("name", "debug")
 
+
+    let snapWidth = 75
+    let pipeLength = 100;
+    let pipeWidth = 50;
+    let position = {x: 400, y: 100}
+    let angle = 180
+
+    this._group = new Group();
+
+    let mockPipe = new Rect(this._layers[3], position, pipeWidth, pipeLength)
+    mockPipe.fill.color = "black"
+    mockPipe.fill.opacity = 1
+    this._group.add(mockPipe)
+
+    let mockSnapArea1 = new Rect(this._layers[3], {x: position.x, y: position.y + pipeLength}, pipeWidth, snapWidth)
+    mockSnapArea1.fill.color = "blue"
+    mockSnapArea1.fill.opacity = 0.5;
+    this._group.add(mockSnapArea1)
+
+    let mockSnapArea2 = new Rect(this._layers[3], {x: position.x, y: position.y - snapWidth}, pipeWidth, snapWidth)
+    mockSnapArea2.fill.color = "orange"
+    mockSnapArea2.fill.opacity = 0.5
+    this._group.add(mockSnapArea2)
+
+    this._group.create()
+    this._group.rotateAroundCenter(90);
+    this._group.update()
+
+    
+
+    this._layers[3]
+      .append("circle")
+        .attr("cx", this._group.center.x) 
+        .attr("cy", this._group.center.y)
+        .attr("r", 2)
+        .style("fill", "red")
+
     // add fluids to the fluid registery for use later
     FluidRegistry.register(new Fluid("Water", 2, {red: 0, green: 0, blue: 200}))
     FluidRegistry.register(new Fluid("Smoke", -1, {red: 142, green: 140, blue: 145}))
@@ -82,13 +122,13 @@ export default class Game {
         },
         20, 10, 5
     ));*/
-    this._hud.inventory.add(new Tank(this._layers[1], {x: 475, y: 540}, {width: 40, height: 100}, 5));
-    this._hud.inventory.add(new Tank(this._layers[1], {x: 475, y: 540}, {width: 50, height: 50}, 5));
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 100}, 5));
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 50, height: 50}, 5));
     //this._hud.inventory.add(new CrossPipe(this._layers[1], {x: 475, y: 540}, 10, 100, 5));
     this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 50, height: 50}, 5, true, false, false, false))
     this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 50, height: 100}, 5, false, false, false, false))
-    this._hud.inventory.add(new Pipe(this._layers[1], {x: 500, y: 500}, 50, 10, 5));
-    this._hud.inventory.add(new Pipe(this._layers[1], {x: 500, y: 500}, 50, 10, 5));
+    this._hud.inventory.add(new Pipe(this._layers[1], {x: 0, y: 0}, 50, 10, 5));
+    this._hud.inventory.add(new Pipe(this._layers[1], {x: 0, y: 0}, 50, 10, 5));
     this._hud.inventory.add(new Pump(this._layers[1], this._world, {x: 0, y: 0}, 15));
     this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, false))
     //this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
@@ -205,9 +245,12 @@ export default class Game {
 
     //console.log(event.key);
     if(event.key === 'r' && this._player.hand instanceof Pipe) {
-      console.log(this._player.hand);
+      //console.log(this._player.hand);
       this._player.hand.rotate();
       this._player.hand.updateSVG();
+
+      this._group.rotateAroundCenter(90);
+      this._group.update()
     }
   }
 

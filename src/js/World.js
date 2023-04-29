@@ -9,12 +9,14 @@ import { Distance } from "./shapes/Point"
 import { getOpposite } from "./util";
 import * as d3 from "d3"
 import GameObject from "./world_objects/GameObject";
+import Snappable2 from "./world_objects/Snappable2";
+import Pump from "./world_objects/Pump";
 
 export default class World {
 	constructor(game, player, position, width, height) {
 		this._game = game;
 		this.player = player;
-		this.snapSide = "";
+		this.snapPoint = null;
 		this.snappingTo = null;
 
 		// The side that the given object (snappingTo) is on.
@@ -72,15 +74,22 @@ export default class World {
 			// Move the object to the world
 			if(this.player.hand) {
 				if(this.snappingTo) {
-					this.player.hand.attachTo(this.snappingTo, getOpposite(this.snapSide));
-					this.snappingTo.attachTo(this.player.hand, this.snapSide);
+					// get the snap point on the object that is moving
+					let handSnapPoint = this.player.hand.findSnapPointNearPoint(this.snapPoint.center)
+					console.log(handSnapPoint);
+					handSnapPoint.attach(this.snappingTo)
+					this.snapPoint.attach(this.player.hand)
 				}
-				//this.player.hand.showSnapAreas()
+				//console.log(this.player.hand);
+				//console.log(this.snappingTo);
+
+				if(!(this.player.hand instanceof Pump))
+					this.player.hand.showSnapAreas()
 				this.add(this.player.hand);
 				
 				this.player.hand = null; // empty hand
 				this.snappingTo = null;
-				this.snapSide = "";
+				this.snapPoint = null;
 			}
 
 		}
@@ -110,9 +119,9 @@ export default class World {
 			this.player.hand.moveRelativeToCenter(mousePos)
 			let closestSnappable = this.findClosestSnappable(mousePos)
 			//console.log(closestSnappable);
-			if(this.player.hand instanceof Snappable && closestSnappable != null) {
-				this.snapSide = this.player.hand.snapTo(closestSnappable, mousePos);
-				if(this.snapSide !== "")
+			if(this.player.hand instanceof Snappable2 && closestSnappable != null) {
+				this.snapPoint = this.player.hand.snapTo(closestSnappable, mousePos);
+				if(this.snapPoint !== null)
 					this.snappingTo = closestSnappable;
 			}
 			this.player.hand.updateSVG()
@@ -129,9 +138,9 @@ export default class World {
 		// find the closest snappable object to the mouse
 		// then try to snap to that.
 		let closestSnappable = null
-		let closestDistance = 100000
+		let closestDistance = Infinity
 		for(var obj of this.objs) {
-			if(obj instanceof Snappable) {
+			if(obj instanceof Snappable2) {
 				let distance = Distance(obj.center, mousePos);
 				if(distance < closestDistance) {
 					closestDistance = distance

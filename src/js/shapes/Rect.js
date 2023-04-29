@@ -3,6 +3,7 @@
  */
 
 import * as d3 from "d3"
+import { rotatePoints } from "./Point";
 
 export default class Rect {
 	/**
@@ -25,23 +26,11 @@ export default class Rect {
 			color: "blue",
 			width: 1
 		};
-
-		
 	}
 
 	
 
-	/**
-	 * getCenter()
-	 * @returns the center point of the rectangle
-	 * @deprecated in favor of get center()
-	 */
-	getCenter() {
-		return {
-			x: this._position.x + this._width / 2,
-			y: this._position.y + this._height / 2
-		}
-	}
+
 
 	/**
 	 * contains()
@@ -107,7 +96,7 @@ export default class Rect {
 	 * @param {Point} point1 the first point of the rectangle
 	 * @param {Point} point2 the second point of the rectangle
 	 */
-	fromPoints (point1, point2) {
+	fromTwoPoints(point1, point2) {
 		if(point1.x < point2.x) {
 			this._position.x = point1.x;
 		} else {
@@ -123,6 +112,54 @@ export default class Rect {
 		this._width = Math.abs(point1.x - point2.x);
 		this._height = Math.abs(point1.y - point2.y);
 	};
+
+
+	/**
+	 * fromFourPoints()
+	 * @description creates a rectangle from 4 points
+	 * @param {Array[Points]} points the array of 4 points
+	 */
+	fromFourPoints(points) {
+		var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+		for (var i = 0; i < points.length; i++) {
+		  var point = points[i];
+		  minX = Math.min(minX, point.x);
+		  minY = Math.min(minY, point.y);
+		  maxX = Math.max(maxX, point.x);
+		  maxY = Math.max(maxY, point.y);
+		}
+		this.width = maxX - minX;
+		this.height = maxY - minY;
+		this.position.x = minX;
+		this.position.y = minY;
+	}
+
+
+
+
+
+
+
+	/**
+	 * toPoints()
+	 * @description converts this rectangle to points
+	 * @returns the points that make up this rectangle
+	 */
+	toPoints() {
+		return [
+			{...this.position},
+			{x: this.position.x + this.width, y: this.position.y},
+			{x: this.position.x + this.width, y: this.position.y + this.height},
+			{x: this.position.x, y: this.position.y + this.height}
+		]
+	}
+
+
+	/**
+	 * rotateAroundCenter() 
+	 * @description rotates the rectangle around its center 
+	 * 
+	 */
 	
 
 	/**
@@ -137,6 +174,8 @@ export default class Rect {
 		}
 
 		this._layer.append(() => this._group.node())
+
+		this.update();
 	}
 
 	/**
@@ -162,6 +201,65 @@ export default class Rect {
 		this._group.remove()
 	}
 
+
+	/**
+     * move() 
+     * @description moves the rectangle by a delta x, and y
+     * @param {Number} deltaX the difference in x to move the rectangle
+     * @param {Number} deltaY the difference in y to move the rectangle
+     */
+    move(deltaX, deltaY) {
+        this.position.x += deltaX;
+        this.position.y += deltaY;
+    }
+
+
+	/**
+	 * rotateAroundCenter()
+	 * @description rotates this rectangle around its center
+	 */
+	rotateAroundCenter(angle) {
+		var cx = this.position.x + this.width / 2; // center x coordinate
+		var cy = this.position.y + this.height / 2; // center y coordinate
+		var points = this.toPoints()
+		var rotatedPoints = rotatePoints(points, {x: cx, y: cy}, angle);
+		this.fromFourPoints(rotatedPoints);
+	}
+
+
+	/**
+	 * rotateAroundPoint() 
+	 * @description rotates the rectangle around a point
+	 * @param {Point} point the point to rotate the rectangle around
+	 * @param {Degrees} angle the angle to rotate the rectangle by in degrees
+	 */
+	rotateAroundPoint(center, angle) {
+		var points = this.toPoints()
+		this.fromFourPoints(rotatePoints(points, center, angle));
+	}
+
+	/**
+	 * getCenter()
+	 * @returns the center point of the rectangle
+	 * @deprecated in favor of get center()
+	 */
+	getCenter() {
+		return {
+			x: this._position.x + this._width / 2,
+			y: this._position.y + this._height / 2
+		}
+	}
+
+	/**
+	 * get center()
+	 * @returns the center point of the rectangle
+	 */
+	get center() {
+		return {
+			x: this._position.x + this._width / 2,
+			y: this._position.y + this._height / 2
+		}
+	}
 	
 
 	/**
@@ -169,7 +267,7 @@ export default class Rect {
 	 * @description sets the fill of the rectangle
 	 * @param {Object} value the object to set the fill to. The object has a color, and opacity values
 	 */
-	 set fill(value) {
+	set fill(value) {
 		this._fill = value;
 	}
 
