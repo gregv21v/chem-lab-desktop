@@ -1,10 +1,19 @@
+import * as d3 from "d3"
+
 export default class Arrow {
 
-
+    /**
+     * contructor()
+     * @description constructs the arrow
+     * @param {Layer} layer the layer that the arrow is drawn to
+     * @param {Number} radius the radius of the arrow
+     * @param {Number} center the center of the arrow
+     */
     constructor(layer, radius, center) {
         this._radius = radius;
         this._center = center;
         this._points = [];
+        this._layer = layer; // the layer the arrow is drawn to
 
         let angle = 360 / 3
 
@@ -19,6 +28,8 @@ export default class Arrow {
 
     create() {
         this._svg = this._layer.append("path")
+
+        this.update();
     }
 
 
@@ -28,19 +39,20 @@ export default class Arrow {
      */
     update() {
         let path = d3.path() 
-		let angle = 360 / 3
 
 		path.moveTo(
-			this.center.x + this._radius * Math.cos((0) * Math.PI / 180), 
-			this.center.y + this._radius * Math.sin((0) * Math.PI / 180)
+			this._points[0].x, 
+			this._points[0].y
 		)
 
-		for (let i = 0; i < 4; i++) {
+		for (let i = 0; i < this._points.length; i++) {
 			path.lineTo(
-				this.center.x + this._radius * Math.cos((i * angle) * Math.PI / 180), 
-				this.center.y + this._radius * Math.sin((i * angle) * Math.PI / 180)
+				this._points[i].x, 
+			    this._points[i].y
 			)
 		}
+
+        path.closePath();
 
 		this._svg
 			.attr("d", path)

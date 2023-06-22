@@ -22,6 +22,8 @@ import EmptyFluid from "../fluids/EmptyFluid";
 import ContainerFluidBody from "../fluids/ContainerFluidBody";
 import SnapPoint from "../SnapPoint";
 import Snappable2 from "../Snappable2";
+import Rect from "../../shapes/Rect";
+import * as d3 from "d3"
 
 export default class Tank extends Snappable2 {
 
@@ -94,8 +96,9 @@ export default class Tank extends Snappable2 {
 				},
 				this._snapWidth,
 				this.height,
-				this.position.x + this.width,
-				"x"
+				{x: this.position.x + this.width, y: this.position.y + this.height / 2},
+				"x",
+				"right"
 			),
 
 			// left
@@ -106,8 +109,9 @@ export default class Tank extends Snappable2 {
 				},
 				this._snapWidth,
 				this.height,
-				this.position.x,
-				"x"
+				{x: this.position.x, y: this.position.y + this.height / 2},
+				"x",
+				"left"
 			),
 
 			// top
@@ -118,8 +122,9 @@ export default class Tank extends Snappable2 {
 				},
 				this.width,
 				this._snapWidth,
-				this.position.y,
-				"y"
+				{x: this.position.x + this.width / 2, y: this.position.y},
+				"y",
+				"up"
 			),
 
 			// bottom
@@ -130,12 +135,15 @@ export default class Tank extends Snappable2 {
 				},
 				this.width,
 				this._snapWidth,
-				this.position.y + this.height,
-				"y"
+				{y: this.position.y + this.height, x:  + this.width / 2},
+				"y",
+				"down"
 			),
 		]
 
 		for (const point of snapPoints) {
+			point.fill.color = "pink"
+			point.fill.opacity = 0;
 			this._objectGroup.add(point);
 		}
 
@@ -151,89 +159,102 @@ export default class Tank extends Snappable2 {
 	create() {
 		this._group = this._layer.append("g")
 		this._svg = {
-			walls: this._group.append("rect"),
-			interiorVertical: this._group.append("rect"),
-			interiorHorizontal: this._group.append("rect"),
 			fluids: this._group.append("g")
 		};
-
-		this._svg.walls.attr("name", "walls")
-		this._svg.interiorHorizontal.attr("name", "interiorHorizontal")
-		this._svg.interiorVertical.attr("name", "interiorVertical")
-		this._svg.fluids.attr("name", "fluids")
 
 		this._emptyFluid.create(this._svg.fluids)
 		this._emptyFluid.container = this;
 
-		this.updateSVG()
+		this.createGraphics();
+
+		this._objectGroup.create();
+		this.update()
 	}
 
-  	/**
-	 * updateSVG()
-	 * @description renders the svg for the tan
-	 */
-	updateSVG() {
-		//this._position.x = this.center.x - this.width/2;
-		//this._position.y = this.center.y - this.height/2;
-		//this.tooltip.createSVG();
-
-		// setup walls svg
-		this._svg.walls.attr("height", this.height);
-		this._svg.walls.attr("width", this.width);
-		this._svg.walls.attr("x", this._position.x);
-		this._svg.walls.attr("y", this._position.y);
-		this._svg.walls.style("fill", this._wallColor);
+	createGraphics() {
 		
 
-		// setup interior svg
-		this._svg.interiorVertical.attr("height", this._interior.height);
-		this._svg.interiorVertical.attr("width", this._interior.width);
-		this._svg.interiorVertical.attr("x", this._position.x + this._wallWidth);
+		this._boundingBox = new Rect(
+			d3.select('[name="debug"]'),
+			{...this.position},
+			this.width,
+			this.height
+		)
+		this._boundingBox.fill.opacity = 0
+		this._boundingBox.stroke.opacity = 0;
 
-		this._svg.interiorVertical.style("fill", "white")
+		this._objectGroup.add(this._boundingBox);
+		
+		//this._arrow = new Arrow(this._group, this._interiorHeight / 2, this.center)
+		//this._objectGroup.add(this._arrow)
 
-		this._svg.interiorHorizontal.attr("height", this._interior.height);
-		this._svg.interiorHorizontal.attr("width", this._interior.width);
-		this._svg.interiorHorizontal.attr("y", this._position.y + this._wallWidth)
+		this._walls = new Rect(
+			this._group, 
+			{...this.position},
+			this.width,
+			this.height
+		)
+		this._walls.fill.color = "green"
+		this._walls.fill.opacity = 1
+		this._walls.stroke.color = "black"
+		this._walls.stroke.opacity = 0;
+		this._objectGroup.add(this._walls)
 
-		this._svg.interiorHorizontal.style("fill", "white")
-    
-		if(this._leftOpened) {
-			this._svg.interiorHorizontal.attr("x", this._position.x);
+		this._interiorVertical = new Rect(
+			this._group, 
+			{x: this._position.x + this._wallWidth, y: this._position.y + this._wallWidth},
+			this._interior.width,
+			this._interior.height
+		)
+		this._interiorVertical.stroke.opacity = 0;
+		this._interiorVertical.fill.color = "white"
+		this._interiorVertical.fill.opacity = 1
+		this._objectGroup.add(this._interiorVertical)
 
-			if(this._rightOpened) {
-				this._svg.interiorHorizontal.attr("width", this._interior.width + this._wallWidth*2)
-			}
-		} else {
-			this._svg.interiorHorizontal.attr("x", this._position.x + this._wallWidth);
+		this._interiorHorizontal = new Rect(
+			this._group, 
+			{x: this._position.x + this._wallWidth, y: this._position.y + this._wallWidth},
+			this._interior.width,
+			this._interior.height
+		)
+		this._interiorHorizontal.stroke.opacity = 0;
+		this._interiorHorizontal.fill.color = "white"
+		this._interiorHorizontal.fill.opacity = 1
+		this._objectGroup.add(this._interiorHorizontal)
 
-			if(this._rightOpened) {
-				this._svg.interiorHorizontal.attr("width", this._interior.width + this._wallWidth)
+
+		if(this._upOpened) {
+			this._interiorVertical.height += this._wallWidth 
+			this._interiorVertical.position.y -= this._wallWidth
+
+			if(this._downOpened) {
+				this._interiorVertical.height += this._wallWidth
 			}
 		}
 
-		if(this._upOpened) {
-			this._svg.interiorVertical.attr("y", this._position.y);
+		if(this._leftOpened) {
+			this._interiorHorizontal.width += this._wallWidth 
+			this._interiorHorizontal.position.x -= this._wallWidth
 
-			if(this._downOpened) {
-				this._svg.interiorVertical.attr("height", this._interior.height + this._wallWidth * 2)
-			}
-		} else {
-			this._svg.interiorVertical.attr("y", this._position.y + this._wallWidth)
-
-			if(this._downOpened) {
-				this._svg.interiorVertical.attr("height", this._interior.height + this._wallWidth)
+			if(this._rightOpened) {
+				this._interiorHorizontal.width += this._wallWidth
 			}
 		}
 
 		// setup liquid svg
-		this.updateFluidBodies()
-
-		// setup label svg
-		//this._svg.label.attr("fill", "black");
-		//this._svg.label.attr("x", this._position.x + this.width/2 - (this.text.length * 6)/2);
-		//this._svg.label.attr("y", this._position.y + this.height/2);
+		
 	}
+
+
+	/**
+	 * update()
+	 * @description updates the tank
+	 */
+	update() {
+		this._objectGroup.update();
+		this.updateFluidBodies()
+	}
+
 
   	/**
 	 * updateFluidBodies() 
@@ -320,28 +341,11 @@ export default class Tank extends Snappable2 {
 	}
 
   	/**
-	 * getSnapAreas() 
-	 * @description gets the snap areas for the tank
-	 * @returns snap areas for the tank
-	 */
-	getSnapAreas() {
-		return {
-			left: this.getLeftArea(),
-			right: this.getRightArea(),
-			down: this.getDownArea(),
-      		up: this.getUpArea()
-		}
-	}
-
-	
-
-
-  	/**
 	 *	transferLiquid()
 	 *	@description transfers liquid from the tank to its connecting pipes
 	 */
 	transferLiquid() {
-		for (const snapPoint of this._snapGroup.objects) {
+		for (const snapPoint of this._objectGroup.objects) {
 			if(snapPoint instanceof SnapPoint) {
 				for (const snappable of snapPoint.snappables) {
 					// snappable.opened is for valves
@@ -411,7 +415,7 @@ export default class Tank extends Snappable2 {
 	 * 			false if the pipe does not have access to the fluid
 	 */
 	getFirstAccessibleFluid(pipe, snapPoint) {
-		let isDown = (snapPoint.axis === "y" && (snapPoint.value > this.position.y))
+		let isDown = (snapPoint.axis === "y" && (snapPoint.point.y > this.position.y))
 
 		let lastFluid = this._fluidBodies[this._fluidBodies.length - 1];
 		// get the last 
@@ -531,87 +535,6 @@ export default class Tank extends Snappable2 {
 	};
 
 
-    
-
-
-	/**
-		leftSnapBehaviour()
-		@description determines what happens when an Snappable snaps to
-		the left of another snappable
-		@param snappable the Snappable being snapped to
-		@param mousePos the current position of the mouse
-	*/
-	leftSnapBehaviour(snappable, mousePos) {
-		if(!this._leftOpened) {
-			let thisRect = this.rect
-			// match this object with the left edge of
-			// the other object
-			this.moveRelativeToCenter({
-				x: snappable._center.x - thisRect.width / 2,
-				y: mousePos.y
-			})
-		}
-	}
-
-	/**
-		rightSnapBehaviour()
-		@description determines what happens when an Snappable snaps to
-		the right of another snappable
-		@param snappable the Snappable being snapped to
-		@param mousePos the current position of the mouse
-	*/
-	rightSnapBehaviour(snappable, mousePos) {
-		if(!this._rightOpened) {
-			let thisRect = this.rect
-			let otherRect = snappable.rect
-			
-			// match the right edge
-			this.moveRelativeToCenter({
-				x: snappable._center.x + otherRect.width + thisRect.width / 2,
-				y: mousePos.y
-			})
-		}
-	}
-
-	/**
-		bottomSnapBehaviour()
-		@description determines what happens when an Snappable snaps to
-		the botttom of another snappable
-		@param snappable the Snappable being snapped to
-		@param mousePos the current position of the mouse
-	*/
-	downSnapBehaviour(snappable, mousePos) {
-		if(!this._downOpened) {
-			let thisRect = this.rect
-			let otherRect = snappable.rect
-
-			this._rotation = 90
-			this.moveRelativeToCenter({
-				y: snappable._center.y + otherRect.height + thisRect.height / 2,
-				x: mousePos.x
-			})
-		}
-  	}
-
-	/**
-	 * topSnapBehaviour()
-	 * @description determines what happens when an Snappable snaps to
-	 * 	the top of another snappable
-	 * @param snappable the Snappable being snapped to
-	 * @param mousePos the current position of the mouse
-	*/
-	upSnapBehaviour(snappable, mousePos) {
-		if(!this._upOpened) {
-			let thisRect = this.rect
-			//let otherRect = snappable.rect
-
-			this._rotation = 90
-			this.moveRelativeToCenter({
-				y: snappable._center.y - thisRect.height / 2,
-				x: mousePos.x
-			})
-		}
-	}
 
 	/**
 	 * moveRelativeToCenter()
@@ -729,6 +652,13 @@ export default class Tank extends Snappable2 {
 		return this._downOpened;
 	}
 
-	
+	/**
+	 * get boundingBox()
+	 * @description gets the bounding box for this tank
+	 * @returns the bounding box
+	 */
+	get boundingBox() {
+		return this._boundingBox;
+	}
 
 }

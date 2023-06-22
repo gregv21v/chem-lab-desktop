@@ -68,3 +68,7 @@ This game is in early alpha, so expect bugs
 - Add the ability to rotate tanks
 
 
+<strong>Current Issue</strong>
+I redid the snapping system. Now there is an issue when snapping to the bottom and top edge of a tank. I'm trying to get it so that you can snap one snap point to another. So you need to find the two closest snap points together then set the distance between them to zero. You should still be able to move the object along the axis it is aligned to
+
+

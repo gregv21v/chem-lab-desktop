@@ -8,12 +8,12 @@ import { Distance } from "../shapes/Point"
 import * as d3 from "d3"
 import Group from "../shapes/Group"
 import SnapPoint from "./SnapPoint"
+import { getAreaOfIntersection, getOpposite } from "../util"
 
-export default class Snappable2 extends GameObject {
+export default class Snappable2 extends Rect {
   constructor(layer, center) {
-    super(layer, center, { x: 0, y: 0 })
+    super(layer, {x: 0, y: 0}, 0, 0) 
 
-    this._position = { x: 0, y: 0 }
     this._rotation = 0;
     this._objectGroup = new Group(); // the place where all the graphic objects are stored
 
@@ -27,11 +27,23 @@ export default class Snappable2 extends GameObject {
   }
 
 
+  /**
+   * create() 
+   * @description creates the snappable
+   */
+  create() {
+    this._objectGroup.create();
+  }
+
+
   // Rotating should maintain consistency
   // between the snap areas and their corresponding
   // sides.
   rotate() {
     this._rotation = (this._rotation + 90) % 360
+    
+
+    this.rotateAroundCenter(90)
   };
 
 
@@ -58,8 +70,28 @@ export default class Snappable2 extends GameObject {
     @param point the point to center on
   */
   moveTo(point) {
-    this._position.x = point.x
-    this._position.y = point.y
+    console.log(point);
+
+    let lastPosition = {...this._position};
+		this._position.x = point.x
+		this._position.y = point.y
+
+		let delta = {
+			x: this._position.x - lastPosition.x,
+			y: this._position.y - lastPosition.y
+		}
+
+    this._objectGroup.move(delta.x, delta.y)
+  }
+
+  /**
+   * move()
+   * @description moves by a certain x and y amount
+   * @param {Point} delta the distance to move in the x and y 
+   */
+  move(delta) {
+    this._position.x += delta.x;
+    this._position.y += delta.y;
   }
 
   /**
@@ -69,8 +101,8 @@ export default class Snappable2 extends GameObject {
    */
   moveRelativeToCenter(point) {
     let lastPosition = {...this._position};
-		this._position.x = point.x - this.width / 2
-		this._position.y = point.y - this.height / 2
+		this._position.x = point.x - this._boundingBox.width / 2;
+		this._position.y = point.y - this._boundingBox.height / 2;
 
 		let delta = {
 			x: this._position.x - lastPosition.x,
@@ -86,8 +118,11 @@ export default class Snappable2 extends GameObject {
    * @description shows the snap areas
    */
   showSnapAreas() {
-    this._objectGroup.create();
-    this._objectGroup.update();
+    for (const obj of this._objectGroup.objects) {
+      if(obj instanceof SnapPoint) {
+        obj.create()
+      }
+    }
   };
 
   /**
@@ -114,7 +149,7 @@ export default class Snappable2 extends GameObject {
     // find the closest snappable region that
     // intersects
 
-    var closestSnapPoint = null;
+    var closestSnapPoint = -1;
     var closestDistance = Infinity;
     var thisRect = this.rect
 
@@ -132,16 +167,17 @@ export default class Snappable2 extends GameObject {
       }
     }
 
+    console.log(closestSnapPoint);
     return snappable.snapGroup.objects[closestSnapPoint];
   }
 
   /**
    * findSnapPointNearPoint()
    * @description find the closest snap point to another snap point
-   * @param {Point} point the point the snap point should be near
+   * @param {Point} snapPoint the point the snap point should be near
    * @returns the index of the nearest snap point
    */
-  findSnapPointNearPoint(point) {
+  findSnapPointNearSnapPoint(snapPoint) {
     // find the closest snappable region that
     // intersects
     var index = 0;
@@ -151,10 +187,10 @@ export default class Snappable2 extends GameObject {
       let obj = this._objectGroup.objects[i];
       if(obj instanceof SnapPoint) {
         let center = obj.center
-        let distance = Distance(center, point)
+        let distance = Distance(center, snapPoint.center)
 
         // find the closest intersecting snap area
-        if (distance < closestDistance && this.rect.intersects(obj)) {
+        if (distance < closestDistance) {
           closestDistance = distance
           index = i
         }
@@ -164,46 +200,103 @@ export default class Snappable2 extends GameObject {
     return this._objectGroup.objects[index];
   }
 
+  /**
+   * findClosestSnappingPair() 
+   * @description finds the two closest snapping points
+   * @param {Snappable} snappable the snappable to pair with
+   * @returns {Object} an object contain the pair of snappables
+   */
+  findClosestSnappingPair(snappable) {
+    let closestDistance = Infinity;
+    let closestPair = {
+      moving: null,
+      fixed: null
+    }
+
+    // find the two snap points that are closest to each other
+    for (const movingPoint of this.objectGroup.objects) {
+      if(movingPoint instanceof SnapPoint) {
+        for (const fixedPoint of snappable.objectGroup.objects) {
+          if(fixedPoint instanceof SnapPoint) {
+            let dist = Distance(fixedPoint.center, movingPoint.center)
+            if(dist < closestDistance && this.rect.intersects(fixedPoint)) {
+              closestDistance = dist;
+              closestPair = {
+                moving: movingPoint,
+                fixed: fixedPoint
+              }
+            }
+          }
+        }  
+      }
+    } 
+
+    return closestPair;
+  }
+
+  
+
 
   /**
    * snapTo()
    * @description snaps a given object to this object depending on where the mouse is
-   * @param {Snappable} snappable the snappable to snap to
+   * @param {Object} closestPair the closest pair of snapping points
    * @param {Point} mousePos the position of the mouse 
    * @returns the closest side that can be snapped to
    */
-  snapTo(snappable, mousePos) {
+  flexibleSnap(otherSnappable, mousePos) {
 
-    let snapPoint = this.findClosestSnapPoint(snappable, mousePos);
+    let fixedPoints = otherSnappable.snapPoints; // check
+    let movingPoints = this.snapPoints; // check
 
-    if(snapPoint) {
-      
-      let point = {
-        x: mousePos.x,
-        y: mousePos.y
-      }
+    console.log(fixedPoints);
+    console.log(movingPoints);
 
-      // based on the axis set the x or y position
-      if(snapPoint.axis === "x") {
-        if(snapPoint.value < this.position.x) { // on the right
-          point.x = snapPoint.value + this.width / 2
-        } else { // on the right
-          point.x = snapPoint.value - this.width / 2
+    // find the two closest points
+    let largestArea = -Infinity
+    let pair = {
+      fixed: fixedPoints[0],
+      moving: movingPoints[0]
+    }
+    
+    // get all the snap regions that intersect with the moving rect
+    //console.log(fixedPoints);
+    for(let point of fixedPoints) {
+        console.log(this._boundingBox);
+        let area = getAreaOfIntersection(point, this._boundingBox);
+        console.log(area);
+        
+        if(area > largestArea && point.intersect(this._boundingBox)) {
+          largestArea = area;
+          pair.fixed = point
         }
-      } else {
-        if(snapPoint.value < this.position.y) { // on the bottom
-          point.y = snapPoint.value + this.height / 2
-        } else { // on the top
-          point.y = snapPoint.value - this.height / 2
-        }
-      }
-
-      this.moveRelativeToCenter(point)
-      return snapPoint;
-    } else {
-      return null;
     }
 
+    console.log(pair.fixed);
+  
+    
+    // find the moving area that is closet to the fixed area 
+    for(let point of movingPoints) {
+      if(point.side === getOpposite(pair.fixed.side)) {
+        pair.moving = point
+      }
+    }
+    
+    /*console.log(pair);
+    if(pair.fixed) {
+      
+      this.move({
+          x: (pair.fixed.axis === "x") ? pair.fixed.position.x - this.position.x: 0,
+          y: (pair.fixed.axis === "y") ? pair.fixed.position.y - this.position.y: 0
+      })
+      
+      this.move({
+        x: (pair.moving.side === "right" && pair.fixed.axis === "x") ? -this.width : 0,
+        y: (pair.moving.side === "down" && pair.fixed.axis === "y") ? -this.height : 0
+      })
+    }*/
+
+    //return pair.moving;
 
   }
 
@@ -220,12 +313,31 @@ export default class Snappable2 extends GameObject {
 
     // based on the axis set the x or y position
     if(snapPoint.axis === "x") {
-      point.x = snapPoint.value - drop.size / 2
+      point.x = snapPoint.point.x - drop.size / 2
     } else {
-      point.y = snapPoint.value - drop.size / 2
+      point.y = snapPoint.point.y - drop.size / 2
     }
 
     return point;
+  }
+
+
+  /**
+   * get position()
+   * @description gets the position of the snappable
+   * @returns {Point} position
+   */
+  get position() {
+    return this._position;
+  }
+
+  /**
+   * set position()
+   * @description sets the position of the snappable
+   * @returns {Point} position
+   */
+  set position(value) {
+    this._position = value;
   }
 
 
@@ -249,12 +361,37 @@ export default class Snappable2 extends GameObject {
 
 
   /**
-   * get snapGroup()
+   * get objectGroup()
    * @description gets the snap group of the snappable
    * @returns {Array[SnapPoint]} the snap group of the snappable
    */
-  get snapGroup() {
+  get objectGroup() {
     return this._objectGroup;
   }
+
+
+  /**
+   * get snapPoints() 
+   * @description gets the snap points of the snappable
+   * @returns {Array[SnapPoint]} the snap points of the snappable
+   */
+  get snapPoints() {
+    let snapPoints = [];
+    for (const object of this._objectGroup.objects) {
+      if(object instanceof SnapPoint) {
+        snapPoints.push(object);
+      }
+    }
+    return snapPoints;
+  }
+
+  /**
+	 * get boundingBox()
+	 * @description gets the bounding box for this snappable
+	 * @returns the bounding box
+	 */
+	get boundingBox() {
+		return null;
+	}
 
 }

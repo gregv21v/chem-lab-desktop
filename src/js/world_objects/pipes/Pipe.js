@@ -9,8 +9,10 @@ import Rect from "../../shapes/Rect";
 import Snappable2 from "../Snappable2";
 import SnapPoint from "../SnapPoint";
 import Group from "../../shapes/Group";
+import Arrow from "../../shapes/Arrow";
 
 export default class Pipe extends Snappable2 {
+
 
 	/**
 	 * constructor()
@@ -20,14 +22,17 @@ export default class Pipe extends Snappable2 {
 	 * @param {Number} interiorHeight the interior height of the pipe
 	 * @param {Number} wallWidth the wall width of the pipe
 	 */
-	constructor(layer, center, width, interiorHeight, wallWidth) {
+	constructor(layer, center, length, interiorHeight, wallWidth) {
 		super(layer, center)
+
+		this._diameter = interiorHeight + wallWidth * 2;
+		this._length = length;
 
 		this._wallWidth = wallWidth;
 		this._interiorHeight = interiorHeight;
 		this._position = center
 		//this.center = center; // position of pipe
-		this._width = width;
+		this._width = length;
 		this._opened = true;
 
 		this._drops = [];
@@ -38,7 +43,6 @@ export default class Pipe extends Snappable2 {
 
 		//this.updatePosition();
 
-		this.createSnapPoints();
   	}
 
 	/**
@@ -56,18 +60,19 @@ export default class Pipe extends Snappable2 {
 			},
 			this._snapWidth,
 			this.height,
-			this.position.x + this.width,
-			"x"
+			{
+				x: this.position.x + this.width,
+				y: this.position.y + this.height / 2
+			},
+			"x",
+			"left"
 		)
+		start.fill.opacity = 0.5;
+		start.stroke.opacity = 0;
+		start.fill.color = "orange"
 		this._objectGroup.add(start);
 
-		let boundingBox = new Rect(
-			d3.select('[name="debug"]'),
-			{...this.position},
-			this.width,
-			this.height
-		)
-		this._objectGroup.add(boundingBox);
+		
 
 		// end
 		let end = new SnapPoint(
@@ -77,13 +82,21 @@ export default class Pipe extends Snappable2 {
 			},
 			this._snapWidth,
 			this.height,
-			this.position.x,
-			"x"
+			{
+				x: this.position.x, 
+				y: this.position.y + this.height / 2
+			},
+			"x",
+			"right"
 		)
+		end.fill.opacity = 0.5;
+		end.stroke.opacity = 0;
+		end.fill.color = "orange"
 		this._objectGroup.add(end);
-
-		this._objectGroup.create();
 	}
+
+
+	
 
 	/**
 	 * getDropStartPosition()
@@ -104,7 +117,6 @@ export default class Pipe extends Snappable2 {
 				for (const snappable of snapPoint.snappables) {
 					if(snappable instanceof Tank) {
 						let exitingDrops = this.takeExitingDrops(snapPoint); // take the exiting drops
-						console.log(exitingDrops);
 						for(const drop of exitingDrops) {
 							snappable.addDrop(drop);
 							drop.destroy()
@@ -171,91 +183,61 @@ export default class Pipe extends Snappable2 {
 	*/
 	create() {
 		this._group = this._layer.append("g")
-		this._svg = {
-			walls: this._group.append("rect"),
-			interior: this._group.append("rect"),
-			direction: this._group.append("path")
-		}
+		this._group.attr("name", "Pipe")
 
-		this._svg.walls.attr("name", "pipeWalls")
-		this._svg.interior.attr("name", "pipeInterior")
-
-		this.updateSVG();
+		this.createGraphics();
+		this.createSnapPoints();
+		this._objectGroup.create();
 	}
 
 
 	/**
-	 * createDirectionalArrow()
-	 * @description creates the directional arrow that shows what direction the fluid is going
+	 * createGraphics()
+	 * @description creates the graphics for the pipe 
 	 */
-	createDirectionalArrow(rotation = 0) {
-		let path = d3.path() 
-		let radius = this._interiorHeight / 2
-		let angle = 360 / 3
-		let center = {
-			x: this.position.x + this.width / 2,
-			y: this.position.y + this.height / 2
-		}
-
-		path.moveTo(
-			center.x + radius * Math.cos((rotation + 0) * Math.PI / 180), 
-			center.y + radius * Math.sin((rotation + 0) * Math.PI / 180)
+	createGraphics() {
+		this._boundingBox = new Rect(
+			d3.select('[name="debug"]'),
+			{...this.position},
+			this.width,
+			this.height
 		)
+		this._boundingBox.fill.opacity = 0
+		this._boundingBox.stroke.opacity = 0;
+		this._objectGroup.add(this._boundingBox);
 
-		for (let i = 0; i < 4; i++) {
-			path.lineTo(
-				center.x + radius * Math.cos((rotation + i * angle) * Math.PI / 180), 
-				center.y + radius * Math.sin((rotation + i * angle) * Math.PI / 180)
-			)
-		}
+		
+		//this._arrow = new Arrow(this._group, this._interiorHeight / 2, this.center)
+		//this._objectGroup.add(this._arrow)
 
-		this._svg.direction
-			.attr("d", path)
-			.style("stroke", "red")
-			.style("fill", "rgba(0, 0, 0, 0)")
+		this._walls = new Rect(
+			this._group, 
+			{...this.position},
+			this._length,
+			this._diameter
+		)
+		this._walls.fill.color = "black"
+		this._walls.fill.opacity = 1
+		this._walls.stroke.color = "black"
+		this._walls.stroke.opacity = 0;
+		this._objectGroup.add(this._walls)
+
+		this._interior = new Rect(
+			this._group, 
+			{x: this._position.x - this._wallWidth, y: this._position.y + this._wallWidth},
+			this._length + this._wallWidth * 2,
+			this._interiorHeight
+		)
+		this._interior.stroke.opacity = 0;
+		this._interior.fill.color = "white"
+		this._interior.fill.opacity = 1
+		this._objectGroup.add(this._interior)
+
 	}
 
 
-
-	updateSVG() {
-		//this.updatePosition();
-	
-		if(this.rotation == 0) {
-			//let extraWidth = (this.attachments.right && this.attachments.right[0].wallWidth) ? this.attachments.right[0].wallWidth : 0
-			//console.log(extraWidth);
-
-			// draw the directional arrow
-			this.createDirectionalArrow();
-
-
-			// interior
-			this._svg.interior.attr("width", this._width);
-			this._svg.interior.attr("height", this._interiorHeight);
-			this._svg.interior.attr("x", this._position.x);
-			this._svg.interior.attr("y", this._position.y + this._wallWidth);
-		} else {
-			this.createDirectionalArrow(this.rotation)
-
-			// interior
-			this._svg.interior.attr("width", this._interiorHeight);
-			this._svg.interior.attr("height", this._width);
-			this._svg.interior.attr("x", this._position.x + this._wallWidth);
-			this._svg.interior.attr("y", this._position.y);
-		}
-
-		// walls
-		this._svg.walls.attr("width", this.width);
-		this._svg.walls.attr("height", this.height);
-		this._svg.walls.attr("x", this._position.x);
-		this._svg.walls.attr("y", this._position.y);
-		this._svg.walls.style("fill", "black")
-					.style("fill-opacity", 1)
-
-
-		// interior
-		this._svg.interior.style("fill", "white")
-						.style("fill-opacity", 1)
-
+	update() {
+		this._objectGroup.update();
 	}
 
 	destroySVG() {
@@ -278,6 +260,11 @@ export default class Pipe extends Snappable2 {
 			this._direction = "down"
 		}
 
+		for (const snap of this._objectGroup.objects) {
+			if(snap instanceof SnapPoint) {
+				snap.axis = (snap.axis === "x") ? "y" : "x"
+			}
+		}
 		this._objectGroup.rotateAroundCenter(90)
 	}
 
@@ -317,29 +304,6 @@ export default class Pipe extends Snappable2 {
 		return this._interiorHeight;
 	};
 
-	/**
-	 * getSnapAreas()
-	 * @description gets the snap areas of the pipe
-	 * @returns the snap areas of the pipe
-	 */
-	getSnapAreas() {
-		if(this.rotation === 0) {
-			return {
-				left: this.getLeftArea(),
-				right: this.getRightArea()
-			}
-		} else if(this.rotation === 90) {
-			return {
-				up: this.getUpArea(),
-				down: this.getDownArea()
-			}
-		}
-
-	}
-
-
-	
-
   	/**
 	 * get rect()
 	 * @description gets the rect for this pipe
@@ -357,6 +321,33 @@ export default class Pipe extends Snappable2 {
 	 */
 	get name() {
 		return "Pipe";
+	}
+
+
+	/**
+	 * get length()
+	 * @description gets the length of the pipe
+	 * @returns the length of the pipe
+	 */
+	get length() {
+		return this._length;
+	}
+
+	/**
+	 * get diameter() 
+	 * @description gets the diameter of the pipe
+	 */
+	get diameter() {
+		return this._diameter;
+	}
+
+	/**
+	 * set diameter() 
+	 * @description sets the diameter of the pipe
+	 * @param {Number} value the new diamater
+	 */
+	set diameter(value) {
+		this._diameter = value;
 	}
 
 	/**
@@ -399,6 +390,16 @@ export default class Pipe extends Snappable2 {
 	 */
 	get direction() {
 		return this._direction;	
+	}
+
+
+	/**
+	 * get boundingBox()
+	 * @description gets the bounding box for this pipe
+	 * @returns the bounding box
+	 */
+	get boundingBox() {
+		return this._boundingBox;
 	}
 
 

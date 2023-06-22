@@ -22,18 +22,9 @@ export default class ContainerFluidBody extends FluidBody {
      * @description creates the svg for the fluid
      */
     create() {
-        this._group = d3.create("svg:g")
-
-        this._svg = {
-            rect: this._group.append("rect")
-        };
-
-        this._svg.rect.attr("name", "ContainerFluidBody")
-        this._svg.rect.style("fill", this._fluid.getColorAsString())
-
-        this.position = this._position
-
-        this._layer.append(() => this._group.node())
+        super.create();
+        this.fill.color = this._fluid.getColorAsString()
+        this.update();
     }
 
     /**
@@ -83,9 +74,6 @@ export default class ContainerFluidBody extends FluidBody {
      */
     set container(value) {
         this._container = value;
-
-        this._svg.rect.attr("width", this.width);
-        this._svg.rect.attr("height", this.height);
     }
 
     /**
@@ -123,17 +111,7 @@ export default class ContainerFluidBody extends FluidBody {
         return this._fluid;
     }
 
-    /**
-     * get rect()
-     * @description gets the rect for this fluid
-     */
-    get rect() {
-        this._rect.width = this.width;
-        this._rect.height = this.height;
-        this._rect.position = this.position;
-
-        return this._rect;
-    }
+    
 
     /**
      * set volume()
@@ -146,9 +124,6 @@ export default class ContainerFluidBody extends FluidBody {
         } else {
             this._volume = value;
         }
-
-        this._svg.rect.attr("width", this.width);
-        this._svg.rect.attr("height", this.height);
     }
 
     /** 

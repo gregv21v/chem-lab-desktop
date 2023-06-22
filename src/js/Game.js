@@ -134,7 +134,7 @@ export default class Game {
     //this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
     //this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
     this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
-    this._hud.inventory.add(new ElbowPipe(
+    /*this._hud.inventory.add(new ElbowPipe(
       this._layers[1],
       {x: 0, y: 0},
       5,
@@ -161,7 +161,7 @@ export default class Game {
       5,
       50,
       5
-    ))
+    ))*/
         
     // setup some starting tanks
     /*var sellTank = new Tank(
@@ -244,10 +244,10 @@ export default class Game {
     this._hud.inventory.onKeyPress(event);
 
     //console.log(event.key);
-    if(event.key === 'r' && this._player.hand instanceof Pipe) {
+    if(event.key === 'r') {
       //console.log(this._player.hand);
       this._player.hand.rotate();
-      this._player.hand.updateSVG();
+      this._player.hand.update();
 
       this._group.rotateAroundCenter(90);
       this._group.update()

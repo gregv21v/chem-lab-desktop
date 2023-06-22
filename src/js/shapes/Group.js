@@ -54,37 +54,7 @@ export default class Group {
     }
 
 
-    /**
-     * get center()
-     * @description gets the center of the group
-     */
-    get center() {
-        // convert every shape in the group to points
-        // the calculate the center by averaging the points
-        let total = {
-            x: 0,
-            y: 0
-        }
-        for (const obj of this._objects) {
-            total.x += obj.center.x 
-            total.y += obj.center.y 
-        }
-
-        return {
-            x: total.x / this._objects.length,
-            y: total.y / this._objects.length
-        }
-    }
-
-
-    /**
-     * get objects()
-     * @description gets the objects in the group
-     */
-    get objects() {
-        return this._objects;
-    }
-
+    
     /**
      * findObjectNearestPoint()
      * @description find the object closest to a point
@@ -125,6 +95,58 @@ export default class Group {
 			obj.move(deltaX, deltaY)
 		}
     }
+
+
+    /**
+     * moveTo()
+     * @description Moves the group to the specified position
+     * @param {Number} x the x coordinate to move to
+     * @param {Number} y the y coordinate to move to
+     */
+    moveTo(x, y) { 
+        for (const obj of this._objects) {
+            let currentPos = obj.position;
+            let diff = {
+                x: x - currentPos.x,
+                y: y - currentPos.y
+            }
+            obj.move(diff.x, diff.y);
+        }
+    }
+
+
+    /**
+     * get objects()
+     * @description gets the objects in the group
+     */
+    get objects() {
+        return this._objects;
+    }
+
+    /**
+     * get center()
+     * @description gets the center of the group
+     */
+    get center() {
+        // convert every shape in the group to points
+        // the calculate the center by averaging the points
+        let total = {
+            x: 0,
+            y: 0
+        }
+        for (const obj of this._objects) {
+            total.x += obj.center.x 
+            total.y += obj.center.y 
+        }
+
+        return {
+            x: total.x / this._objects.length,
+            y: total.y / this._objects.length
+        }
+    }
+
+
+    
 
 
 }

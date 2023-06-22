@@ -4,8 +4,10 @@
 
 import * as d3 from "d3"
 import { rotatePoints } from "./Point";
+import GameObject from "../world_objects/GameObject";
+import { overlap, project } from "../util";
 
-export default class Rect {
+export default class Rect extends GameObject {
 	/**
 	 * constructor()
 	 * @description constructs the Rect
@@ -14,23 +16,88 @@ export default class Rect {
 	 * @param {Number} height the height of the rect
 	 */
 	constructor(layer=d3.select('[name="debug"]'), position={x: 0, y: 0}, width=0, height=0) {
+		super(layer, position, {x: 0, y:0})
 		this._layer = layer;
 		this._width = width;
 		this._height = height;
 		this._position = position; // top left corner
 		this._fill = {
-			opacity: 0.5,
+			opacity: 1,
 			color: "white"
 		};
 		this._stroke = {
 			color: "blue",
-			width: 1
+			width: 1,
+			opacity: 1
 		};
 	}
 
 	
 
+	/**
+	 * getAxes()
+	 * @description gets the axes for the rectangle
+	 * @returns the axes for the rectangle
+	 */
+	getAxes() { 
+		let vertices = this.toPoints();
+		let axes = [];
+		// loop over the vertices
+		for (let i = 0; i < vertices.length; i++) {
+			// get the current vertex
+			let p1 = vertices[i];
+			// get the next vertex
+			let p2 = vertices[i + 1 == vertices.length ? 0 : i + 1];
+			// subtract the two to get the edge vector
+			let edge = {
+				x: p1.x - p2.x,
+				y: p1.y - p2.y
+			}
+			
+			// get either perpendicular vector
+			let normal = {
+				x: -edge.y,
+				y: edge.x
+			}
+			// the perp method is just (x, y) =&gt; (-y, x) or (y, -x)
+			axes.push(normal)
+		}	
+		return axes;
+	}
 
+	intersect(rect) {
+		// use the SAT 
+	  let axes1 = this.getAxes();
+	  let axes2 = rect.getAxes();
+	  
+	  // loop over the axes1
+	  for (let i = 0; i < axes1.length; i++) {
+		let axis = axes1[i];
+		// project both shapes onto the axis
+		let p1 = project(this, axis);
+		let p2 = project(rect, axis);
+		// do the projections overlap?
+		if (!overlap(p1, p2)) {
+		  // then we can guarantee that the shapes do not overlap
+		  return false;
+		}
+	  }
+	  // loop over the axes2
+	  for (let i = 0; i < axes2.length; i++) {
+		let axis = axes2[i];
+		// project both shapes onto the axis
+		let p1 = project(this, axis);
+		let p2 = project(rect, axis);
+		// do the projections overlap?
+		if (!overlap(p1, p2)) {
+		  // then we can guarantee that the shapes do not overlap
+		  return false;
+		}
+	  }
+	  // if we get here then we know that every axis had overlap on it
+	  // so we can guarantee an intersection
+	  return true;
+	}
 
 	/**
 	 * contains()
@@ -134,12 +201,6 @@ export default class Rect {
 		this.position.y = minY;
 	}
 
-
-
-
-
-
-
 	/**
 	 * toPoints()
 	 * @description converts this rectangle to points
@@ -189,6 +250,7 @@ export default class Rect {
 		this._svg.rect.attr("y", this._position.y);
 		this._svg.rect.attr("stroke-width", this._stroke.width);
 		this._svg.rect.attr("stroke", this._stroke.color);
+		this._svg.rect.attr("stroke-opacity", this._stroke.opacity)
 		this._svg.rect.attr("fill", this._fill.color);
 		this._svg.rect.attr("fill-opacity", this._fill.opacity);
 	}

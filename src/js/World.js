@@ -31,6 +31,7 @@ export default class World {
 		this.drops = [];
 		this.objs = [];
 		this.lines = []
+		this._closestPair = null;
 		
 
 
@@ -116,15 +117,21 @@ export default class World {
 			}
 
 
-			this.player.hand.moveRelativeToCenter(mousePos)
-			let closestSnappable = this.findClosestSnappable(mousePos)
+			this.player.hand.moveRelativeToCenter(mousePos); // check
+			
+			let closestSnappable = this.findClosestSnappable(mousePos) // check
+			closestSnappable
+			//console.log(closestSnappable) // check
+			
 			//console.log(closestSnappable);
 			if(this.player.hand instanceof Snappable2 && closestSnappable != null) {
-				this.snapPoint = this.player.hand.snapTo(closestSnappable, mousePos);
-				if(this.snapPoint !== null)
+				
+				this._movingPoint = this.player.hand.flexibleSnap(closestSnappable);
+				if(this._movingPoint !== null)
 					this.snappingTo = closestSnappable;
-			}
-			this.player.hand.updateSVG()
+			} 
+			this.player.hand.update()
+			
 		}
 
 	}
@@ -142,7 +149,7 @@ export default class World {
 		for(var obj of this.objs) {
 			if(obj instanceof Snappable2) {
 				let distance = Distance(obj.center, mousePos);
-				if(distance < closestDistance) {
+				if(distance < closestDistance && distance > 0) {
 					closestDistance = distance
 					closestSnappable = obj
 				}

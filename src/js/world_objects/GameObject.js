@@ -8,7 +8,6 @@
     snapTo --> snaps one object to another
 
 */
-import Rect from "../shapes/Rect";
 import * as d3 from "d3"
 
 export default class GameObject {
@@ -117,20 +116,6 @@ export default class GameObject {
       y: this._position.y + this.height / 2
     }
   }
-
-  /**
-   * get rect()
-   * @description gets the rectangler bounding box of this game object.
-   * @returns the rectangler bounding box of this GameObject
-   */
-  get rect() {
-    let rect = new Rect()
-    rect.width = this.width;
-    rect.height = this.height;
-    rect.position = this.position;
-    return rect;
-  }
-
 
   /**
    * get position()

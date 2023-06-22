@@ -64,10 +64,10 @@ export default class Pump extends GameObject {
 				console.log("You need to set the world for this pump to produce a drop.")
 		})
 
-		this.updateSVG();
+		this.update();
 	};
 
-	updateSVG() {
+	update() {
 		var self = this;
 		//this._tooltip.createSVG();
 
