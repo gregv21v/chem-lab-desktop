@@ -97,7 +97,7 @@ export default class Game {
     this._hud.inventory.add(new ElbowPipe(
       this._layers[1],
       {x: 0, y: 0},
-      5,
+      10,
       50,
       5
     ))
@@ -204,7 +204,7 @@ export default class Game {
     this._hud.inventory.onKeyPress(event);
 
     //console.log(event.key);
-    if(event.key === 'r' && this._player.hand instanceof Pipe) {
+    if(event.key === 'r' && this._player.hand instanceof Pipe || this._player.hand instanceof Tank) {
       console.log(this._player.hand);
       this._player.hand.rotate();
       this._player.hand.updateSVG();
