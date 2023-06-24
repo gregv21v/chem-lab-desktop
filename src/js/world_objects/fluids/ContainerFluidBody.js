@@ -13,8 +13,8 @@ export default class ContainerFluidBody extends FluidBody {
      * @param {Number} volume the volume of the fluid
      * @param {Fluid} fluid the fluid that this mass is made of 
      */
-    constructor(layer, position, volume, fluid) {
-        super(layer, position, {x: 0, y: 0}, volume, fluid)
+    constructor(layer, position, width, height, volume, fluid) {
+        super(layer, position, width, height, {x: 0, y: 0}, volume, fluid)
     }
 
     /**
@@ -24,9 +24,29 @@ export default class ContainerFluidBody extends FluidBody {
     create() {
         super.create();
         this.fill.color = this._fluid.getColorAsString()
-        this.update();
+        this.stroke.opacity = 0;
+        this.update();  
     }
 
+
+
+
+
+    /**
+     * update()
+     * @description updates the ContainerFluidBody
+     */
+    update() {
+		this._svg.rect.attr("width", this.width);
+		this._svg.rect.attr("height", this.height);
+		this._svg.rect.attr("x", this._position.x);
+		this._svg.rect.attr("y", this._position.y);
+		this._svg.rect.attr("stroke-width", this._stroke.width);
+		this._svg.rect.attr("stroke", this._stroke.color);
+		this._svg.rect.attr("stroke-opacity", this._stroke.opacity)
+		this._svg.rect.attr("fill", this._fill.color);
+		this._svg.rect.attr("fill-opacity", this._fill.opacity);
+	}
     /**
 	 * removeDrop()
 	 * @description removes a drop from the tank of size size
@@ -38,13 +58,13 @@ export default class ContainerFluidBody extends FluidBody {
             return null;
         } else if(size * size <= this.volume) {
 			this.volume -= size * size;
-            let newDrop = new Drop(d3.select("svg"), {x: 0, y: 0}, {x: 0, y: 0}, size, this.fluid);
+            let newDrop = new Drop(d3.select("[name='fluids']"), {x: 0, y: 0}, {x: 0, y: 0}, size, this.fluid);
             newDrop.create()
 			return newDrop;
 		} else {
             let dropSize = Math.round(Math.sqrt(this.volume))
             this.volume -= dropSize * dropSize
-            let newDrop = new Drop(d3.select("svg"), {x: 0, y: 0}, {x: 0, y: 0}, dropSize, this.fluid);
+            let newDrop = new Drop(d3.select("[name='fluids']"), {x: 0, y: 0}, {x: 0, y: 0}, dropSize, this.fluid);
             newDrop.create()
             return newDrop;
         }
@@ -90,7 +110,7 @@ export default class ContainerFluidBody extends FluidBody {
      * @returns the width of this Fluid
      */
     get width() {
-        return this._container.interior.width;
+        return this._container.interiorWidth;
     }
 
     /**
@@ -99,7 +119,7 @@ export default class ContainerFluidBody extends FluidBody {
      * @returns height
      */
     get height() {
-        return this._volume / this._container.interior.width;
+        return this._volume / this._container.interiorWidth;
     }
 
 

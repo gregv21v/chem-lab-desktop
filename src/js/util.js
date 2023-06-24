@@ -22,12 +22,31 @@ export function getOpposite(side) {
   } else if(side === "top") {
     return "bottom"
   } else if(side === "bottom") {
-    return "top";
+    return "top"; 
+  } else if(side === "start") {
+    return "end";
+  } else if(side === "end") {
+    return "start";
   } else {
     return ""
   }
 
 }
+
+/**
+ * getNextSide()
+ * @description gets the next side going clockwise
+ * @param {side} side the side to get the next side for
+ */
+export function getNextSide(side) {
+  let sideOrder = [
+    "left", "up", "right", "down"
+  ]
+  let currentIndex = sideOrder.indexOf(side)
+  return sideOrder[(currentIndex + 1) % sideOrder.length]
+}
+
+
 
 
 /**

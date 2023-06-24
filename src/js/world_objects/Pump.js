@@ -43,10 +43,10 @@ export default class Pump extends GameObject {
 		
 
 		this._possibleFluids = [
-			new Fluid("Water", 2, this._production * this._production, {red: 0, green: 0, blue: 200}),
-			new Fluid("Smoke", -1, this._production * this._production, {red: 142, green: 140, blue: 145}),
-			new Fluid("Dust", 5, this._production * this._production, {red: 173, green: 161, blue: 113}),
-			new Fluid("Lava", 1, this._production * this._production, {red: 255, green: 0, blue: 0})
+			new Fluid("Water", 2, this._production * this._production, {red: 0, green: 0, blue: 200, alpha: 255}),
+			new Fluid("Smoke", -1, this._production * this._production, {red: 142, green: 140, blue: 145, alpha: 200}),
+			new Fluid("Dust", 5, this._production * this._production, {red: 173, green: 161, blue: 113, alpha: 255}),
+			new Fluid("Lava", 1, this._production * this._production, {red: 255, green: 0, blue: 0, alpha: 255}),
 		]
 	}
 
@@ -99,7 +99,7 @@ export default class Pump extends GameObject {
 		let size = getRandomInt(5, this._production)
 
 		let drop = new Drop(
-			d3.select("svg"),
+			d3.select("[name='debug']"),
 			{x: this._position.x - this._production/2, y: this._position.y + this._production * 3}, // position
 			{x: 0, y: 1}, // velocity
 			size,
@@ -120,6 +120,16 @@ export default class Pump extends GameObject {
 	 * @param point point to move to
 	 */
 	moveRelativeToCenter(point) {
+		this._position.x = point.x - this._production
+		this._position.y = point.y - this._production
+	}
+
+
+	/**
+	 * moveTo()
+	 * @description moves the pump to a point
+	 */
+	moveTo(point) {
 		this._position.x = point.x - this._production
 		this._position.y = point.y - this._production
 	}

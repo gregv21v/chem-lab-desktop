@@ -15,22 +15,13 @@ export default class FluidBody extends Rect {
      * @param {Number} volume the volume of the fluid
      * @param {Fluid} fluid the fluid that this mass is made of 
      */
-    constructor(layer, position, velocity, volume, fluid) {
-        super(layer, position, 0, 0)
+    constructor(layer, position, width, height, velocity, volume, fluid) {
+        super(layer, position, width, height)
         this._volume = volume;
         this._fluid = fluid;
         this._velocity = velocity;
     }
 
-
-    /**
-     * create()
-     * @description renders the svg for the fluid
-     */
-    create() {
-        super.create();
-        this.update();
-    }
 
     /**
      * clone()

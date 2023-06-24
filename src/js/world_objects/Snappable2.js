@@ -11,11 +11,20 @@ import SnapPoint from "./SnapPoint"
 import { getAreaOfIntersection, getOpposite } from "../util"
 
 export default class Snappable2 extends Rect {
-  constructor(layer, center) {
-    super(layer, {x: 0, y: 0}, 0, 0) 
+  constructor(layer, position, width, height) {
+    super(layer, position, width, height) 
 
     this._rotation = 0;
     this._objectGroup = new Group(); // the place where all the graphic objects are stored
+
+    this._boundingBox = new Rect(
+			d3.select('[name="debug"]'),
+			position,
+			width,
+			height
+		)
+		this._boundingBox.fill.opacity = 0
+		this._boundingBox.stroke.opacity = 0;
 
     // snap areas are the regions around a given game object
     // that will cause a another object to snap with this object
@@ -23,7 +32,7 @@ export default class Snappable2 extends Rect {
     // snap parts
     this.snapCenter = { x: 0, y: 0 }
     this._snapping = false; // determines if the object is currently snapping
-    this._snapRadius = 20
+    this._snapRadius = 30
   }
 
 
@@ -45,6 +54,14 @@ export default class Snappable2 extends Rect {
 
     this.rotateAroundCenter(90)
   };
+
+  /**
+	 * update()
+	 * @description updates the attributes of the snappable
+	 */
+	update() {
+		this._objectGroup.update();
+	}
 
 
 
@@ -70,7 +87,6 @@ export default class Snappable2 extends Rect {
     @param point the point to center on
   */
   moveTo(point) {
-    console.log(point);
 
     let lastPosition = {...this._position};
 		this._position.x = point.x
@@ -81,7 +97,18 @@ export default class Snappable2 extends Rect {
 			y: this._position.y - lastPosition.y
 		}
 
-    this._objectGroup.move(delta.x, delta.y)
+    this._objectGroup.moveBy(delta.x, delta.y)
+  }
+
+  /**
+   * moveBy()
+   * @description moves the position of the Snappable by delta
+   * @param {Point} delta the difference between the current position and the new position
+   */
+  moveBy(delta) {
+    this._position.x += delta.x;
+    this._position.y += delta.y;
+    this._objectGroup.moveBy(delta.x, delta.y)
   }
 
   /**
@@ -92,6 +119,15 @@ export default class Snappable2 extends Rect {
   move(delta) {
     this._position.x += delta.x;
     this._position.y += delta.y;
+  }
+
+  /**
+	 * snapAdjustments() 
+	 * @description these are adjustments made to the relative position of two snapping objects 
+	 * @param {Pair} pair the pair of objects being snapped 
+	 * @param {Rect} movingObject the object being moved
+	 */
+	snapAdjustments(pair) {
   }
 
   /**
@@ -167,7 +203,7 @@ export default class Snappable2 extends Rect {
       }
     }
 
-    console.log(closestSnapPoint);
+    //console.log(closestSnapPoint);
     return snappable.snapGroup.objects[closestSnapPoint];
   }
 
@@ -386,12 +422,23 @@ export default class Snappable2 extends Rect {
   }
 
   /**
+	 * get center()
+	 * @returns the center point of the rectangle
+	 */
+	get center() {
+		return {
+			x: this._boundingBox.x + this._boundingBox.width / 2,
+			y: this._boundingBox.y + this._boundingBox.height / 2
+		}
+	}
+
+  /**
 	 * get boundingBox()
 	 * @description gets the bounding box for this snappable
 	 * @returns the bounding box
 	 */
 	get boundingBox() {
-		return null;
+		return this._boundingBox;
 	}
 
 }

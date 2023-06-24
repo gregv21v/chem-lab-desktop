@@ -122,6 +122,7 @@ export default class Rect extends GameObject {
 	 * @returns true if the two rects intersect
 	 * 			false otherwise
 	 */
+	/*
 	intersects(rect) {
 		// if at least one corner of the rect is in the other rect
 		return (
@@ -136,7 +137,7 @@ export default class Rect extends GameObject {
 			rect.contains({x: this._position.x, y: this._position.y + this._height}) || // bottom left
 			rect.contains({x: this._position.x + this._width, y: this._position.y + this._height}) // bottom right
 		);
-	}
+	}*/
 
 	/**
 	 * withinYRange()
@@ -147,11 +148,11 @@ export default class Rect extends GameObject {
 	withinYRange(rect) {
 		return (
 			(
-				this._position.y < rect.position.y && 
-				this._position.y + this._height > rect.position.y
+				this.position.y < rect.position.y && 
+				this.position.y + this.height > rect.position.y
 			) || (
-				this._position.y < rect.position.y + rect.height &&
-				this._position.y + this._height > rect.position.y + rect.height
+				this.position.y < rect.position.y + rect.height &&
+				this.position.y + this.height > rect.position.y + rect.height
 			)
 		)
 	}
@@ -195,10 +196,10 @@ export default class Rect extends GameObject {
 		  maxX = Math.max(maxX, point.x);
 		  maxY = Math.max(maxY, point.y);
 		}
-		this.width = maxX - minX;
-		this.height = maxY - minY;
-		this.position.x = minX;
-		this.position.y = minY;
+		this._width = maxX - minX;
+		this._height = maxY - minY;
+		this._position.x = minX;
+		this._position.y = minY;
 	}
 
 	/**
@@ -265,12 +266,12 @@ export default class Rect extends GameObject {
 
 
 	/**
-     * move() 
+     * moveBy() 
      * @description moves the rectangle by a delta x, and y
      * @param {Number} deltaX the difference in x to move the rectangle
      * @param {Number} deltaY the difference in y to move the rectangle
      */
-    move(deltaX, deltaY) {
+    moveBy(deltaX, deltaY) {
         this.position.x += deltaX;
         this.position.y += deltaY;
     }
@@ -298,6 +299,24 @@ export default class Rect extends GameObject {
 	rotateAroundPoint(center, angle) {
 		var points = this.toPoints()
 		this.fromFourPoints(rotatePoints(points, center, angle));
+	}
+
+	/**
+	 * getAreaOfIntersection()
+	 * @description get the area of intersection of two rectangles
+	 * @param {Rect} the rect to get the area of intersection with
+	 * @returns the area of intersection
+	 */
+	getAreaOfIntersection(otherRect) {  
+		return Math.max(
+				0, 
+			Math.min(this.position.x + this.width, otherRect.position.x + otherRect.width)
+			- Math.max(this.position.x, otherRect.position.x)
+		 ) * Math.max(
+			  0, 
+			Math.min(this.position.y + this.height, otherRect.position.y + otherRect.height) 
+			- Math.max(this.position.y, otherRect.position.y)
+		 )
 	}
 
 	/**
@@ -408,4 +427,40 @@ export default class Rect extends GameObject {
 		this._position = value;
 	}
 
+	/**
+	 * get x()
+	 * @description gets the x position of the rect
+	 * @returns the x position of the rect
+	 */
+	get x() {
+		return this._position.x;
+	}
+
+	/**
+	 * set x()
+	 * @description sets the x position of the rect
+	 * @param {Number} value the value to set x position
+	 */
+	set x(value) {
+		this._position.x = value;
+	}
+
+
+	/**
+	 * get x()
+	 * @description gets the x position of the rect
+	 * @returns the x position of the rect
+	 */
+	get y() {
+		return this._position.y;
+	}
+
+	/**
+	 * set y()
+	 * @description sets the y position of the rect
+	 * @param {Number} value the value to set y position
+	 */
+	set y(value) {
+		this._position.y = value;
+	}
 }

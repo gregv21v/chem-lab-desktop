@@ -5,7 +5,7 @@ export default class Group {
      * @description constructs the group
      */
     constructor() {
-        this._objects = [];
+        this._objects = []; // shapes within the group
     }
 
 
@@ -85,14 +85,14 @@ export default class Group {
 
 
     /**
-     * move()
-     * @description moves the group()
+     * moveBy()
+     * @description moves the group by delta
      * @param {Number} deltaX the difference in x to move the group
      * @param {Number} deltaY the difference in y to move the group
      */
-    move(deltaX, deltaY) {
+    moveBy(deltaX, deltaY) {
         for (const obj of this._objects) {
-			obj.move(deltaX, deltaY)
+			obj.moveBy(deltaX, deltaY)
 		}
     }
 
@@ -134,6 +134,9 @@ export default class Group {
             x: 0,
             y: 0
         }
+
+        console.log(this._objects);
+
         for (const obj of this._objects) {
             total.x += obj.center.x 
             total.y += obj.center.y 

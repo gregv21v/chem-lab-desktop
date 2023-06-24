@@ -19,10 +19,10 @@ export default class SnapPoint extends Rect {
      */
     constructor(position, width, height, point, axis, side) {
         super(d3.select('[name="debug"]'), position, width, height)
-        this._point = point;
-        this._axis = axis;
-        this._side = side;
-        this._snappables = [];
+        this._point = point; // the point being snapped to 
+        this._axis = axis; // the fixed axis
+        this._side = side; // the side being snapped to 
+        this._attachments = []; // the attachments
     }
 
 
@@ -54,18 +54,19 @@ export default class SnapPoint extends Rect {
 	}
 
     /**
-     * move() 
+     * moveBy() 
      * @description moves the snap point by a delta x, and y
      * @param {Number} deltaX the difference in x to move the snap point
      * @param {Number} deltaY the difference in y to move the snap point
      */
-    move(deltaX, deltaY) {
+    moveBy(deltaX, deltaY) {
         this.position.x += deltaX;
         this.position.y += deltaY;
 
         this._point.x += deltaX
         this._point.y += deltaY
 
+        
         if(this._debug) {
             this._debug
                 .attr("cx", this._point.x)
@@ -79,6 +80,7 @@ export default class SnapPoint extends Rect {
                     .style("fill", "red")
         }
         
+        
     }
 
     /**
@@ -87,7 +89,7 @@ export default class SnapPoint extends Rect {
      * @param {Snappable} snappable the snappable to attach
      */
     attach(snappable) {
-        this._snappables.push(snappable)
+        this._attachments.push(snappable)
     }
 
     /**
@@ -127,12 +129,12 @@ export default class SnapPoint extends Rect {
     }
 
     /**
-     * get snappables()
-     * @description gets the snappables attached to this snap point
-     * @returns the snappables attached
+     * get attachments()
+     * @description gets the attachments attached to this snap point
+     * @returns the attachments attached
      */
-    get snappables() {
-        return this._snappables;
+    get attachments() {
+        return this._attachments;
     }
 
     /**
@@ -142,6 +144,14 @@ export default class SnapPoint extends Rect {
      */
     get side() {
         return this._side;
+    }
+
+    /**
+     * set side()
+     * @description sets the side attached to this snap point
+     */
+    set side(value) {
+        this._side = value;
     }
 
 

@@ -17,7 +17,7 @@ export default class Drop extends FluidBody {
    * @param {Point} velocity the velocity of the drop
    */
   constructor(layer, position, velocity, size, fluid) {
-    super(layer, position, velocity, size * size, fluid)
+    super(layer, position, size, size, velocity, size * size, fluid)
     this._size = size;
 
     /**
@@ -41,17 +41,14 @@ export default class Drop extends FluidBody {
 
     this._svg.rect.attr("name", "Drop")
     this._svg.rect.style("fill", this._fluid.getColorAsString())
+    this._svg.rect.attr("x", this._position.x);
+    this._svg.rect.attr("y", this._position.y);
 
     this.position = this._position;
     this.size = this._size
 
     this._layer.append(() => this._group.node())
   }
-
-
-
-  
-
 
 
   /**
@@ -65,6 +62,9 @@ export default class Drop extends FluidBody {
       x: this.position.x + this._velocity.x,
       y: this.position.y + this._velocity.y * this.fluid.density
     }
+
+    this._svg.rect.attr("x", this._position.x);
+    this._svg.rect.attr("y", this._position.y);
 
 
     // if the drop is outside the world remove it

@@ -39,7 +39,7 @@ export default class Fluid {
      * @returns the getColorAsString of the fluid
      */
     getColorAsString() {
-        return "rgb(" + this._color.red + "," + this._color.green + "," + this._color.blue + ")";
+        return "rgba(" + this._color.red + "," + this._color.green + "," + this._color.blue + "," + this._color.alpha + ")";
     }
 
     /**

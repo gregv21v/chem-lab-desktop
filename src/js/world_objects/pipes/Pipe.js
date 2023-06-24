@@ -10,6 +10,8 @@ import Snappable2 from "../Snappable2";
 import SnapPoint from "../SnapPoint";
 import Group from "../../shapes/Group";
 import Arrow from "../../shapes/Arrow";
+import { getNextSide, getOpposite } from "../../util";
+import { rotatePoint } from "../../shapes/Point";
 
 export default class Pipe extends Snappable2 {
 
@@ -39,7 +41,7 @@ export default class Pipe extends Snappable2 {
 
 		this._rect = new Rect(this.position, this.width, this.height);
 		this._rotation = 0;
-		this._direction = "right"
+		this._direction = "left"
 
 		//this.updatePosition();
 
@@ -52,30 +54,8 @@ export default class Pipe extends Snappable2 {
 	createSnapPoints() {
 		this._snapWidth = 20;
 
-		// start
-		let start = new SnapPoint(
-			{
-				x: this.position.x + this.width,
-				y: 0
-			},
-			this._snapWidth,
-			this.height,
-			{
-				x: this.position.x + this.width,
-				y: this.position.y + this.height / 2
-			},
-			"x",
-			"left"
-		)
-		start.fill.opacity = 0.5;
-		start.stroke.opacity = 0;
-		start.fill.color = "orange"
-		this._objectGroup.add(start);
-
-		
-
 		// end
-		let end = new SnapPoint(
+		let start = new SnapPoint(
 			{
 				x: this.position.x - this._snapWidth,
 				y: 0
@@ -87,12 +67,41 @@ export default class Pipe extends Snappable2 {
 				y: this.position.y + this.height / 2
 			},
 			"x",
+			"left"
+		)
+		start.fill.opacity = 0.5;
+		start.stroke.opacity = 0;
+		start.fill.opacity = 0;
+		start.fill.color = "orange"
+		start.create();
+		this._objectGroup.add(start);
+
+		// start
+		let end = new SnapPoint(
+			{
+				x: this.position.x + this.width,
+				y: 0
+			},
+			this._snapWidth,
+			this.height,
+			{
+				x: this.position.x + this.width,
+				y: this.position.y + this.height / 2
+			},
+			"x",
 			"right"
 		)
 		end.fill.opacity = 0.5;
 		end.stroke.opacity = 0;
+		end.fill.opacity = 0;
+		
 		end.fill.color = "orange"
+		end.create();
 		this._objectGroup.add(end);
+
+		
+
+		
 	}
 
 
@@ -114,13 +123,14 @@ export default class Pipe extends Snappable2 {
   	transferLiquid() {
 		for (const snapPoint of this._objectGroup.objects) {
 			if(snapPoint instanceof SnapPoint) {
-				for (const snappable of snapPoint.snappables) {
-					if(snappable instanceof Tank) {
+				console.log(snapPoint);
+				for (const tank of snapPoint.attachments) {
+					if(tank instanceof Tank) {
 						let exitingDrops = this.takeExitingDrops(snapPoint); // take the exiting drops
 						for(const drop of exitingDrops) {
-							snappable.addDrop(drop);
+							tank.addDrop(drop);
 							drop.destroy()
-							snappable.updateFluidBodies()
+							tank.updateFluidBodies()
 						}
 					}
 				}
@@ -152,7 +162,7 @@ export default class Pipe extends Snappable2 {
 			//console.log(drop);
 			// if a drop can no longer flow in the direction it was
 			// flowing, give it is at its spout, and ready to leak.
-			if(!drop.canFlow(this) /*&& side === drop.direction*/) {
+			if(!drop.canFlow(this)) {
 				exitingDrops.push(drop);
 				//console.log("Direction: " + drop.direction)
 				//console.log("Exiting");
@@ -187,7 +197,6 @@ export default class Pipe extends Snappable2 {
 
 		this.createGraphics();
 		this.createSnapPoints();
-		this._objectGroup.create();
 	}
 
 
@@ -203,7 +212,8 @@ export default class Pipe extends Snappable2 {
 			this.height
 		)
 		this._boundingBox.fill.opacity = 0
-		this._boundingBox.stroke.opacity = 0;
+		this._boundingBox.stroke.opacity = 1;
+		this._boundingBox.create();
 		this._objectGroup.add(this._boundingBox);
 
 		
@@ -220,6 +230,7 @@ export default class Pipe extends Snappable2 {
 		this._walls.fill.opacity = 1
 		this._walls.stroke.color = "black"
 		this._walls.stroke.opacity = 0;
+		this._walls.create();
 		this._objectGroup.add(this._walls)
 
 		this._interior = new Rect(
@@ -231,7 +242,22 @@ export default class Pipe extends Snappable2 {
 		this._interior.stroke.opacity = 0;
 		this._interior.fill.color = "white"
 		this._interior.fill.opacity = 1
+		this._interior.create();
 		this._objectGroup.add(this._interior)
+
+
+		this._arrow = new Arrow(
+			d3.select("[name='fluids']"),
+			this._diameter/4 - this._wallWidth*2,
+			this.center
+		)
+
+		this._arrow.stroke.color = "red"
+		this._arrow.stroke.opacity = 1;
+		this._arrow.fill.opacity = 0;
+		this._arrow.rotate(45)
+		this._arrow.create();
+		this._objectGroup.add(this._arrow)
 
 	}
 
@@ -252,17 +278,20 @@ export default class Pipe extends Snappable2 {
 	 * @description rotates the pipe
 	 */
 	rotate() {
-		this._rotation = (this._rotation + 90) % 180
+		this._rotation = (this._rotation + 90) % 360
+	
+		let directions = ["left", "up", "right", "down"]
 
-		if(this._rotation === 0) {
-			this._direction = "right"
-		} else { 
-			this._direction = "down"
-		}
+		let center = this._boundingBox.center;
+		this._position = rotatePoint(this._position, center, 90);
+
+		this._direction = directions[360 / this._rotation]
+		console.log(this._direction);
 
 		for (const snap of this._objectGroup.objects) {
 			if(snap instanceof SnapPoint) {
 				snap.axis = (snap.axis === "x") ? "y" : "x"
+				snap.side = getNextSide(snap.side);
 			}
 		}
 		this._objectGroup.rotateAroundCenter(90)
@@ -285,11 +314,47 @@ export default class Pipe extends Snappable2 {
 		return this._rotation;
 	}
 
+	/**
+	 * snapAdjustments() 
+	 * @description these are adjustments made to the relative position of two snapping objects 
+	 * @param {Pair} pair the pair of objects being snapped 
+	 * @param {Rect} movingObject the object being moved
+	 */
+	snapAdjustments(pair) {
 
-	/*
-		Switch the pipe too and from horizontal and vertical orientation.
-	*/
 
+		
+		if(pair.fixed.side === "left" && pair.fixed.point.x < this.center.x) {
+			this.moveBy({
+				x: -this.boundingBox.width,
+				y: 0
+			})
+		} 
+
+		if(pair.fixed.side === "right" && pair.fixed.point.x > this.center.x) {
+			this.moveBy({
+				x: +this.boundingBox.width,
+				y: 0
+			})
+		} 
+		
+
+		if(pair.fixed.side === "up" && pair.fixed.point.y < this.center.y) {
+			this.moveBy({
+				x: 0,
+				y: -this.boundingBox.height
+			})
+		} 
+
+		if(pair.fixed.side === "down" && pair.fixed.point.y > this.center.y) {
+			this.moveBy({
+				x: 0,
+				y: this.boundingBox.height
+			})
+		} 
+
+		
+	}
 
 
 

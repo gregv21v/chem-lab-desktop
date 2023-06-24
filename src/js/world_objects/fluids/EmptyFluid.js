@@ -9,6 +9,15 @@ export default class EmptyFluid extends Fluid {
      * @description constructs the fluid
      */
     constructor() {
-        super("Empty", 0, {red: 255, green: 255, blue: 255})
+        super("Empty", 0, {red: 255, green: 255, blue: 255, alpha: 255})
+    }
+
+
+    /**
+     * create()
+     * @description creates the fluid
+     */
+    create() {
+        super.create();
     }
 }

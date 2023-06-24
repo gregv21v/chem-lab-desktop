@@ -31,10 +31,8 @@ export default class World {
 		this.drops = [];
 		this.objs = [];
 		this.lines = []
-		this._closestPair = null;
+		this._snappedPair = null;
 		
-
-
 
 		let mainSVG = d3.select("svg");
 		let self = this;
@@ -69,28 +67,21 @@ export default class World {
 		if(this.player.hand != null &&
 			!this._game.hud.inventory.contains({x: evnt.clientX, y: evnt.clientY}))
 		{
-			//this.player.hand.updateTooltip();
-			//console.log(this.player.hand);
-			//console.log(this.snappingTo);
+
 			// Move the object to the world
 			if(this.player.hand) {
-				if(this.snappingTo) {
+				if(this._snappedPair) {
 					// get the snap point on the object that is moving
-					let handSnapPoint = this.player.hand.findSnapPointNearPoint(this.snapPoint.center)
-					console.log(handSnapPoint);
-					handSnapPoint.attach(this.snappingTo)
-					this.snapPoint.attach(this.player.hand)
+					this._snappedPair.fixed.attach(this.player.hand);
+					this._snappedPair.moving.attach(this._fixedSnappable);
 				}
-				//console.log(this.player.hand);
-				//console.log(this.snappingTo);
 
-				if(!(this.player.hand instanceof Pump))
-					this.player.hand.showSnapAreas()
+
+				//if(!(this.player.hand instanceof Pump))
+					//this.player.hand.showSnapAreas()
 				this.add(this.player.hand);
 				
 				this.player.hand = null; // empty hand
-				this.snappingTo = null;
-				this.snapPoint = null;
 			}
 
 		}
@@ -106,7 +97,7 @@ export default class World {
 
 		if(this.player.hand != null) {
 
-			for (var i = 0; i < this.lines.length; i++) {
+			/*for (var i = 0; i < this.lines.length; i++) {
 				var objCenter = this.objs[i].center
 				this.lines[i]
 					.style("stroke", "orange")
@@ -114,27 +105,85 @@ export default class World {
 					.attr("y1", objCenter.y)
 					.attr("x2", mousePos.x)
 					.attr("y2", mousePos.y)
+			}*/
+
+			if(!this.player.hand instanceof Pump) {
+				this.player.hand.moveTo({
+					x: mousePos.x - this.player.hand.boundingBox.width / 2,
+					y: mousePos.y - this.player.hand.boundingBox.height / 2
+				});
+			} else {
+				this.player.hand.moveTo(mousePos);
 			}
-
-
-			this.player.hand.moveRelativeToCenter(mousePos); // check
 			
-			let closestSnappable = this.findClosestSnappable(mousePos) // check
-			closestSnappable
-			//console.log(closestSnappable) // check
+			this._fixedSnappable = this.findClosestSnappable(mousePos) // check
+		
 			
-			//console.log(closestSnappable);
-			if(this.player.hand instanceof Snappable2 && closestSnappable != null) {
-				
-				this._movingPoint = this.player.hand.flexibleSnap(closestSnappable);
-				if(this._movingPoint !== null)
-					this.snappingTo = closestSnappable;
+			if(this.player.hand instanceof Snappable2 && this._fixedSnappable != null) {
+				//closestSnappable.boundingBox.fill.opacity = 1;
+				//closestSnappable.boundingBox.fill.color = "orange";
+				//closestSnappable.boundingBox.update();
+				this.flexibleSnap(this._fixedSnappable, this.player.hand);
 			} 
 			this.player.hand.update()
 			
 		}
 
 	}
+
+	/**
+	 * flexibleSnap() 
+	 * @description allows you to flexibly snap two objects together 
+	 * @param {Object} fixedObject the object that doesn't move 
+	 * @param {Object} movingObject the object that will snap to the fixed object
+	 * @param {Point} mousePos the mouse position
+ 	 */
+	flexibleSnap(fixedObject, movingObject) {
+		let fixedPoints = fixedObject.snapPoints;
+		let movingPoints = movingObject.snapPoints;
+
+		let largestArea = -Infinity;
+		let pair = {
+			fixed: fixedPoints[0],
+		  	moving: movingPoints[0]
+		}
+
+		// get all the snap regions that intersect with the moving rect
+		for(let point of fixedPoints) {
+			let intersectionArea = point.getAreaOfIntersection(movingObject.boundingBox)
+		
+			if(intersectionArea > largestArea && movingObject.boundingBox.intersect(point)) {
+				largestArea = intersectionArea;
+				pair.fixed = point
+			}
+		}
+
+
+		// find the moving area that is closet to the fixed area 
+		for(let point of movingPoints) {
+			if(point.side === getOpposite(pair.fixed.side)) {
+				pair.moving = point
+		  	}
+		}
+
+
+		if(pair.fixed) {
+			console.log("fixed", pair.fixed.side);
+			console.log("moving", pair.moving.side);
+			console.log("movingObject", movingObject);
+			movingObject.moveBy({
+				x: (pair.fixed.axis === "x") ? pair.fixed.point.x - movingObject.position.x: 0,
+				y: (pair.fixed.axis === "y") ? pair.fixed.point.y - movingObject.position.y: 0
+			})
+			
+			movingObject.snapAdjustments(pair, fixedObject);
+
+			this._snappedPair = pair;
+		}
+
+	}
+
+	
 
 	/**
 		findClosestSnappable()
@@ -149,7 +198,10 @@ export default class World {
 		for(var obj of this.objs) {
 			if(obj instanceof Snappable2) {
 				let distance = Distance(obj.center, mousePos);
-				if(distance < closestDistance && distance > 0) {
+
+				// TODO: change distance < 100 so that it compares the distance from 
+				// one edge to another instead of from center to center
+				if(distance < closestDistance && distance > 0 && distance < 100) {
 					closestDistance = distance
 					closestSnappable = obj
 				}
@@ -175,8 +227,6 @@ export default class World {
 	*/
 	add (obj) {
 		this.objs.push(obj);
-
-		obj.create();
 
 		// for debugging purposes
 		//var mainSVG = d3.select("body").select("svg")

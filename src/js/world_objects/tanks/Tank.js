@@ -24,6 +24,8 @@ import SnapPoint from "../SnapPoint";
 import Snappable2 from "../Snappable2";
 import Rect from "../../shapes/Rect";
 import * as d3 from "d3"
+import { getNextSide, getOpposite } from "../../util";
+import { rotatePoint } from "../../shapes/Point";
 
 export default class Tank extends Snappable2 {
 
@@ -39,10 +41,10 @@ export default class Tank extends Snappable2 {
 	 * @param {Boolean} downOpen indicates whether the down side is opened
 	 */
 	constructor(
-		layer, center, interior, wallWidth, 
+		layer, position, interior, wallWidth, 
 		leftOpened=false, rightOpened=false, upOpened=true, downOpened=false
 	) {
-		super(layer, center) 
+		super(layer, position, interior.width + wallWidth * 2, interior.height + wallWidth * 2); 
 
 		
 
@@ -54,16 +56,17 @@ export default class Tank extends Snappable2 {
 
 		this._interior = interior;
 		this._wallWidth = wallWidth;
-		this._position = center;
 		this._rotation = 90
 
 		this._wallColor = "green";
 		this._active = false;
 		this._text = "";
 
+		
 		this._emptyFluid = new ContainerFluidBody(
-			layer,
+			d3.select("[name='fluids']"),
 			{x: this._position.x + this._wallWidth, y: this._position.y + this._wallWidth}, // position
+			interior.width, interior.height, // dims
 			interior.height * interior.width, // volume 
 			new EmptyFluid() // fluid
 		)
@@ -86,7 +89,7 @@ export default class Tank extends Snappable2 {
 	 */ 
 	createSnapPoints() {
 		this._snapWidth = 20;
-		let snapPoints = [
+		this._snapPoints = [
 
 			// right
 			new SnapPoint(
@@ -141,12 +144,52 @@ export default class Tank extends Snappable2 {
 			),
 		]
 
-		for (const point of snapPoints) {
-			point.fill.color = "pink"
+		for (const point of this._snapPoints) {
+			point.fill.color = "orange"
 			point.fill.opacity = 0;
+			point.stroke.opacity = 0;
+			point.create();
 			this._objectGroup.add(point);
 		}
 
+	}
+
+
+	/**
+	 * snapAdjustments() 
+	 * @description these are adjustments made to the relative position of two snapping objects 
+	 * @param {Pair} pair the pair of objects being snapped 
+	 * @param {Rect} movingObject the object being moved
+	 */
+	snapAdjustments(pair, fixedObject) {
+		if(pair.fixed.side === "left" && pair.fixed.point.x < this.center.x) {
+			this.moveBy({
+				x: -this.boundingBox.width,
+				y: 0
+			})
+		} 
+
+		if(pair.fixed.side === "right" && pair.fixed.point.x > this.center.x) {
+			this.moveBy({
+				x: +this.boundingBox.width,
+				y: 0
+			})
+		} 
+		
+
+		if(pair.fixed.side === "up" && pair.fixed.point.y < this.center.y) {
+			this.moveBy({
+				x: 0,
+				y: -this.boundingBox.height
+			})
+		} 
+
+		if(pair.fixed.side === "down" && pair.fixed.point.y > this.center.y) {
+			this.moveBy({
+				x: 0,
+				y: this.boundingBox.height
+			})
+		} 
 	}
 
 	
@@ -158,16 +201,14 @@ export default class Tank extends Snappable2 {
 	 */
 	create() {
 		this._group = this._layer.append("g")
-		this._svg = {
-			fluids: this._group.append("g")
-		};
 
-		this._emptyFluid.create(this._svg.fluids)
 		this._emptyFluid.container = this;
 
 		this.createGraphics();
 
-		this._objectGroup.create();
+		this._emptyFluid.create();
+		this._emptyFluid.update();
+
 		this.update()
 	}
 
@@ -181,8 +222,9 @@ export default class Tank extends Snappable2 {
 			this.height
 		)
 		this._boundingBox.fill.opacity = 0
-		this._boundingBox.stroke.opacity = 0;
+		this._boundingBox.stroke.opacity = 1;
 
+		this._boundingBox.create();
 		this._objectGroup.add(this._boundingBox);
 		
 		//this._arrow = new Arrow(this._group, this._interiorHeight / 2, this.center)
@@ -198,6 +240,7 @@ export default class Tank extends Snappable2 {
 		this._walls.fill.opacity = 1
 		this._walls.stroke.color = "black"
 		this._walls.stroke.opacity = 0;
+		this._walls.create();
 		this._objectGroup.add(this._walls)
 
 		this._interiorVertical = new Rect(
@@ -209,6 +252,7 @@ export default class Tank extends Snappable2 {
 		this._interiorVertical.stroke.opacity = 0;
 		this._interiorVertical.fill.color = "white"
 		this._interiorVertical.fill.opacity = 1
+		this._interiorVertical.create();
 		this._objectGroup.add(this._interiorVertical)
 
 		this._interiorHorizontal = new Rect(
@@ -220,6 +264,7 @@ export default class Tank extends Snappable2 {
 		this._interiorHorizontal.stroke.opacity = 0;
 		this._interiorHorizontal.fill.color = "white"
 		this._interiorHorizontal.fill.opacity = 1
+		this._interiorHorizontal.create();
 		this._objectGroup.add(this._interiorHorizontal)
 
 
@@ -246,13 +291,50 @@ export default class Tank extends Snappable2 {
 	}
 
 
+	rotate() {
+		this._rotation = (this._rotation + 90) % 360
+
+		let center = this._boundingBox.center;
+		
+		this._walls.rotateAroundPoint(center, 90);
+		this._interiorHorizontal.rotateAroundPoint(center, 90);
+		this._interiorVertical.rotateAroundPoint(center, 90);
+		this._boundingBox.rotateAroundPoint(center, 90);
+		for (const snapPoint of this._snapPoints) {
+			snapPoint.side = getNextSide(snapPoint.side);
+			snapPoint.axis = (snapPoint.axis === "x") ? "y" : "x";
+			snapPoint.rotateAroundPoint(center, 90);
+		}
+
+		/*d3.select('[name="debug"]')
+			.append('circle')
+			.attr('r', 3)
+			.style('fill', 'blue')
+			.attr("cx", center.x)
+			.attr("cy", center.y)
+		*/
+
+
+		this._position = rotatePoint(this._position, center, 90);
+		if(this._position.y > this._boundingBox.y) {
+			this._position.y -= this._boundingBox.height;
+		}
+
+		if(this._position.x > this._boundingBox.x) { 
+			this._position.x -= this._boundingBox.width;
+		}
+
+	}
+
+
 	/**
 	 * update()
 	 * @description updates the tank
 	 */
 	update() {
-		this._objectGroup.update();
+
 		this.updateFluidBodies()
+		this._objectGroup.update();
 	}
 
 
@@ -268,6 +350,7 @@ export default class Tank extends Snappable2 {
 				y: lastY
 			}
 			lastY = fluidBody.getButtomY()
+			fluidBody.update();
 			//console.log(lastY)
 		}
 	}
@@ -318,6 +401,7 @@ export default class Tank extends Snappable2 {
 
 			// if it doesn't exist add it
 			if(i >= this._fluidBodies.length) {
+				this._objectGroup.add(newFluid)
 				this._fluidBodies.push(newFluid);
 				this._fluidBodies = this._fluidBodies.sort((a, b) => a.fluid.density - b.fluid.density) 
 			} else { // otherwise combine the new fluid with the existing one
@@ -326,7 +410,6 @@ export default class Tank extends Snappable2 {
 		}
 			
 
-		newFluid.create(this._svg.fluids);
 		this.updateFluidBodies()
 	}
 
@@ -347,19 +430,38 @@ export default class Tank extends Snappable2 {
 	transferLiquid() {
 		for (const snapPoint of this._objectGroup.objects) {
 			if(snapPoint instanceof SnapPoint) {
-				for (const snappable of snapPoint.snappables) {
-					// snappable.opened is for valves
-					if(snappable instanceof Pipe && snappable.opened) {
+				for (const pipe of snapPoint.attachments) {
+					// pipe.opened is for valves
+					if(pipe instanceof Pipe && pipe.opened) {
 
 						let drop = null;
-						let firstFluid = this.getFirstAccessibleFluid(snappable, snapPoint);
+						let firstFluid = this.getFirstAccessibleFluid(pipe, snapPoint);
+
+						// is the direction of the pipe facing away from the tank
+						let isFacingAway = (snapPoint.side === pipe.direction)
 
 						// get a drop from the tank
-						if(firstFluid) {
-							console.log(firstFluid);
+						if(firstFluid && isFacingAway) {
 
-							let dropSize = snappable.getDropSize()
-							//console.log(dropSize);
+							if(this._temp) {
+								this._temp
+									.attr("width", firstFluid.width)
+									.attr("height", firstFluid.height)
+									.attr("x", firstFluid.position.x)
+									.attr("y", firstFluid.position.y)
+							} else {
+								this._temp = d3.select("[name='debug']")
+									.append("rect")
+									.style("fill-opacity", 0)
+									.style("stroke", "black")
+									.attr("width", firstFluid.width)
+									.attr("height", firstFluid.height)
+									.attr("x", firstFluid.position.x)
+									.attr("y", firstFluid.position.y)
+							}
+
+
+							let dropSize = pipe.getDropSize()
 							drop = firstFluid.removeDrop(dropSize)
 
 							if(drop) {
@@ -371,14 +473,14 @@ export default class Tank extends Snappable2 {
 
 						// if pipe is there, move the drop to the pipe
 						if(drop) {
-							console.log(snappable);
-							console.log(snapPoint);
-							drop.position = snappable.getDropStartPoint(snapPoint, drop);
+							//console.log(pipe);
+							//console.log(snapPoint);
+							drop.position = pipe.getDropStartPoint(snapPoint, drop);
 							drop.stepAlongPath = 0;
 
 							// create the drop in the world and add it to the respective pipe
-							drop.direction = snappable.direction;
-							snappable.addDrop(drop);
+							drop.direction = pipe.direction;
+							pipe.addDrop(drop);
 						}
 					}
 				}
@@ -417,7 +519,7 @@ export default class Tank extends Snappable2 {
 	getFirstAccessibleFluid(pipe, snapPoint) {
 		let isDown = (snapPoint.axis === "y" && (snapPoint.point.y > this.position.y))
 
-		let lastFluid = this._fluidBodies[this._fluidBodies.length - 1];
+		let lastFluid = this._fluidBodies[0];
 		// get the last 
 		if(isDown && !(lastFluid.fluid instanceof EmptyFluid)) {
 			return lastFluid;
@@ -428,7 +530,7 @@ export default class Tank extends Snappable2 {
 		for (const fluidBody of this._fluidBodies) {
 			if(
 				!(fluidBody.fluid instanceof EmptyFluid) && 
-				pipe.rect.withinYRange(fluidBody.rect) 
+				pipe.boundingBox.withinYRange(fluidBody) 
 			) {
 				return fluidBody;
 			}
@@ -461,13 +563,17 @@ export default class Tank extends Snappable2 {
 
 			// if it doesn't exist add it
 			if(i >= this._fluidBodies.length) {
-				let newFluid = new ContainerFluidBody(this._svg.fluids, {x: 0, y: 0}, drop.volume, drop.fluid);
-				newFluid.create();
+				let newFluid = new ContainerFluidBody(
+					d3.select("[name='fluids']"), {x: 0, y: 0},
+					this._interior.width, drop.volume / this._interior.width, 
+					drop.volume, drop.fluid
+				);
 				newFluid.container = this;
+				newFluid.create();
 				this._fluidBodies.push(newFluid);
 				this._fluidBodies = this._fluidBodies.sort((a, b) => a.fluid.density - b.fluid.density) 
 			} else { // otherwise combine the new fluid with the existing one
-				this._fluidBodies[i].volume += drop.volume
+				this._fluidBodies[i].volume += drop.volume				
 			}
 		}
 			
@@ -536,23 +642,14 @@ export default class Tank extends Snappable2 {
 
 
 
-	/**
-	 * moveRelativeToCenter()
-	 * @description moves the Snappable relative to it's center
-	 * @param point point to move to
-	 */
-	moveRelativeToCenter(point) {
-		super.moveRelativeToCenter(point)
-
-		this.updateFluidBodies()
-	}
+	
 
 	/**
 	 * getUpY()
 	 * @description get the y value for the top of the tank, below the inner wall
 	 */
 	getUpY() {
-		return this._position.y + this._wallWidth;
+		return this._boundingBox.y + this._wallWidth;
 	}
 
 	/**
@@ -560,7 +657,7 @@ export default class Tank extends Snappable2 {
 	 * @description get the y value for the bottom of the tank, below the inner wall
 	 */
 	getDownY() {
-		return this._position.y + this._interior.height + this._wallWidth;
+		return this._boundingBox.y + this._boundingBox.height - this._wallWidth;
 	}
 
 
@@ -602,7 +699,7 @@ export default class Tank extends Snappable2 {
 	 * @returns the width of the tank
 	 */
 	get width() {
-		return this._interior.width + this._wallWidth * 2;
+		return this._boundingBox.width;
 	}
 
 	/**
@@ -611,8 +708,26 @@ export default class Tank extends Snappable2 {
 	 * @returns height of the tank
 	 */
 	get height() {
-		return this._interior.height + this._wallWidth * 2;
+		return this._boundingBox.height;	
 	}
+
+
+	/**
+	 * get interiorWidth()
+	 * @description gets the interior width of the tank
+	 */
+	get interiorWidth() {
+		return this._boundingBox.width - this._wallWidth * 2;
+	}
+
+	/**
+	 * get interiorWidth()
+	 * @description gets the interior width of the tank
+	 */
+	get interiorHeight() {
+		return this._boundingBox.height - this._wallWidth * 2;
+	}
+
 
 
 	
