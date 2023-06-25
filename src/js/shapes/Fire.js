@@ -1,23 +1,30 @@
 import * as d3 from "d3"
 import { rotatePoints } from "./Point";
 
-export default class Arrow {
+export default class Fire {
 
     /**
      * contructor()
-     * @description constructs the arrow
-     * @param {Layer} layer the layer that the arrow is drawn to
-     * @param {Number} radius the radius of the arrow
-     * @param {Number} center the center of the arrow
+     * @description constructs the fire
+     * @param {Layer} layer the layer that the fire is drawn to
+     * @param {Number} position the position of the fire
+     * @param {Number} width the width of the fire
+     * @param {Number} height the height of the fire
+     * @param {Number} min the minimum height of the fire
+     * @param {Number} max the maximum height of the fire
      */
-    constructor(layer, radius, center) {
-        this._radius = radius;
-        this._center = center;
+    constructor(layer, position, width, height, max, min, offset, flameCount) {
+        this._width = width;
+        this._height = height;
+        this._min = min;
+        this._max = max;
+        this._flameCount = flameCount;
+        this._position = position;
         this._points = [];
-        this._layer = layer; // the layer the arrow is drawn to
+        this._layer = layer; // the layer the fire is drawn to
 
         this._fill = {
-            color: "red",
+            color: "orange",
             opacity: 1
         }
 
@@ -27,14 +34,33 @@ export default class Arrow {
             opacity: 0
         }
 
-        let angle = 360 / 3
+        let flameRadius = this._width / this._flameCount
 
-		for (let i = 0; i < 3; i++) {
-			this._points.push({
-				x: this._center.x + this._radius * Math.cos((i * angle) * Math.PI / 180), 
-				y: this._center.y + this._radius * Math.sin((i * angle) * Math.PI / 180)
+        this._points.push({
+            x: this._position.x,
+            y: this._position.y + this._max + offset
+        })
+
+        for(let j = 1; j < this._flameCount; j++) {    
+            this._points.push({
+                x: this._position.x + j * flameRadius, 
+                y: this._position.y + (((j % 2) === 0) ? this._max : this._min)
             })
-		}
+        }
+
+        this._points.push({
+            x: this._position.x + this._width,
+            y: this._position.y + this._max + offset
+        })
+
+
+
+        d3.select("[name='debug']")
+            .append("circle")
+            .style("fill", "blue")
+                .attr("r", 3)
+                .attr("cx", this._position.x)
+                .attr("cy", this._position.y)
     }
 
 
@@ -115,10 +141,10 @@ export default class Arrow {
      * @param {Number} deltaY the difference in y to move the arrow
      */
     moveBy(deltaX, deltaY) {
-        this._center.x += deltaX;
-        this._center.y += deltaY;
+        //this._center.x += deltaX;
+        //this._center.y += deltaY;
 
-		for (let i = 0; i < 3; i++) {
+		for (let i = 0; i < this._points.length; i++) {
 			this._points[i].x += deltaX;
 			this._points[i].y += deltaY;
 		}

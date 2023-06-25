@@ -24,7 +24,7 @@ import SnapPoint from "../SnapPoint";
 import Snappable2 from "../Snappable2";
 import Rect from "../../shapes/Rect";
 import * as d3 from "d3"
-import { getNextSide, getOpposite } from "../../util";
+import { getNextSide, getRandomInt } from "../../util";
 import { rotatePoint } from "../../shapes/Point";
 
 export default class Tank extends Snappable2 {
@@ -161,7 +161,7 @@ export default class Tank extends Snappable2 {
 	 * @param {Pair} pair the pair of objects being snapped 
 	 * @param {Rect} movingObject the object being moved
 	 */
-	snapAdjustments(pair, fixedObject) {
+	snapAdjustments(pair) {
 		if(pair.fixed.side === "left" && pair.fixed.point.x < this.center.x) {
 			this.moveBy({
 				x: -this.boundingBox.width,
@@ -206,6 +206,7 @@ export default class Tank extends Snappable2 {
 
 		this.createGraphics();
 
+		this._emptyFluid.stroke.opacity = 1;
 		this._emptyFluid.create();
 		this._emptyFluid.update();
 
@@ -222,7 +223,7 @@ export default class Tank extends Snappable2 {
 			this.height
 		)
 		this._boundingBox.fill.opacity = 0
-		this._boundingBox.stroke.opacity = 1;
+		this._boundingBox.stroke.opacity = 0;
 
 		this._boundingBox.create();
 		this._objectGroup.add(this._boundingBox);
@@ -443,24 +444,6 @@ export default class Tank extends Snappable2 {
 						// get a drop from the tank
 						if(firstFluid && isFacingAway) {
 
-							if(this._temp) {
-								this._temp
-									.attr("width", firstFluid.width)
-									.attr("height", firstFluid.height)
-									.attr("x", firstFluid.position.x)
-									.attr("y", firstFluid.position.y)
-							} else {
-								this._temp = d3.select("[name='debug']")
-									.append("rect")
-									.style("fill-opacity", 0)
-									.style("stroke", "black")
-									.attr("width", firstFluid.width)
-									.attr("height", firstFluid.height)
-									.attr("x", firstFluid.position.x)
-									.attr("y", firstFluid.position.y)
-							}
-
-
 							let dropSize = pipe.getDropSize()
 							drop = firstFluid.removeDrop(dropSize)
 
@@ -487,6 +470,46 @@ export default class Tank extends Snappable2 {
 			}
 		}
 	}
+
+
+	/**
+	 * heatLiquids() 
+	 * @description heats the liquids in the tank
+	 */
+	heatLiquids(world) {
+		// whenever a liquid is heated it will sometimes produce a drop 
+		/*let dropX = getRandomInt(0, this.width)
+		let dropSize = 5;
+		let firstFluid = this._fluidBodies[0];
+		let drop = firstFluid.removeDrop(dropSize);
+
+		if(drop) {
+			this.removeVolumelessFluids()
+			this._emptyFluid.addDrop(drop.size)
+			this.updateFluidBodies();
+			drop.position.x = dropX;
+			drop.heat(5);
+			drop.direction = "up"
+			
+			world.addDrop(drop)
+		}*/
+
+		if(this._emptyFluid.volume > 0) {
+			for (const fluid of this._fluidBodies) {
+				
+				if(!(fluid.fluid instanceof EmptyFluid)) { 
+					console.log(fluid.fluid);
+					let lastVolume = fluid.volume;
+					fluid.expand(1.0005);
+					let diffVolume = fluid.volume - lastVolume;
+					this._emptyFluid.volume -= diffVolume;
+				}
+			}
+			this.updateFluidBodies();
+		}
+		
+	}
+
 
 	/**
 	 * getEmptyFluid() 

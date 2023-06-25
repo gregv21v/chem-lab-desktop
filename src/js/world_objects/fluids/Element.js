@@ -4,7 +4,7 @@ import Drop from "./Drop";
 /**
  * Fluid - a fluid is a gas or a liquid
  */
-export default class Fluid {
+export default class Element {
     /**
      * constructor()
      * @description constructs the fluid
@@ -13,7 +13,7 @@ export default class Fluid {
      * @param {Number} volume the volume of the fluid
      * @param {Color} color the color of the fluid
      */
-    constructor(name, density, heatedDensityMultiplier, color) {
+    constructor(name, density, color) {
         this._color = color;
         this._name = name;
         this._density = density;

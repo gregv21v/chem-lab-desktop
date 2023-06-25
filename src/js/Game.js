@@ -22,6 +22,7 @@ import ElbowPipe from "./world_objects/pipes/ElbowPipe"
 import Rect from "./shapes/Rect"
 import { rotatePoints } from "./shapes/Point"
 import Group from "./shapes/Group"
+import Heater from "./world_objects/Heater"
 
 
 export default class Game {
@@ -92,10 +93,10 @@ export default class Game {
         .style("fill", "red")*/ 
 
     // add fluids to the fluid registery for use later
-    FluidRegistry.register(new Fluid("Water", 2, {red: 0, green: 0, blue: 200, alpha: 255}))
+    FluidRegistry.register(new Fluid("Water", 2, -3, {red: 0, green: 0, blue: 200, alpha: 255}))
     //FluidRegistry.register(new Fluid("Smoke", -1, {red: 142, green: 140, blue: 145, alpha: 255}))
-    FluidRegistry.register(new Fluid("Dust", 5, {red: 173, green: 161, blue: 113, alpha: 255}))
-    FluidRegistry.register(new Fluid("Magma", 1, {red: 255, green: 0, blue: 0, alpha: 255}))
+    FluidRegistry.register(new Fluid("Dust", 5, -1, {red: 173, green: 161, blue: 113, alpha: 255}))
+    FluidRegistry.register(new Fluid("Magma", 1, -1, {red: 255, green: 0, blue: 0, alpha: 255}))
     //FluidRegistry.register(new Fluid("Nitrogen Gas", -2, {red: 0, green: 0, blue: 100, alpha: 255}))
 
     // setup the player 
@@ -122,6 +123,7 @@ export default class Game {
         },
         20, 10, 5
     ));*/
+    this._hud.inventory.add(new Heater(this._layers[1], {x: 0, y: 0}, 40, 20));
     this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 100}, 5));
     this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 100}, 5));
     this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 50, height: 50}, 5));

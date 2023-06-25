@@ -19,6 +19,7 @@ export default class Drop extends FluidBody {
   constructor(layer, position, velocity, size, fluid) {
     super(layer, position, size, size, velocity, size * size, fluid)
     this._size = size;
+    this._tempature = 0;
 
     /**
      * Will be removed in favor of velocity
@@ -168,6 +169,25 @@ export default class Drop extends FluidBody {
     } else {
       this.direction = directions[(index - 1) % directions.length]
     }
+  }
+
+
+  /**
+   * heat()
+   * @description heats the drop
+   * @param {Number} amount the amount to increase the drops tempature by
+   */
+  heat(amount) {
+    this._tempature += amount;
+  }
+
+  /**
+   * cool()
+   * @description cools the drop
+   * @param {Number} amount the amount to decrease the drops tempature by
+   */
+  cool(amount) {
+    this._tempature -= amount;
   }
 
 

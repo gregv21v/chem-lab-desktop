@@ -35,6 +35,7 @@ export default class Pipe extends Snappable2 {
 		this._position = center
 		//this.center = center; // position of pipe
 		this._width = length;
+		this._height = interiorHeight + wallWidth * 2;
 		this._opened = true;
 
 		this._drops = [];
@@ -53,51 +54,53 @@ export default class Pipe extends Snappable2 {
 	 */ 
 	createSnapPoints() {
 		this._snapWidth = 20;
-
-		// end
-		let start = new SnapPoint(
-			{
-				x: this.position.x - this._snapWidth,
-				y: 0
-			},
-			this._snapWidth,
-			this.height,
-			{
-				x: this.position.x, 
-				y: this.position.y + this.height / 2
-			},
-			"x",
-			"left"
-		)
-		start.fill.opacity = 0.5;
-		start.stroke.opacity = 0;
-		start.fill.opacity = 0;
-		start.fill.color = "orange"
-		start.create();
-		this._objectGroup.add(start);
+		this._snapPoints = [];
 
 		// start
-		let end = new SnapPoint(
-			{
-				x: this.position.x + this.width,
-				y: 0
-			},
-			this._snapWidth,
-			this.height,
-			{
-				x: this.position.x + this.width,
-				y: this.position.y + this.height / 2
-			},
-			"x",
-			"right"
+		this._snapPoints.push(
+			new SnapPoint(
+				{
+					x: this.position.x - this._snapWidth,
+					y: 0
+				},
+				this._snapWidth,
+				this.height,
+				{
+					x: this.position.x, 
+					y: this.position.y + this.height / 2
+				},
+				"x",
+				"left"
+			)
 		)
-		end.fill.opacity = 0.5;
-		end.stroke.opacity = 0;
-		end.fill.opacity = 0;
-		
-		end.fill.color = "orange"
-		end.create();
-		this._objectGroup.add(end);
+		this._snapPoints[0].stroke.opacity = 0;
+		this._snapPoints[0].fill.opacity = 0;
+		this._snapPoints[0].fill.color = "orange"
+		this._snapPoints[0].create();
+		this._objectGroup.add(this._snapPoints[0]);
+
+		// end
+		this._snapPoints.push(
+				new SnapPoint(
+				{
+					x: this.position.x + this.width,
+					y: 0
+				},
+				this._snapWidth,
+				this.height,
+				{
+					x: this.position.x + this.width,
+					y: this.position.y + this.height / 2
+				},
+				"x",
+				"right"
+			)
+		)
+		this._snapPoints[1].stroke.opacity = 0;
+		this._snapPoints[1].fill.opacity = 0;
+		this._snapPoints[1].fill.color = "orange"
+		this._snapPoints[1].create();
+		this._objectGroup.add(this._snapPoints[1]);
 
 		
 
@@ -121,22 +124,35 @@ export default class Pipe extends Snappable2 {
    	 * @description transfers liquid to connected tanks
   	 */
   	transferLiquid() {
-		for (const snapPoint of this._objectGroup.objects) {
-			if(snapPoint instanceof SnapPoint) {
-				console.log(snapPoint);
-				for (const tank of snapPoint.attachments) {
-					if(tank instanceof Tank) {
-						let exitingDrops = this.takeExitingDrops(snapPoint); // take the exiting drops
-						for(const drop of exitingDrops) {
-							tank.addDrop(drop);
-							drop.destroy()
-							tank.updateFluidBodies()
-						}
-					}
+		// go through all the attachments for all the pipes
+		// get the existing drops 
+		let exitingDrops = this.takeExitingDrops();
+		//console.log(exitingDrops);
+
+		let snapPoints = {
+			left: this._snapPoints.find(snapPoint => snapPoint.side === "left"),
+			right: this._snapPoints.find(snapPoint => snapPoint.side === "right"),
+			up: this._snapPoints.find(snapPoint => snapPoint.side === "up"),
+			down: this._snapPoints.find(snapPoint => snapPoint.side === "down")
+		}
+
+		//console.log(snapPoints);
+
+		// find the exiting tank
+		for (const drop of exitingDrops) {
+			if(snapPoints[drop.direction] && snapPoints[drop.direction].attachments.length > 0) {
+				let tank = snapPoints[drop.direction].attachments[0];
+				if(tank instanceof Tank) {
+					tank.addDrop(drop);
+					drop.destroy();
+					tank.updateFluidBodies();
 				}
+			} else {
+				this._drops.push(drop);
 			}
 		}
   	}
+
 
 	
 
@@ -152,7 +168,7 @@ export default class Pipe extends Snappable2 {
 	 * takeExitingDrops()
 	 * @description takes the exiting drops from the pipe
 	 */
-	takeExitingDrops(snapPoint) {
+	takeExitingDrops() {
 
 		// search for available drops
 		var exitingDrops = []; // drops at their exit.
@@ -207,12 +223,12 @@ export default class Pipe extends Snappable2 {
 	createGraphics() {
 		this._boundingBox = new Rect(
 			d3.select('[name="debug"]'),
-			{...this.position},
-			this.width,
-			this.height
+			{...this._position},
+			this._width,
+			this._height
 		)
 		this._boundingBox.fill.opacity = 0
-		this._boundingBox.stroke.opacity = 1;
+		this._boundingBox.stroke.opacity = 0;
 		this._boundingBox.create();
 		this._objectGroup.add(this._boundingBox);
 
@@ -255,7 +271,6 @@ export default class Pipe extends Snappable2 {
 		this._arrow.stroke.color = "red"
 		this._arrow.stroke.opacity = 1;
 		this._arrow.fill.opacity = 0;
-		this._arrow.rotate(45)
 		this._arrow.create();
 		this._objectGroup.add(this._arrow)
 
@@ -281,9 +296,6 @@ export default class Pipe extends Snappable2 {
 		this._rotation = (this._rotation + 90) % 360
 	
 		let directions = ["left", "up", "right", "down"]
-
-		let center = this._boundingBox.center;
-		this._position = rotatePoint(this._position, center, 90);
 
 		this._direction = directions[360 / this._rotation]
 		console.log(this._direction);
@@ -420,11 +432,7 @@ export default class Pipe extends Snappable2 {
 	 * @returns the height of the pipe
 	 */
 	get height() {
-		if(this.rotation === 0) {
-			return this._interiorHeight + this._wallWidth * 2;
-		} else {
-			return this._width;
-		}
+		return this._boundingBox.height;
 	}
   
 	/**
@@ -432,11 +440,7 @@ export default class Pipe extends Snappable2 {
 	 * @returns the width of the pipe
 	 */
 	get width() {
-		if(this.rotation === 0) {
-			return this._width;
-		} else {
-			return this._interiorHeight + this._wallWidth * 2;
-		}
+		return this._boundingBox.width;
 	}
 
 

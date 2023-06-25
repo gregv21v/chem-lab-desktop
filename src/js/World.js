@@ -2,7 +2,6 @@
 	The world contains all the game objects.
 */
 import Pipe from "./world_objects/pipes/Pipe";
-import Snappable from "./world_objects/Snappable";
 import Rect from "./shapes/Rect";
 import Tank from "./world_objects/tanks/Tank";
 import { Distance } from "./shapes/Point"
@@ -11,6 +10,7 @@ import * as d3 from "d3"
 import GameObject from "./world_objects/GameObject";
 import Snappable2 from "./world_objects/Snappable2";
 import Pump from "./world_objects/Pump";
+import Heater from "./world_objects/Heater";
 
 export default class World {
 	constructor(game, player, position, width, height) {
@@ -32,6 +32,9 @@ export default class World {
 		this.objs = [];
 		this.lines = []
 		this._snappedPair = null;
+
+
+		
 		
 
 		let mainSVG = d3.select("svg");
@@ -68,9 +71,11 @@ export default class World {
 			!this._game.hud.inventory.contains({x: evnt.clientX, y: evnt.clientY}))
 		{
 
+			
+
 			// Move the object to the world
 			if(this.player.hand) {
-				if(this._snappedPair) {
+				if(this._fixedSnappable) {
 					// get the snap point on the object that is moving
 					this._snappedPair.fixed.attach(this.player.hand);
 					this._snappedPair.moving.attach(this._fixedSnappable);
@@ -80,10 +85,16 @@ export default class World {
 				//if(!(this.player.hand instanceof Pump))
 					//this.player.hand.showSnapAreas()
 				this.add(this.player.hand);
-				
 				this.player.hand = null; // empty hand
+				this._fixedSnappable = null;
+				this.update();
 			}
 
+		}
+
+		console.log("Objects --------------------------------");
+		for (const obj of this.objs) {
+			console.log(obj);
 		}
 	}
 
@@ -107,6 +118,7 @@ export default class World {
 					.attr("y2", mousePos.y)
 			}*/
 
+			
 			if(!this.player.hand instanceof Pump) {
 				this.player.hand.moveTo({
 					x: mousePos.x - this.player.hand.boundingBox.width / 2,
@@ -168,15 +180,12 @@ export default class World {
 
 
 		if(pair.fixed) {
-			console.log("fixed", pair.fixed.side);
-			console.log("moving", pair.moving.side);
-			console.log("movingObject", movingObject);
 			movingObject.moveBy({
 				x: (pair.fixed.axis === "x") ? pair.fixed.point.x - movingObject.position.x: 0,
 				y: (pair.fixed.axis === "y") ? pair.fixed.point.y - movingObject.position.y: 0
 			})
 			
-			movingObject.snapAdjustments(pair, fixedObject);
+			movingObject.snapAdjustments(pair);
 
 			this._snappedPair = pair;
 		}
@@ -261,12 +270,12 @@ export default class World {
 			this.drops[i].update(this);
 		}
 
-		let pipes = this.findPipes();
-
 		// Move fluid drops through pipes
 		/*for(const pipe of pipes) {
 			pipe.updateDrops();
 		}*/
+
+
 
 		for(const obj of this.objs) {
 			if(obj instanceof Pipe || obj instanceof Tank) {
@@ -274,6 +283,10 @@ export default class World {
 					obj.updateDrops();
 				}
 				obj.transferLiquid();
+			}
+
+			if(obj instanceof Heater) {
+				obj.heat(this);
 			}
 
 			

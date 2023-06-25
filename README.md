@@ -66,9 +66,10 @@ This game is in early alpha, so expect bugs
 - Add fluid "shaders" that make lower density fluids appear more like smoke, and vis versa for denser fluids 
 - Make it so that you can move game objects
 - Add the ability to rotate tanks
+- Allow evaporation effect 
 
 
 <strong>Current Issue</strong>
-I redid the snapping system. Now there is an issue when snapping to the bottom and top edge of a tank. I'm trying to get it so that you can snap one snap point to another. So you need to find the two closest snap points together then set the distance between them to zero. You should still be able to move the object along the axis it is aligned to
+If you rotate a pipe two times near a tank then place that pipe it will attach to the side it was snapping to before you rotated it instead of the opposite side like its suppose to
 
 

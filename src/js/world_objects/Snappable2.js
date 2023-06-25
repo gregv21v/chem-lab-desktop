@@ -337,9 +337,10 @@ export default class Snappable2 extends Rect {
   }
 
   /**
-   * getSnapPointCenter() 
-   * @description gets the center of a snap point. This is the point along the 
-   *  edge of a snappable where two points snap
+   * getDropStartPoint() 
+   * @param {SnapPoint} snapPoint the snap point to start the drop at 
+   * @param {Drop} drop the drop to start
+   * @description gets the point where a drop starts in a pipe. 
    */
   getDropStartPoint(snapPoint, drop) {
     let point = {

@@ -24,7 +24,6 @@ export default class ContainerFluidBody extends FluidBody {
     create() {
         super.create();
         this.fill.color = this._fluid.getColorAsString()
-        this.stroke.opacity = 0;
         this.update();  
     }
 
@@ -69,6 +68,18 @@ export default class ContainerFluidBody extends FluidBody {
             return newDrop;
         }
 	}
+
+    /**
+     * expand()
+     * @description expands the fluid due to tempature. Use a fraction to contract the fluid
+     * @param {Number} amount amount to expand
+     */
+    expand(amount) {
+        this._volume = this._volume * amount;
+    }
+
+
+   
 
     /**
      * addDrop()
