@@ -15,7 +15,7 @@ export class HUD {
         this._player = player;
         this._game = game;
 
-        this._inventory = new Inventory(game.layers[0], player, {x: 20, y: 45}, 250, game.height - 60);
+        this._inventory = new Inventory(game.layers[0], player, {x: 20, y: 20}, 275, game.height - 30);
 
         /*this._credits = new ValueBox({x: 20, y: 20}, 250, 25);
         this._credits.create(svg)

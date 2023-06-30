@@ -24,6 +24,9 @@ export default class CrossPipe extends Pipe {
         this._position = position
   
         this._drops = [];
+        this._description = [
+          "Pipe that is shaped like a cross"
+        ]
     }
   
   

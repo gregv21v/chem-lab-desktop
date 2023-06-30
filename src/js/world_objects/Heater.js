@@ -21,6 +21,12 @@ export default class Heater extends Snappable2 {
 
         this._isOn = true;
         this._tempature = 5;
+        this._description = [
+            "Heaters heat the",
+            "fluids in",  
+            "tanks causing the",
+            "liquids to expand"
+        ]
     }
 
 
@@ -224,6 +230,17 @@ export default class Heater extends Snappable2 {
     get height() {
         return this._height;
     };
+
+
+
+    /**
+     * get description()
+     * @description the description of what the object does
+     *
+     */
+    get description() {
+        return this._description;
+    }
 }
 
 

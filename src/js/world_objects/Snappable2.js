@@ -442,4 +442,13 @@ export default class Snappable2 extends Rect {
 		return this._boundingBox;
 	}
 
+
+  /**
+   * get description()
+   * @description gets the description
+   */
+  get description() { 
+    return this._description;
+  }
+
 }

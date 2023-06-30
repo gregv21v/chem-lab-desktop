@@ -106,7 +106,7 @@ export default class Game {
     
 
     // setup the world
-    this._world = new World(this, this._player, {x: 270, y: 20}, this._width - (270 + 400), this._height - 30)
+    this._world = new World(this, this._player, {x: 310, y: 20}, this._width - (310 + 400), this._height - 30)
     this._world.create()
 
     // setup the HUD
@@ -134,8 +134,8 @@ export default class Game {
     this._hud.inventory.add(new Pipe(this._layers[1], {x: 0, y: 0}, 50, 10, 5));
     this._hud.inventory.add(new Pump(this._layers[1], this._world, {x: 0, y: 0}, 15));
     this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, false))
-    //this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
-    //this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
     this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
     /*this._hud.inventory.add(new ElbowPipe(
       this._layers[1],

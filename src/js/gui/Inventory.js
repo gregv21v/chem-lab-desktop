@@ -14,8 +14,6 @@
 
 */
 import Slot from "./Slot";
-import Rect from "../shapes/Rect";
-import * as d3 from "d3"
 import ScrollableContainer from "./ScrollableContainer";
 
 export default class Inventory extends ScrollableContainer {
@@ -33,7 +31,7 @@ export default class Inventory extends ScrollableContainer {
 		super(layer, position, width, height)
 
 		this.player = player; // the player the inventory belongs to 
-		this.slotHeight = 60; // the height of the slots 
+		this.slotHeight =75; // the height of the slots 
 
 		this.objs = []; // the GameObjects in the inventory
 		this.slots = []; // the Slots that the GameObjects fit in
@@ -46,6 +44,8 @@ export default class Inventory extends ScrollableContainer {
 	 */
 	create() {
 		super.create();
+
+		
 	}
 
 	/**
@@ -93,6 +93,7 @@ export default class Inventory extends ScrollableContainer {
 
 		newSlot.name = this.objs[index].name;
 		newSlot.setDimensions(this.objs[index].width, this.objs[index].height);
+		newSlot.description = this.objs[index].description;
 		newSlot.index = index;
 
 		return newSlot;

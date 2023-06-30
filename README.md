@@ -67,6 +67,9 @@ This game is in early alpha, so expect bugs
 - Make it so that you can move game objects
 - Add the ability to rotate tanks
 - Allow evaporation effect 
+- give some indication when one object is snapped to another
+- Make it so that fluids enter pipes starting from the bottom, then going from left to right. The top is last.
+- Fluids should entered the pipe one drop at a time, and the drops should not overlap
 
 
 <strong>Current Issue</strong>

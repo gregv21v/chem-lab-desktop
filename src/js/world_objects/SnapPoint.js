@@ -67,7 +67,7 @@ export default class SnapPoint extends Rect {
         this._point.y += deltaY
 
         
-        if(this._debug) {
+        /*if(this._debug) {
             this._debug
                 .attr("cx", this._point.x)
                 .attr("cy", this._point.y)
@@ -78,7 +78,7 @@ export default class SnapPoint extends Rect {
                     .attr("cy", this._point.y)
                     .attr("r", 2)
                     .style("fill", "red")
-        }
+        }*/
         
         
     }

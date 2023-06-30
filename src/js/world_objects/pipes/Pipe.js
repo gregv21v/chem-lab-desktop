@@ -44,6 +44,12 @@ export default class Pipe extends Snappable2 {
 		this._rotation = 0;
 		this._direction = "left"
 
+		this._description = [
+			"Pipes move fluid from one ",
+			"tank to another depending on", 
+			"the direction of the arrow"
+		]
+
 		//this.updatePosition();
 
   	}

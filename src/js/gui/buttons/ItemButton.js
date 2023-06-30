@@ -15,6 +15,7 @@
   Liquid: Water
 
 */
+import MultiLineText from "../MultiLineText";
 import Button from "./Button"
 import * as d3 from "d3"
 
@@ -33,6 +34,7 @@ export default class ItemButton extends Button {
 
     this._nameText = "Item"
     this._dimensionsText = "A X B"
+    this._descriptionText = ["This item does", "such and such."]
     this._FluidTypeText = "Water"
     this._isFluid = false;
   }
@@ -50,13 +52,22 @@ export default class ItemButton extends Button {
 
     let self = this;
 
+    let descriptionTemp = new MultiLineText(
+      this._group, this._descriptionText, 
+      {x: this._position.x + 40 + 40, y: this._position.y + 20}
+    )
+    descriptionTemp.create();
+
     this._svg = {
   		rect: this._group.append("rect"),
       name: this._group.append("text"),
       dimensions: this._group.append("text"),
+      description: descriptionTemp,
       fluidType: this._group.append("text"),
       clickBox: this._group.append("rect"),
     }
+
+    
 
     this._group.attr("name", "ItemButton")
     this._svg.rect.attr("name", "rect")
@@ -86,20 +97,24 @@ export default class ItemButton extends Button {
   /**
 		createTextSVG()
 		@description creates the text svg for the itemButton
-		@param svgMain the main svg canvas
 	*/
-  createTextSVG(svgMain) {
+  createTextSVG() {
 
     // add name text
     this._svg.name.attr("x", this._position.x + 10);
   	this._svg.name.attr("y", this._position.y + 20);
     this._svg.name.text(this._nameText)
 
-
     // add dimensions text
     this._svg.dimensions.attr("x", this._position.x + 10);
   	this._svg.dimensions.attr("y", this._position.y + 40);
     this._svg.dimensions.text(this._dimensionsText)
+
+
+    // add description text 
+    this._svg.description.position = {
+      x: this._position.x + 40 + 40, y: this._position.y + 20
+    }
 
     // add liquid type text
     if(this._isFluid) {
@@ -140,6 +155,16 @@ export default class ItemButton extends Button {
   	this._svg.dimensions.text(width + "X" + height);
   	this._dimensionsText = width + "X" + height;
   };
+
+  /**
+		set description()
+		@description sets the description of the item button
+    @param {String} description description to be set to
+	*/
+  set description(value) {
+    this._svg.description.text = value;
+    this._descriptionText = value;
+  }
 
 
   /**
@@ -206,6 +231,11 @@ export default class ItemButton extends Button {
     // add dimensions text
     this._svg.dimensions.attr("x", this._position.x + 10);
   	this._svg.dimensions.attr("y", this._position.y + 40);
+
+    // add description text 
+    this._svg.description.position = {
+      x: this._position.x + 40 + 40, y: this._position.y + 20
+    }
 
     // add liquid type text
     if(this._isFluid) {

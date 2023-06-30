@@ -76,6 +76,9 @@ export default class Tank extends Snappable2 {
 			this._emptyFluid	
 		] 
 
+		this._description = [
+			"Holds fluids"
+		]
 		
 		this.createSnapPoints();
 		
@@ -206,7 +209,7 @@ export default class Tank extends Snappable2 {
 
 		this.createGraphics();
 
-		this._emptyFluid.stroke.opacity = 1;
+		this._emptyFluid.stroke.opacity = 0;
 		this._emptyFluid.create();
 		this._emptyFluid.update();
 
@@ -472,6 +475,9 @@ export default class Tank extends Snappable2 {
 	}
 
 
+	
+
+
 	/**
 	 * heatLiquids() 
 	 * @description heats the liquids in the tank
@@ -662,8 +668,6 @@ export default class Tank extends Snappable2 {
 
 		this.updateFluidBodies();**/
 	};
-
-
 
 	
 

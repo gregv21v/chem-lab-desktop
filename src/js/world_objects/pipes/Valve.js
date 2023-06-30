@@ -23,6 +23,10 @@ export default class Valve extends Pipe {
 
     this._interiorHeight = interiorHeight;
     this._wallWidth = wallWidth;
+
+    this._description = [
+      "Valves control the flow of fluids"
+    ]
   }
 
   create() {
