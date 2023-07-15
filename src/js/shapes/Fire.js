@@ -1,7 +1,8 @@
 import * as d3 from "d3"
 import { rotatePoints } from "./Point";
+import Shape from "./Shape";
 
-export default class Fire {
+export default class Fire extends Shape {
 
     /**
      * contructor()
@@ -9,17 +10,18 @@ export default class Fire {
      * @param {Layer} layer the layer that the fire is drawn to
      * @param {Number} position the position of the fire
      * @param {Number} width the width of the fire
-     * @param {Number} height the height of the fire
      * @param {Number} min the minimum height of the fire
      * @param {Number} max the maximum height of the fire
+     * @param {Number} offset basically how much shared height the fire has 
+     * @param {Number} flameCount the number of flames the fire has
      */
-    constructor(layer, position, width, height, max, min, offset, flameCount) {
+    constructor(layer, position, width, max, min, offset, flameCount) {
+        super(layer, position);
+
         this._width = width;
-        this._height = height;
         this._min = min;
         this._max = max;
         this._flameCount = flameCount;
-        this._position = position;
         this._points = [];
         this._layer = layer; // the layer the fire is drawn to
 
@@ -53,14 +55,6 @@ export default class Fire {
             y: this._position.y + this._max + offset
         })
 
-
-
-        d3.select("[name='debug']")
-            .append("circle")
-            .style("fill", "blue")
-                .attr("r", 3)
-                .attr("cx", this._position.x)
-                .attr("cy", this._position.y)
     }
 
 
@@ -152,6 +146,38 @@ export default class Fire {
 
 
     /**
+     * moveTo()
+     * @description moves the fire to point x, y
+     * @param {Number} x the x position to move to
+     * @param {Number} y the y position to move to
+     */
+    moveTo(x, y) {
+        let center = this.center;
+        for (const point of this._points) {
+            let delta = {
+                x: x - center.x,
+                y: y - center.y
+            }
+            point.x += delta.x;
+            point.y += delta.y;
+        }
+    }
+    
+    /**
+     * scale() 
+     * @description scales the fire
+     * @param {Number} amount the scale amount
+     */
+    scale(amount) {
+        this._points = this._points.map(point => {
+			return {
+				x: amount * (point.x - this.center.x) + this.center.x,
+				y: amount * (point.y - this.center.y) + this.center.y,
+			}
+		})
+    }
+
+    /**
 	 * set fill()
 	 * @description sets the fill of the arrow
 	 * @param {Object} value the object to set the fill to. The object has a color, and opacity values
@@ -185,13 +211,4 @@ export default class Fire {
 		return this._stroke
 	}
 
-
-    /**
-     * get center()
-     * @description gets the center
-     * @returns the center
-     */
-    get center() {
-        return this._center;
-    }
 }

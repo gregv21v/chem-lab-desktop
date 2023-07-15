@@ -15,6 +15,7 @@
   Liquid: Water
 
 */
+import Pump from "../../world_objects/Pump";
 import MultiLineText from "../MultiLineText";
 import Button from "./Button"
 import * as d3 from "d3"
@@ -56,6 +57,7 @@ export default class ItemButton extends Button {
       this._group, this._descriptionText, 
       {x: this._position.x + 40 + 40, y: this._position.y + 20}
     )
+
     descriptionTemp.create();
 
     this._svg = {
@@ -65,9 +67,9 @@ export default class ItemButton extends Button {
       description: descriptionTemp,
       fluidType: this._group.append("text"),
       clickBox: this._group.append("rect"),
+      thumbnail: undefined
     }
 
-    
 
     this._group.attr("name", "ItemButton")
     this._svg.rect.attr("name", "rect")
@@ -101,19 +103,20 @@ export default class ItemButton extends Button {
   createTextSVG() {
 
     // add name text
-    this._svg.name.attr("x", this._position.x + 10);
+    this._svg.name.attr("x", this._position.x + 70);
   	this._svg.name.attr("y", this._position.y + 20);
+    this._svg.name.style("font-size", "20px");
     this._svg.name.text(this._nameText)
 
     // add dimensions text
-    this._svg.dimensions.attr("x", this._position.x + 10);
+    this._svg.dimensions.attr("x", this._position.x + 70);
   	this._svg.dimensions.attr("y", this._position.y + 40);
     this._svg.dimensions.text(this._dimensionsText)
 
 
     // add description text 
     this._svg.description.position = {
-      x: this._position.x + 40 + 40, y: this._position.y + 20
+      x: this._position.x + 40 + 40, y: this._position.y + 20 + 60
     }
 
     // add liquid type text
@@ -133,6 +136,16 @@ export default class ItemButton extends Button {
    */
   set item(value) {
     this._item = value;
+
+
+    this._thumbnail = this._item.getThumbnail(
+      this._position.x + 10, this._position.y + 10, .5, this._group 
+    );
+
+    this._thumbnail.update();
+
+    console.log(this._thumbnail);
+
   }
 
   /**
@@ -224,23 +237,31 @@ export default class ItemButton extends Button {
 		this._position = value; 
 
 		// add name text
-    this._svg.name.attr("x", this._position.x + 10);
+    this._svg.name.attr("x", this._position.x + 10 + 60);
   	this._svg.name.attr("y", this._position.y + 20);
 
 
     // add dimensions text
-    this._svg.dimensions.attr("x", this._position.x + 10);
+    this._svg.dimensions.attr("x", this._position.x + 10 + 60);
   	this._svg.dimensions.attr("y", this._position.y + 40);
 
     // add description text 
     this._svg.description.position = {
-      x: this._position.x + 40 + 40, y: this._position.y + 20
+      x: this._position.x + 10 + 60, y: this._position.y + 60
     }
 
     // add liquid type text
     if(this._isFluid) {
-      this._svg.fluidType.attr("x", this._position.x + 10);
+      this._svg.fluidType.attr("x", this._position.x + 10 + 60);
     	this._svg.fluidType.attr("y", this._position.y + 60);
+    }
+
+    
+    if(this._thumbnail) {
+      this._thumbnail.moveTo(
+        this._position.x + 10 + this._thumbnail.width / 2, this._position.y + 10 + this._thumbnail.height / 2
+      )
+      this._thumbnail.update();
     }
 
     this._svg.clickBox.attr("x", this._position.x);

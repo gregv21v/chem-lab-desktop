@@ -20,6 +20,9 @@ import { getRandomInt } from "../util";
 import * as d3 from "d3"
 import Fluid from "./fluids/Fluid";
 import FluidRegistry from "./fluids/FluidRegistry";
+import Group from "../shapes/Group";
+import Circle from "../shapes/Circle";
+import Rect from "../shapes/Rect";
 
 export default class Pump extends GameObject {
 	/**
@@ -46,8 +49,8 @@ export default class Pump extends GameObject {
 		]
 
 		this._possibleFluids = [
-			new Fluid("Hydrogen", -1, this._production * this._production, {red: 0, green: 100, blue: 200, alpha: 100}),
-			//new Fluid("Oxygen", -1, this._production * this._production, {red: 142, green: 140, blue: 145, alpha: 100}),
+			new Fluid("Hydrogen", 2, this._production * this._production, {red: 0, green: 100, blue: 200, alpha: 100}),
+			new Fluid("Oxygen", 2, this._production * this._production, {red: 142, green: 140, blue: 145, alpha: 100}),
 			//new Fluid("Dust", 5, this._production * this._production, {red: 173, green: 161, blue: 113, alpha: 255}),
 			//new Fluid("Lava", 1, this._production * this._production, {red: 255, green: 0, blue: 0, alpha: 255}),
 		]
@@ -92,13 +95,44 @@ export default class Pump extends GameObject {
 	}
 
 
+
+	/**
+	 * createGraphics()
+	 * @description the group of that the graphic is attached to
+	 * @param {SVGGroup} svgGroup the svg group to add the graphic to
+	 */
+	createGraphics(svgGroup) {
+		let group = new Group();
+
+		let spout = new Rect(svgGroup, {
+			x: this._position.x - this._production / 2,
+			y: this._position.y + 10 - this._production / 2
+		}, this._production, this._production)
+
+		spout.fill.color = "blue";
+		spout.fill.opacity = 1;
+		spout.create();
+		group.add(spout);
+
+		let button = new Circle(svgGroup, this._position, 10)
+		button.fill.color = "red";
+		button.fill.opacity = 1;
+		button.create();
+		group.add(button);
+
+		
+
+		return group;
+	}
+
+
 	/**
 	 * produceDrop()
 	 * @description Creates a drop of liquid upon clicking the pump.
 	 * @param {World} world the world to produce the drop in
 	 */
 	produceDrop(world) {
-		let fluid = this._possibleFluids[0];
+		let fluid = this._possibleFluids[getRandomInt(0, this._possibleFluids.length)];
 		let size = getRandomInt(5, this._production)
 
 		let drop = new Drop(
@@ -196,6 +230,25 @@ export default class Pump extends GameObject {
 	 */
 	get description() {
 		return this._description;
+	}
+
+	/**
+	 * getThumbnail()
+	 * @description gets a thumbnail to represent this game object with the dimensions of width and height
+	 * @param {Number} x the x coordinate
+	 * @param {Number} y the y coordinate
+	 * @param {Number} width the width of the thumbnail
+	 * @param {Number} height the height of the thumbnail
+	 * @param {SVGElement} group the group to add the thumbnail to
+	 */
+	getThumbnail(x, y, amount, group) {
+		let graphics = this.createGraphics(group);
+
+		graphics.moveTo(x + graphics.width / 2, y + graphics.height / 2);
+		graphics.scale(0.75);
+		graphics.update();
+		
+		return graphics;
 	}
 
 }

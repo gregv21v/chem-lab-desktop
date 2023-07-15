@@ -72,6 +72,14 @@ export default class MultiLineText {
                 svgLine.text(this._lines[i])
             }
         }
+
+        // remove any unused lines
+        if(this._svg.length > this._lines.length) {
+            for (var i = this._svg.length - this._lines.length; i < this._svg.length; i++) {
+                let svgLine = this._svg[i];
+                svgLine.remove();
+            }
+        }
     }
 
 

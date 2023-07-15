@@ -1,6 +1,6 @@
 import { rotatePoints } from "../shapes/Point";
 import Rect from "../shapes/Rect";
-import Snappable from "./Snappable";
+import Snappable from "./Snappable1";
 import * as d3 from "d3";
 
 /**

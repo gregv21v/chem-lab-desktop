@@ -1,44 +1,84 @@
 /**
  * Circle - a circle
+ * 
  */
 import * as d3 from "d3"
 import { Distance } from "./Point";
+import Shape from "./Shape";
 
-export default class Circle {
+export default class Circle extends Shape {
 
 	/**
 	 * constructor()
 	 * @param {Point} center the center of the circle
 	 * @param {Number} radius the radius of the circle
 	 */
-	constructor(center, radius) {
-		this.radius = radius;
-		this.center = center;
-		this.color = "rgb(0, 0, 255)";
-		this.fillOpacity = 0.5;
+	constructor(layer, center, radius) {
+		super(layer);
+		this._radius = radius;
+		this._position = center;		
+	}
 
-		var mainSVG = d3.select("body").select("svg");
-		this.svg = mainSVG.append("circle");
+
+	/**
+	 * create()
+	 * @description creates the graphic
+	 */
+	create() {
+		this._svg = this._layer.append("circle");
+
+		this.update();
+	}
+
+	update() {
+		this._svg
+			.attr("r", this._radius)
+			.attr("cx", this.center.x)
+		 	.attr("cy", this.center.y)
+
+		this.updateStyles();
+	}
+
+	/**
+	 * toPoints()
+	 * @description converts the circle to points
+	 */
+	toPoints() {
+		let sides = 6;
+		let angle = 360 / sides
+		let points = [];
+
+		for (let i = 0; i < sides; i++) {
+			points.push({
+				x: this.center.x + this._radius * Math.cos((i * angle) * Math.PI / 180), 
+				y: this.center.y + this._radius * Math.sin((i * angle) * Math.PI / 180)
+            })
+		}
+
+		return points;
 	}
 
 	contains (point) {
-	  return Distance(this.center, point) <= this.radius;
+	  return Distance(this.center, point) <= this._radius;
 	}
 
-	createSVG() {
-		this.svg.attr("r", this.radius);
-		this.svg.attr("cx", this.center.x);
-		this.svg.attr("cy", this.center.y);
-		this.svg.attr("fill", this.color);
-		this.svg.attr("fill-opacity", this.fillOpacity);
+	/**
+	 * set center()
+	 * @description sets the center of the circle
+	 * @param {Number} center the center of the circle
+	 */
+	set center(value) {
+		this._position = value;
 	}
 
-	destroySVG() {
-		this.svg.attr("r", 0);
+	/**
+	 * get center() 
+	 * @description gets the center of the circle
+	 * @return {Point} the center of the circle
+	 */
+	get center() {
+		return this._position;
 	}
 
-	updateSVG() {
-
-	}
 
 }

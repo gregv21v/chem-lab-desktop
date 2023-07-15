@@ -72,6 +72,7 @@ This game is in early alpha, so expect bugs
 - Fluids should entered the pipe one drop at a time, and the drops should not overlap
 
 
+
 <strong>Current Issue</strong>
 If you rotate a pipe two times near a tank then place that pipe it will attach to the side it was snapping to before you rotated it instead of the opposite side like its suppose to
 

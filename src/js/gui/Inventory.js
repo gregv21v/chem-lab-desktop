@@ -31,7 +31,7 @@ export default class Inventory extends ScrollableContainer {
 		super(layer, position, width, height)
 
 		this.player = player; // the player the inventory belongs to 
-		this.slotHeight =75; // the height of the slots 
+		this.slotHeight = 100; // the height of the slots 
 
 		this.objs = []; // the GameObjects in the inventory
 		this.slots = []; // the Slots that the GameObjects fit in
@@ -88,9 +88,10 @@ export default class Inventory extends ScrollableContainer {
 			color: "blue",
 			opacity: 0.5,
 			strokeColor: "black",
-			strokeWidth: 5
+			strokeWidth: 3
 		}
 
+		newSlot.item = this.objs[index];
 		newSlot.name = this.objs[index].name;
 		newSlot.setDimensions(this.objs[index].width, this.objs[index].height);
 		newSlot.description = this.objs[index].description;

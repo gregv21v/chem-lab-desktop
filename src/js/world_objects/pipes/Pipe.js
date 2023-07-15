@@ -2,18 +2,17 @@
  * Pipe - a pipe
  */
 
-import Snappable from "../Snappable";
 import Tank from "../tanks/Tank"
 import * as d3 from "d3"
 import Rect from "../../shapes/Rect";
-import Snappable2 from "../Snappable2";
+import Snappable from "../Snappable";
 import SnapPoint from "../SnapPoint";
 import Group from "../../shapes/Group";
 import Arrow from "../../shapes/Arrow";
 import { getNextSide, getOpposite } from "../../util";
 import { rotatePoint } from "../../shapes/Point";
 
-export default class Pipe extends Snappable2 {
+export default class Pipe extends Snappable {
 
 
 	/**
@@ -80,10 +79,11 @@ export default class Pipe extends Snappable2 {
 			)
 		)
 		this._snapPoints[0].stroke.opacity = 0;
+		this._snapPoints[0].stroke.color = "blue"
 		this._snapPoints[0].fill.opacity = 0;
 		this._snapPoints[0].fill.color = "orange"
 		this._snapPoints[0].create();
-		this._objectGroup.add(this._snapPoints[0]);
+		this._snapGroup.add(this._snapPoints[0]);
 
 		// end
 		this._snapPoints.push(
@@ -103,10 +103,11 @@ export default class Pipe extends Snappable2 {
 			)
 		)
 		this._snapPoints[1].stroke.opacity = 0;
+		this._snapPoints[1].stroke.color = "blue"
 		this._snapPoints[1].fill.opacity = 0;
 		this._snapPoints[1].fill.color = "orange"
 		this._snapPoints[1].create();
-		this._objectGroup.add(this._snapPoints[1]);
+		this._snapGroup.add(this._snapPoints[1]);
 
 		
 
@@ -217,55 +218,12 @@ export default class Pipe extends Snappable2 {
 		this._group = this._layer.append("g")
 		this._group.attr("name", "Pipe")
 
-		this.createGraphics();
-		this.createSnapPoints();
-	}
-
-
-	/**
-	 * createGraphics()
-	 * @description creates the graphics for the pipe 
-	 */
-	createGraphics() {
-		this._boundingBox = new Rect(
-			d3.select('[name="debug"]'),
-			{...this._position},
-			this._width,
-			this._height
-		)
+		this._boundingBox.position = this._position;
+		this._boundingBox.width = this._width
+		this._boundingBox.height = this._height
 		this._boundingBox.fill.opacity = 0
 		this._boundingBox.stroke.opacity = 0;
-		this._boundingBox.create();
-		this._objectGroup.add(this._boundingBox);
-
-		
-		//this._arrow = new Arrow(this._group, this._interiorHeight / 2, this.center)
-		//this._objectGroup.add(this._arrow)
-
-		this._walls = new Rect(
-			this._group, 
-			{...this.position},
-			this._length,
-			this._diameter
-		)
-		this._walls.fill.color = "black"
-		this._walls.fill.opacity = 1
-		this._walls.stroke.color = "black"
-		this._walls.stroke.opacity = 0;
-		this._walls.create();
-		this._objectGroup.add(this._walls)
-
-		this._interior = new Rect(
-			this._group, 
-			{x: this._position.x - this._wallWidth, y: this._position.y + this._wallWidth},
-			this._length + this._wallWidth * 2,
-			this._interiorHeight
-		)
-		this._interior.stroke.opacity = 0;
-		this._interior.fill.color = "white"
-		this._interior.fill.opacity = 1
-		this._interior.create();
-		this._objectGroup.add(this._interior)
+		this._boundingBox.create();	
 
 
 		this._arrow = new Arrow(
@@ -278,13 +236,56 @@ export default class Pipe extends Snappable2 {
 		this._arrow.stroke.opacity = 1;
 		this._arrow.fill.opacity = 0;
 		this._arrow.create();
-		this._objectGroup.add(this._arrow)
 
+		this._graphicsGroup = this.createGraphics(this._group);
+		this._graphicsGroup.add(this._arrow);
+
+		this.createSnapPoints();
+	}
+
+
+	/**
+	 * createGraphics()
+	 * @description creates the graphics for the pipe 
+	 * @param {svgGroup} svgGroup the svg group for the graphics
+	 */
+	createGraphics(svgGroup) {
+		
+		let group = new Group();
+
+		let walls = new Rect(
+			svgGroup, 
+			{...this.position},
+			this._length,
+			this._diameter
+		)
+		walls.fill.color = "black"
+		walls.fill.opacity = 1
+		walls.stroke.color = "black"
+		walls.stroke.opacity = 0;
+		walls.create();
+		group.add(walls)
+
+		let interior = new Rect(
+			svgGroup, 
+			{x: this._position.x - this._wallWidth, y: this._position.y + this._wallWidth},
+			this._length + this._wallWidth * 2,
+			this._interiorHeight
+		)
+		interior.stroke.opacity = 0;
+		interior.fill.color = "white"
+		interior.fill.opacity = 1
+		interior.create();
+		group.add(interior)
+
+		return group;
 	}
 
 
 	update() {
-		this._objectGroup.update();
+		this._graphicsGroup.update();
+		this._boundingBox.update();
+		this._snapGroup.update();
 	}
 
 	destroySVG() {
@@ -304,15 +305,16 @@ export default class Pipe extends Snappable2 {
 		let directions = ["left", "up", "right", "down"]
 
 		this._direction = directions[360 / this._rotation]
-		console.log(this._direction);
 
-		for (const snap of this._objectGroup.objects) {
+		for (const snap of this._snapGroup.objects) {
 			if(snap instanceof SnapPoint) {
 				snap.axis = (snap.axis === "x") ? "y" : "x"
 				snap.side = getNextSide(snap.side);
 			}
 		}
-		this._objectGroup.rotateAroundCenter(90)
+		this._graphicsGroup.rotateAroundCenter(90)
+		this._boundingBox.rotateAroundCenter(90);
+		this._snapGroup.rotateAroundCenter(90);
 	}
 
 	/**
@@ -477,5 +479,6 @@ export default class Pipe extends Snappable2 {
 		return this._boundingBox;
 	}
 
+	
 
 }

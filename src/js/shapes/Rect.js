@@ -32,7 +32,23 @@ export default class Rect extends GameObject {
 		};
 	}
 
-	
+
+	/**
+	 * clone()
+	 * @description clones the Rect 
+	 * @returns {Rect} a clone of the Rect
+	 */
+	clone() {
+		let clone = new Rect(
+			this._layer, this._position, this._width, this._height
+		)
+
+		clone._fill = {...this._fill};
+		clone._stroke = {...this._stroke};
+		clone._id = this._id;
+
+		return clone;
+	}
 
 	/**
 	 * getAxes()
@@ -114,30 +130,6 @@ export default class Rect extends GameObject {
 		 && this._position.y + this._height >= point.y)
 	 );
 	}
-
-	/**
-	 * intersects()
-	 * @description checks whether this rectangle intersects with another
-	 * @param {Rect} rect the rectangle to check intersection with
-	 * @returns true if the two rects intersect
-	 * 			false otherwise
-	 */
-	/*
-	intersects(rect) {
-		// if at least one corner of the rect is in the other rect
-		return (
-			// this.rect intersects rect
-			this.contains({x: rect.position.x, y: rect.position.y}) || // top left
-			this.contains({x: rect.position.x + rect.width, y: rect.position.y}) || // top right
-			this.contains({x: rect.position.x, y: rect.position.y + rect.height}) || // bottom left
-			this.contains({x: rect.position.x + rect.width, y: rect.position.y + rect.height}) || // bottom right
-			// rect intersects this.rect
-			rect.contains({x: this._position.x, y: this._position.y}) || // top left
-			rect.contains({x: this._position.x + this._width, y: this._position.y}) || // top right
-			rect.contains({x: this._position.x, y: this._position.y + this._height}) || // bottom left
-			rect.contains({x: this._position.x + this._width, y: this._position.y + this._height}) // bottom right
-		);
-	}*/
 
 	/**
 	 * withinYRange()
@@ -272,9 +264,31 @@ export default class Rect extends GameObject {
      * @param {Number} deltaY the difference in y to move the rectangle
      */
     moveBy(deltaX, deltaY) {
-        this.position.x += deltaX;
-        this.position.y += deltaY;
+        this._position.x += deltaX;
+        this._position.y += deltaY;
     }
+
+
+	/**
+	 * moveTo()
+	 * @description moves to a specific position
+	 * @param {Number} x the x value of the position
+	 * @param {Number} y the y value of the position
+	 */
+	moveTo(x, y) {
+		let points = this.toPoints(x, y);
+		let center = this.center
+		for (const point of points) {
+			let delta = {
+				x: x - center.x,
+				y: y - center.y
+			}
+
+			point.x += delta.x
+			point.y += delta.y
+		}
+		this.fromFourPoints(points);
+	}
 
 
 	/**
@@ -317,6 +331,42 @@ export default class Rect extends GameObject {
 			Math.min(this.position.y + this.height, otherRect.position.y + otherRect.height) 
 			- Math.max(this.position.y, otherRect.position.y)
 		 )
+	}
+
+
+	/**
+	 * scale()
+	 * @description scales the rectangle by the given amount
+	 * @param {Number} amount the amount to scale the rectangle by
+	 */
+	scale(amount) {
+		let newPoints = this.toPoints().map(point => {
+			return {
+				x: amount * (point.x - this.center.x) + this.center.x,
+				y: amount * (point.y - this.center.y) + this.center.y,
+			}
+		})
+
+		this.fromFourPoints(newPoints);
+	}
+
+
+	/**
+	 * scaleHeight()
+	 * @description scales the height by the given amount
+	 * @param {Number} amount the amount to scale the height by
+	 */
+	scaleHeight(amount) {
+		this._height *= amount;
+	}
+
+	/**
+	 * scaleWidth()
+	 * @description scales the width by the given amount
+	 * @param {Number} amount the amount to scale the width by
+	 */
+	scaleWidth(amount) {
+		this._width *= amount;
 	}
 
 	/**
@@ -462,5 +512,24 @@ export default class Rect extends GameObject {
 	 */
 	set y(value) {
 		this._position.y = value;
+	}
+
+
+	/**
+	 * get layer() 
+	 * @description gets the layer of the rect
+	 * @returns {Layer} the layer that the rect is attached to
+	 */
+	set layer(value) {
+		this._layer = value;
+	}
+
+	/**
+	 * set layer() 
+	 * @description sets the layer of the rect
+	 * @param {Layer} layer the layer to attach the rect to
+	 */
+	set layer(value) {
+		this._layer = value;
 	}
 }

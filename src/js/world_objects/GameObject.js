@@ -19,16 +19,24 @@ export default class GameObject {
    * @param {Vector} center the center of the game object
    * @param {Vector} velocity the velocity of the game object
    */
-  constructor(layer, center, velocity) {
+  constructor(layer, position, velocity) {
     this._layer = layer; // the layer that the graphic for this game object will be attached to
-    this._center = center;
-    this._position = center;
+    this._position = position;
     this._velocity = velocity;
     this._width = 0;
     this._height = 0;
 
     this._id = GameObject.lastId
     GameObject.lastId++ 
+  }
+
+  clone() {
+    let clone = new GameObject(this._layer, this._position, this._velocity);
+    clone._width = this._width;
+    clone._height = this._height;
+    clone._id = this._id;
+
+    return clone;
   }
 
   /**
@@ -132,5 +140,6 @@ export default class GameObject {
   set position(value) {
     this._position = value;
   }
+
 
 }

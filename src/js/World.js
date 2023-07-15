@@ -8,7 +8,7 @@ import { Distance } from "./shapes/Point"
 import { getOpposite } from "./util";
 import * as d3 from "d3"
 import GameObject from "./world_objects/GameObject";
-import Snappable2 from "./world_objects/Snappable2";
+import Snappable from "./world_objects/Snappable";
 import Pump from "./world_objects/Pump";
 import Heater from "./world_objects/Heater";
 
@@ -67,7 +67,7 @@ export default class World {
 	mouseDownHandler(evnt) {
 		// place the object in the world
 		// when you are not in the inventory, and have selected a button
-		if(this.player.hand != null &&
+		if(this.player.hand &&
 			!this._game.hud.inventory.contains({x: evnt.clientX, y: evnt.clientY}))
 		{
 
@@ -119,7 +119,8 @@ export default class World {
 			}*/
 
 			
-			if(!this.player.hand instanceof Pump) {
+			if(!(this.player.hand instanceof Pump)) {
+				console.log("Move To");
 				this.player.hand.moveTo({
 					x: mousePos.x - this.player.hand.boundingBox.width / 2,
 					y: mousePos.y - this.player.hand.boundingBox.height / 2
@@ -131,7 +132,7 @@ export default class World {
 			this._fixedSnappable = this.findClosestSnappable(mousePos) // check
 		
 			
-			if(this.player.hand instanceof Snappable2 && this._fixedSnappable != null) {
+			if(this.player.hand instanceof Snappable && this._fixedSnappable != null) {
 				//closestSnappable.boundingBox.fill.opacity = 1;
 				//closestSnappable.boundingBox.fill.color = "orange";
 				//closestSnappable.boundingBox.update();
@@ -205,7 +206,7 @@ export default class World {
 		let closestSnappable = null
 		let closestDistance = Infinity
 		for(var obj of this.objs) {
-			if(obj instanceof Snappable2) {
+			if(obj instanceof Snappable) {
 				let distance = Distance(obj.center, mousePos);
 
 				// TODO: change distance < 100 so that it compares the distance from 
@@ -266,6 +267,8 @@ export default class World {
 		@description Updates all the objects currently in the world
 	*/
 	update() {
+
+
 		for(var i = 0; i < this.drops.length; i++) {
 			this.drops[i].update(this);
 		}
