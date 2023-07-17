@@ -503,6 +503,7 @@ export default class Tank extends Snappable {
 				if(!(fluid.fluid instanceof EmptyFluid)) { 
 					let lastVolume = fluid.volume;
 					fluid.expand(1.0005);
+					fluid.heat(1);
 					let diffVolume = fluid.volume - lastVolume;
 					this._emptyFluid.volume -= diffVolume;
 				}

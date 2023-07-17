@@ -20,6 +20,7 @@ export default class FluidBody extends Rect {
         this._volume = volume;
         this._fluid = fluid;
         this._velocity = velocity;
+        this._temperature = 0 // the current temperature of the fluid
     }
 
 
@@ -29,6 +30,16 @@ export default class FluidBody extends Rect {
      */
     clone() {
         return new FluidBody(this.position, this.velocity, this.volume, this.fluid)
+    }
+
+
+    /**
+     * heat()
+     * @description heat the Fluid
+     * @param {Number} the amount of heat to apply to the fluid body
+     */
+    heat(temperature) {
+        this._temperature += temperature;
     }
 
     /**
