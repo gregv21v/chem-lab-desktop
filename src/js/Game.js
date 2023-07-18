@@ -38,11 +38,16 @@ export default class Game {
    */
   constructor(mode=0) {
     this._mode = mode;
-    let svg = d3.select("svg")
+    let canvas = document.querySelector('canvas');
+    let context = canvas.getContext('2d');
 
-    this._width = svg.attr("width")
-    this._height = svg.attr("height")
 
+    context.fillStyle = 'blue';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    
+
+    /*
     this._layers = []
 
     this._layers.push(svg.append("g")) // gui
@@ -54,43 +59,9 @@ export default class Game {
     this._layers[1].attr("name", "containers")
     this._layers[2].attr("name", "fluids")
     this._layers[3].attr("name", "debug")
+    */
 
-
-    let snapWidth = 75
-    let pipeLength = 100;
-    let pipeWidth = 50;
-    let position = {x: 400, y: 100}
-    let angle = 180
-
-    this._group = new Group();
-
-    /*let mockPipe = new Rect(this._layers[3], position, pipeWidth, pipeLength)
-    mockPipe.fill.color = "black"
-    mockPipe.fill.opacity = 1
-    this._group.add(mockPipe)
-
-    let mockSnapArea1 = new Rect(this._layers[3], {x: position.x, y: position.y + pipeLength}, pipeWidth, snapWidth)
-    mockSnapArea1.fill.color = "blue"
-    mockSnapArea1.fill.opacity = 0.5;
-    this._group.add(mockSnapArea1)
-
-    let mockSnapArea2 = new Rect(this._layers[3], {x: position.x, y: position.y - snapWidth}, pipeWidth, snapWidth)
-    mockSnapArea2.fill.color = "orange"
-    mockSnapArea2.fill.opacity = 0.5
-    this._group.add(mockSnapArea2)
-
-    this._group.create()
-    this._group.rotateAroundCenter(90);
-    this._group.update()*/
-
-    
-
-    /*this._layers[3]
-      .append("circle")
-        .attr("cx", this._group.center.x) 
-        .attr("cy", this._group.center.y)
-        .attr("r", 2)
-        .style("fill", "red")*/ 
+  
 
     // add fluids to the fluid registery for use later
     FluidRegistry.register(new Fluid("Water", 2, -3, {red: 0, green: 0, blue: 200, alpha: 255}))
@@ -123,7 +94,7 @@ export default class Game {
         },
         20, 10, 5
     ));*/
-    this._hud.inventory.add(new Heater(this._layers[1], {x: 0, y: 0}, 40, 20));
+    /*this._hud.inventory.add(new Heater(this._layers[1], {x: 0, y: 0}, 40, 20));
     this._hud.inventory.add(new Heater(this._layers[1], {x: 0, y: 0}, 40, 20));
     this._hud.inventory.add(new Heater(this._layers[1], {x: 0, y: 0}, 40, 20));
     this._hud.inventory.add(new Heater(this._layers[1], {x: 0, y: 0}, 40, 20));
@@ -147,7 +118,7 @@ export default class Game {
     this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, false))
     this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
     this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
-    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))*/
     /*this._hud.inventory.add(new ElbowPipe(
       this._layers[1],
       {x: 0, y: 0},

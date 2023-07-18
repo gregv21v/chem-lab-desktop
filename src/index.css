@@ -1,7 +1,13 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
     Arial, sans-serif;
-  margin: auto;
+  margin: 0;
   max-width: 38rem;
-  padding: 2rem;
+  padding: 0;
+}
+
+
+canvas {
+  margin: 0;
+  padding: 0;
 }
