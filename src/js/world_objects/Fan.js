@@ -21,11 +21,11 @@ export default class Heater extends Snappable {
         super(layer, position, width, height);
 
         this._isOn = true;
-        this._tempature = 5;
+        this._tempature = -5;
         this._description = [
-            "Heaters heat the fluids in",
+            "Fans cool the fluids in",
             "tanks causing the liquids",
-            "to expand"
+            "to contract"
         ]
         ;
     }
@@ -50,12 +50,26 @@ export default class Heater extends Snappable {
 				{x: this._boundingBox.position.x + this._boundingBox.width, y: this._boundingBox.position.y},
 				"y",
 				"up"
+			),
+
+
+            // bottom
+			new SnapPoint(
+				{
+					x: 0,
+					y: this._boundingBox.height + this._boundingBox.position.y
+				},
+				this.width,
+				this._snapWidth,
+				{x: this._boundingBox.position.x + this._boundingBox.width, y: this._boundingBox.position.y + this._boundingBox.height},
+				"y",
+				"up"
 			)
 		]
 
 		for (const point of this._snapPoints) {
 			point.fill.color = "orange"
-			point.fill.opacity = 0.0;
+			point.fill.opacity = 0.5;
 			point.stroke.opacity = 0;
 			point.create();
 			this._snapGroup.add(point);

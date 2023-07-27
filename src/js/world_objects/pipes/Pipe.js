@@ -304,7 +304,7 @@ export default class Pipe extends Snappable {
 	
 		let directions = ["left", "up", "right", "down"]
 
-		this._direction = directions[360 / this._rotation]
+		this._direction = directions[this._rotation / 90]
 
 		for (const snap of this._snapGroup.objects) {
 			if(snap instanceof SnapPoint) {

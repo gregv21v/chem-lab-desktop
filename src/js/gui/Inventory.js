@@ -65,8 +65,7 @@ export default class Inventory extends ScrollableContainer {
 	onKeyPress(event) {
 		if(event.key === "Escape") { 
 			this.add(this.player.hand);
-			this.player.hand.destroySVG()
-
+			this.player.hand.destroy()
 			this.player.hand = null;
 		}
 	}

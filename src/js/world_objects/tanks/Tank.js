@@ -61,7 +61,8 @@ export default class Tank extends Snappable {
 
 		this._wallColor = "green";
 		this._active = false;
-		this._text = "";
+		this._name = "Tank";
+		this._description = "A container to hold fluids"
 
 		
 		this._emptyFluid = new ContainerFluidBody(
@@ -481,7 +482,7 @@ export default class Tank extends Snappable {
 	 */
 	heatLiquids(world) {
 		// whenever a liquid is heated it will sometimes produce a drop 
-		/*let dropX = getRandomInt(0, this.width)
+		let dropX = getRandomInt(0, this.width)
 		let dropSize = 5;
 		let firstFluid = this._fluidBodies[0];
 		let drop = firstFluid.removeDrop(dropSize);
@@ -491,13 +492,14 @@ export default class Tank extends Snappable {
 			this._emptyFluid.addDrop(drop.size)
 			this.updateFluidBodies();
 			drop.position.x = dropX;
+			drop.position.y = this._fluidBodies[0].position.y - dropSize - 1 
 			drop.heat(5);
 			drop.direction = "up"
 			
 			world.addDrop(drop)
-		}*/
+		}
 
-		if(this._emptyFluid.volume > 0) {
+		/*if(this._emptyFluid.volume > 0) {
 			for (const fluid of this._fluidBodies) {
 				
 				if(!(fluid.fluid instanceof EmptyFluid)) { 
@@ -509,7 +511,7 @@ export default class Tank extends Snappable {
 				}
 			}
 			this.updateFluidBodies();
-		}
+		}*/
 		
 	}
 
@@ -543,13 +545,15 @@ export default class Tank extends Snappable {
 	 * 			false if the pipe does not have access to the fluid
 	 */
 	getFirstAccessibleFluid(pipe, snapPoint) {
-		let isDown = (snapPoint.axis === "y" && (snapPoint.point.y > this.position.y))
+		let isDown = (snapPoint.side === "down")
 
-		let lastFluid = this._fluidBodies[0];
+		let lastFluid = this._fluidBodies[this._fluidBodies.length - 1];
 		// get the last 
 		if(isDown && !(lastFluid.fluid instanceof EmptyFluid)) {
 			return lastFluid;
 		}
+
+
 
 		// search throught the list of fluids to find the first 
 		// accessible one by the pipe
@@ -706,6 +710,14 @@ export default class Tank extends Snappable {
 		sidesOpen += (this._downOpened) ? "down " : ""
 
 		return "Tank " + sidesOpen;
+	}
+
+	/**
+	 * get description()
+	 * @description gets the description of the tank
+	 */
+	get description() { 
+		return this._description; 
 	}
 
 	/**
