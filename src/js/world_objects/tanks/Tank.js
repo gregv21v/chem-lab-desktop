@@ -466,17 +466,19 @@ export default class Tank extends Snappable {
 	 * heatLiquids() 
 	 * @description heats the liquids in the tank
 	 */
-	heatLiquids(world) {
+	heatLiquids(world, temperature) {
 		// whenever a liquid is heated it will sometimes produce a drop 
-		this.heatFluidBodies(1);
-		
+		this.heatFluidBodies(temperature);
+
 		let dropX = getRandomInt(0, this.width - this._wallWidth * 2)
 		let dropSize = 5;
 		let firstFluid = this.getFirstFluid();
-		let drop = (firstFluid && firstFluid.isBoiling()) ? firstFluid.removeDrop(dropSize) : null;
+		let drop;
 
 
-
+		if(firstFluid && (firstFluid.isCondensing() || firstFluid.isBoiling())) {
+			drop = firstFluid.removeDrop(dropSize);
+		}
 
 		if(drop) {
 			this.removeVolumelessFluids()
@@ -484,11 +486,18 @@ export default class Tank extends Snappable {
 			this.updateFluidBodies();
 			drop.position.x = this._position.x + this._wallWidth + dropX;
 			drop.position.y = firstFluid.position.y - dropSize * 2
-			drop.density = -1;
+
+			if(firstFluid.isCondensing()) {
+				drop.density = 1;
+			} else if(firstFluid.isBoiling()) {
+				drop.density = -1;
+			}
+
 			drop.velocity = {x: 0, y: 1};
 
 			world.addDrop(drop)
 		}
+
 
 		/*if(this._emptyFluid.volume > 0) {
 			for (const fluid of this._fluidBodies) {

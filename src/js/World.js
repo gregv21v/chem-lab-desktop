@@ -11,6 +11,7 @@ import GameObject from "./world_objects/GameObject";
 import Snappable from "./world_objects/Snappable";
 import Pump from "./world_objects/Pump";
 import Heater from "./world_objects/Heater";
+import Fan from "./world_objects/Fan";
 
 export default class World {
 	constructor(game, player, position, width, height) {
@@ -286,7 +287,7 @@ export default class World {
 				obj.transferLiquid();
 			}
 
-			if(obj instanceof Heater) {
+			if(obj instanceof Heater || obj instanceof Fan) {
 				obj.heat(this);
 			}
 

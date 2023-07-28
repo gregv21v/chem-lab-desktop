@@ -58,7 +58,9 @@ export default class Shape {
      * toPoints()
      * @description converts the shape to points
      */
-    toPoints() {}
+    toPoints() {
+		return [this._position]
+	}
 
 
     /**

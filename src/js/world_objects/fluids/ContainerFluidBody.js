@@ -151,6 +151,16 @@ export default class ContainerFluidBody extends FluidBody {
         return this._temperature >= this._fluid.boilingPoint;
     }
 
+    /**
+     * isCondensing()
+     * @description checks whether the fluid is condensing
+     * @returns true if the fluid body is condensing
+     *          false otherwise
+     */
+    isCondensing() {
+        return this._temperature <= this._fluid.condensingPoint;
+    }
+
 
     /**
      * get temperature()

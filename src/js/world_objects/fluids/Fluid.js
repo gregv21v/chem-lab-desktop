@@ -13,12 +13,13 @@ export default class Fluid {
      * @param {Number} volume the volume of the fluid
      * @param {Color} color the color of the fluid
      */
-    constructor(name, density, heatedDensityMultiplier, boilingPoint, color) {
+    constructor(name, density, heatedDensityMultiplier, boilingPoint, condensationPoint, color) {
         this._color = color; // the color of the fluid
         this._name = name; // the name of the fluid
         this._density = density; // the density of the fluid
         this._heatedDensityMultiplier = heatedDensityMultiplier
         this._boilingPoint = boilingPoint // the point at which this fluid turns to gas
+        this._condensationPoint = condensationPoint // the point at which this fluid turns to liquid
     }
 
     /**

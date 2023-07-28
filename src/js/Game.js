@@ -3,26 +3,18 @@
 */
 
 import Player from "./Player"
-import Shop from "./gui/Shop"
-import TradeItem from "./gui/TradeItem"
-import BorderedButton from "./gui/buttons/BorderedButton"
 import * as d3 from "d3"
 import FluidRegistry from "./world_objects/fluids/FluidRegistry"
 import Fluid from "./world_objects/fluids/Fluid"
-import EmptyFluid from "./world_objects/fluids/EmptyFluid"
-import ScrollableContainer from "./gui/ScrollableContainer"
 import World from "./World"
 import { HUD } from "./HUD"
-import Valve from "./world_objects/pipes/Valve"
 import Tank from "./world_objects/tanks/Tank"
 import Pipe from "./world_objects/pipes/Pipe"
-import CrossPipe from "./world_objects/pipes/CrossPipe"
 import Pump from "./world_objects/Pump"
-import ElbowPipe from "./world_objects/pipes/ElbowPipe"
-import Rect from "./shapes/Rect"
-import { rotatePoints } from "./shapes/Point"
 import Group from "./shapes/Group"
 import Heater from "./world_objects/Heater"
+import FanShape from "./shapes/FanShape"
+import Fan from "./world_objects/Fan"
 
 
 export default class Game {
@@ -54,6 +46,7 @@ export default class Game {
     this._layers[1].attr("name", "containers")
     this._layers[2].attr("name", "fluids")
     this._layers[3].attr("name", "debug")
+
 
 
     let snapWidth = 75
@@ -125,8 +118,7 @@ export default class Game {
     ));*/
     this._hud.inventory.add(new Heater(this._layers[1], {x: 0, y: 0}, 40, 20));
     this._hud.inventory.add(new Heater(this._layers[1], {x: 0, y: 0}, 40, 20));
-    this._hud.inventory.add(new Heater(this._layers[1], {x: 0, y: 0}, 40, 20));
-    this._hud.inventory.add(new Heater(this._layers[1], {x: 0, y: 0}, 40, 20));
+    this._hud.inventory.add(new Fan(this._layers[1], {x: 0, y: 0}, 10));
     this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 100}, 5));
     this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 100}, 5));
     this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 50, height: 50}, 5));

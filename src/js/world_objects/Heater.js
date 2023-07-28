@@ -77,8 +77,6 @@ export default class Heater extends Snappable {
 
 		this._boundingBox.create();
 		
-
-
 		this._graphicsGroup = this.createGraphics(this._group);
         //this._objectGroup.add(this._boundingBox);
 		this.createSnapPoints();
@@ -187,15 +185,6 @@ export default class Heater extends Snappable {
 		} 
 	}
 
-    /**
-     * moveTo()
-     * @description moves to a given point, where the center of the Snappable is
-     *  fixed at the given point
-     * @param point the point to center on
-     */
-    moveTo(point) {
-        super.moveTo(point);
-    }
 
 
     /**
@@ -207,7 +196,7 @@ export default class Heater extends Snappable {
         let top = this._snapPoints[0].attachments[0];
 
         if(top instanceof Tank) {
-            top.heatLiquids(world);
+            top.heatLiquids(world, 1);
         }
     }
 

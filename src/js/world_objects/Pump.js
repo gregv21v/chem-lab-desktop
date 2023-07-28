@@ -50,9 +50,9 @@ export default class Pump extends GameObject {
 		]
 
 		this._possibleFluids = [
-			new Fluid("Hydrogen", 2, this._production * this._production, 20, {red: 0, green: 100, blue: 200, alpha: 100}),
-			new Fluid("Oxygen", 2, this._production * this._production, 10, {red: 142, green: 140, blue: 145, alpha: 100}),
-			new Fluid("Iron", 2, this._production * this._production, 100, {red: 102, green: 51, blue: 0, alpha: 100}),
+			new Fluid("Hydrogen", 2, this._production * this._production, 20, -10, {red: 0, green: 100, blue: 200, alpha: 100}),
+			new Fluid("Oxygen", 2, this._production * this._production, 10, -5, {red: 142, green: 140, blue: 145, alpha: 100}),
+			new Fluid("Iron", 2, this._production * this._production, 100, -60, {red: 102, green: 51, blue: 0, alpha: 100}),
 			//new Fluid("Dust", 5, this._production * this._production, 20, {red: 173, green: 161, blue: 113, alpha: 255}),
 			//new Fluid("Lava", 1, this._production * this._production, 10, {red: 255, green: 0, blue: 0, alpha: 255}),
 		]

@@ -1,33 +1,32 @@
-import Fire from "../shapes/Fire";
 import Rect from "../shapes/Rect";
 import SnapPoint from "./SnapPoint";
 import Snappable from "./Snappable";
-import * as d3 from "d3";
 import Tank from "./tanks/Tank";
+import FanShape from "../shapes/FanShape";
 import Group from "../shapes/Group";
+import * as d3 from "d3";
 
 /**
  * Heater - heats the the fluid in a tank
  * 
  * Heating a fluid can change its density and maybe cause it to evaporate 
  */
-export default class Heater extends Snappable {
+export default class Fan extends Snappable {
     /**
      * constructor()
      * @description constructs the heater
      * @param
      */
-    constructor(layer, position, width, height) {
-        super(layer, position, width, height);
+    constructor(layer, position, radius) {
+        super(layer, position, radius, radius);
+        this._radius = radius;
 
         this._isOn = true;
-        this._tempature = -5;
         this._description = [
             "Fans cool the fluids in",
             "tanks causing the liquids",
             "to contract"
-        ]
-        ;
+        ];
     }
 
 
@@ -43,11 +42,11 @@ export default class Heater extends Snappable {
 			new SnapPoint(
 				{
 					x: 0,
-					y: this._boundingBox.position.y
+					y: this._boundingBox.position.y - this._snapWidth
 				},
-				this.width,
+				this._boundingBox.width,
 				this._snapWidth,
-				{x: this._boundingBox.position.x + this._boundingBox.width, y: this._boundingBox.position.y},
+				{x: 0, y: 0},
 				"y",
 				"up"
 			),
@@ -57,20 +56,20 @@ export default class Heater extends Snappable {
 			new SnapPoint(
 				{
 					x: 0,
-					y: this._boundingBox.height + this._boundingBox.position.y
+					y: this._boundingBox.position.y + this._boundingBox.height
 				},
-				this.width,
+				this._boundingBox.width,
 				this._snapWidth,
-				{x: this._boundingBox.position.x + this._boundingBox.width, y: this._boundingBox.position.y + this._boundingBox.height},
+				{x: 0, y: 0},
 				"y",
-				"up"
+				"down"
 			)
 		]
 
 		for (const point of this._snapPoints) {
 			point.fill.color = "orange"
-			point.fill.opacity = 0.5;
-			point.stroke.opacity = 0;
+			point.fill.opacity = 0.0;
+			point.stroke.opacity = 0.0;
 			point.create();
 			this._snapGroup.add(point);
 		}
@@ -82,12 +81,11 @@ export default class Heater extends Snappable {
     create() {
 		this._group = this._layer.append("g")
 
-        this._boundingBox.position = this._position;
-        this._boundingBox.width = this._width;
-        this._boundingBox.height = this._height + 10
+        this._boundingBox.width = this._radius * 3;
+        this._boundingBox.height = this._radius * 2;
 		this._boundingBox.fill.opacity = 0.0
         this._boundingBox.fill.color = "blue"
-		this._boundingBox.stroke.opacity = 0;
+		this._boundingBox.stroke.opacity = 0.0;
 
 		this._boundingBox.create();
 		
@@ -96,6 +94,8 @@ export default class Heater extends Snappable {
 		this._graphicsGroup = this.createGraphics(this._group);
         //this._objectGroup.add(this._boundingBox);
 		this.createSnapPoints();
+
+        
 
         this.update();
 	}
@@ -108,57 +108,17 @@ export default class Heater extends Snappable {
      */
     createGraphics(svgGroup) {
 
-        let hotPlateHeight = 10;
-        let offset = 10;
-        let delta = 0// the difference in height between the orange and red flames
-
-        let redMax = 20
         let group = new Group(svgGroup);
-        let redFire = new Fire(
+        let fan = new FanShape(
             svgGroup,
-            {x: this._boundingBox.x, y: this._boundingBox.y + this._boundingBox.height - hotPlateHeight - redMax - offset - 5},
-            this._width,
-            redMax, // max
-            8, // min
-            offset + 5, // offset
-            20 // flameCount
+            {
+                x: this._position.x + this._radius, 
+                y: this._position.y + this._radius
+            },
+            this._radius
         )
-
-        redFire.fill.color = "red"
-        redFire.fill.opacity = (this._isOn ? 1 : 0)
-        redFire.create();
-        group.add(redFire);
-
-
-
-        let orangeMax = 10
-        let orangeFire = new Fire(
-            svgGroup,
-            {x: this._position.x + 30 / this._width, y: this._boundingBox.y + this._boundingBox.height - hotPlateHeight - orangeMax - offset},
-            this._width - 60 / this._width,
-            orangeMax, // max
-            5, // min
-            offset, // offset
-            16 // flameCount
-        )
-
-        orangeFire.fill.color = "orange"
-        orangeFire.fill.opacity = (this._isOn ? 1 : 0)
-        orangeFire.create();
-        group.add(orangeFire);
-
-
-        let hotPlate = new Rect(
-            svgGroup,
-            {x: this._boundingBox.x, y: this._boundingBox.y + this._boundingBox.height - hotPlateHeight},
-            this._boundingBox.width,
-            hotPlateHeight
-        )
-
-        hotPlate.fill.color = "black"
-        hotPlate.fill.opacity = 1;
-        hotPlate.create();
-        group.add(hotPlate)
+        fan.create();
+        group.add(fan)
 
         return group;
     }
@@ -219,9 +179,14 @@ export default class Heater extends Snappable {
      */
     heat(world) {
         let top = this._snapPoints[0].attachments[0];
+        let bottom = this._snapPoints[1].attachments[0];
 
         if(top instanceof Tank) {
-            top.heatLiquids(world);
+            top.heatLiquids(world, -1);
+        }
+
+        if(bottom instanceof Tank) {
+            bottom.heatLiquids(world, -1);
         }
     }
 
@@ -231,7 +196,7 @@ export default class Heater extends Snappable {
 	 * @returns gets the name of the pipe
 	 */
 	get name() {
-		return "Heater"
+		return "Fan"
 	}
 
     /**
