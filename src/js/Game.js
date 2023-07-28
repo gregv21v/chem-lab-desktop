@@ -93,10 +93,10 @@ export default class Game {
         .style("fill", "red")*/ 
 
     // add fluids to the fluid registery for use later
-    FluidRegistry.register(new Fluid("Water", 2, -3, {red: 0, green: 0, blue: 200, alpha: 255}))
+    FluidRegistry.register(new Fluid("Water", 2, -3, 20, {red: 0, green: 0, blue: 200, alpha: 255}))
     //FluidRegistry.register(new Fluid("Smoke", -1, {red: 142, green: 140, blue: 145, alpha: 255}))
-    FluidRegistry.register(new Fluid("Dust", 5, -1, {red: 173, green: 161, blue: 113, alpha: 255}))
-    FluidRegistry.register(new Fluid("Magma", 1, -1, {red: 255, green: 0, blue: 0, alpha: 255}))
+    FluidRegistry.register(new Fluid("Dust", 5, -1, 10, {red: 173, green: 161, blue: 113, alpha: 255}))
+    FluidRegistry.register(new Fluid("Magma", 1, -1, 100, {red: 255, green: 0, blue: 0, alpha: 255}))
     //FluidRegistry.register(new Fluid("Nitrogen Gas", -2, {red: 0, green: 0, blue: 100, alpha: 255}))
 
     // setup the player 
@@ -132,8 +132,8 @@ export default class Game {
     this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 50, height: 50}, 5));
     
     //this._hud.inventory.add(new CrossPipe(this._layers[1], {x: 475, y: 540}, 10, 100, 5));
-    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 50, height: 50}, 5, true, false, false, false))
-    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 50, height: 100}, 5, false, false, false, false))
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 50, height: 50}, 5))
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 50, height: 100}, 5))
     this._hud.inventory.add(new Pipe(this._layers[1], {x: 0, y: 0}, 50, 10, 5));
     this._hud.inventory.add(new Pipe(this._layers[1], {x: 0, y: 0}, 50, 10, 5));
     this._hud.inventory.add(new Pipe(this._layers[1], {x: 0, y: 0}, 50, 10, 5));
@@ -144,10 +144,10 @@ export default class Game {
     this._hud.inventory.add(new Pump(this._layers[1], this._world, {x: 0, y: 0}, 5));
     this._hud.inventory.add(new Pump(this._layers[1], this._world, {x: 0, y: 0}, 15));
 
-    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, false))
-    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
-    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
-    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5, false, false, false, true))
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
     /*this._hud.inventory.add(new ElbowPipe(
       this._layers[1],
       {x: 0, y: 0},

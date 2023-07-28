@@ -13,27 +13,12 @@ export default class Fluid {
      * @param {Number} volume the volume of the fluid
      * @param {Color} color the color of the fluid
      */
-    constructor(name, density, heatedDensityMultiplier, color) {
+    constructor(name, density, heatedDensityMultiplier, boilingPoint, color) {
         this._color = color; // the color of the fluid
         this._name = name; // the name of the fluid
         this._density = density; // the density of the fluid
         this._heatedDensityMultiplier = heatedDensityMultiplier
-        this._boilingPoint = 50 // the point at which this fluid turns to gas
-    }
-
-    /**
-     * mix()
-     * @description average the two fluids together.
-     */
-    static mix(fluid1, fluid2) {
-        return new Fluid(
-            Math.floor((fluid1.value + fluid2.value) / 2),
-            {
-                red: Math.floor((fluid1.color.red + fluid2.color.red) / 2),
-                green: Math.floor((fluid1.color.green + fluid2.color.green) / 2),
-                blue: Math.floor((fluid1.color.blue + fluid2.color.blue) / 2)
-            }
-        )
+        this._boilingPoint = boilingPoint // the point at which this fluid turns to gas
     }
 
     /**
@@ -58,6 +43,15 @@ export default class Fluid {
      */
     get density() {
         return this._density
+    }
+
+
+    /**
+     * get boilingPoint()
+     * @description gets the boilingPoint of the fluid
+     */
+    get boilingPoint() {
+        return this._boilingPoint;
     }
 
     /**

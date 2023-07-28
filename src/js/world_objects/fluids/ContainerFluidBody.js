@@ -4,6 +4,7 @@
 import FluidBody from "./FluidBody";
 import Drop from "./Drop";
 import * as d3 from "d3"
+import ToolTip from "../../gui/ToolTip";
 
 export default class ContainerFluidBody extends FluidBody {
     /**
@@ -15,6 +16,13 @@ export default class ContainerFluidBody extends FluidBody {
      */
     constructor(layer, position, width, height, volume, fluid) {
         super(layer, position, width, height, {x: 0, y: 0}, volume, fluid)
+        this._temperature = 0;
+
+        this._tooltip = new ToolTip(
+            {x: this._position.x + this._width / 2, y: this._position.y + this._height / 2},
+            "Temperature: " + this._temperature
+        )
+        
     }
 
     /**
@@ -22,8 +30,13 @@ export default class ContainerFluidBody extends FluidBody {
      * @description creates the svg for the fluid
      */
     create() {
-        super.create();
+		this._svg = {
+			rect: this._layer.append("rect"),
+            hoverBox: d3.select("[name='debug']").append("rect")
+		}
+        this._tooltip.create();
         this.fill.color = this._fluid.getColorAsString()
+   
         this.update();  
     }
 
@@ -45,7 +58,46 @@ export default class ContainerFluidBody extends FluidBody {
 		this._svg.rect.attr("stroke-opacity", this._stroke.opacity)
 		this._svg.rect.attr("fill", this._fill.color);
 		this._svg.rect.attr("fill-opacity", this._fill.opacity);
+
+
+        this._svg.hoverBox.attr("width", this.width);
+		this._svg.hoverBox.attr("height", this.height);
+		this._svg.hoverBox.attr("x", this._position.x);
+		this._svg.hoverBox.attr("y", this._position.y);
+		this._svg.hoverBox.attr("stroke-opacity", 0)
+		this._svg.hoverBox.attr("fill-opacity", 0);
+
+        this._tooltip.text = "Temperature: " + this._temperature
+
+        let self = this;
+        this._svg.hoverBox.on("mouseenter", () => {
+            self._tooltip.text = "Temperature: " + self._temperature
+            self._tooltip.position = {
+                x: self._position.x + self.width,
+                y: self._position.y
+            }
+            
+            self._tooltip.show();
+            self._tooltip.update();
+
+        })
+
+        this._svg.hoverBox.on("mouseleave", () => {
+            self._tooltip.hide();
+        })
+        
 	}
+
+    /**
+     * destroy()
+     * @description destroy the fluid body 
+     */
+    destroy() {
+        this._svg.hoverBox.remove()
+        this._svg.rect.remove()
+        this._tooltip.destroy()
+    }
+
     /**
 	 * removeDrop()
 	 * @description removes a drop from the tank of size size
@@ -62,7 +114,7 @@ export default class ContainerFluidBody extends FluidBody {
 			return newDrop;
 		} else {
             let dropSize = Math.round(Math.sqrt(this.volume))
-            this.volume -= dropSize * dropSize
+            this.volume = 0
             let newDrop = new Drop(d3.select("[name='fluids']"), {x: 0, y: 0}, {x: 0, y: 0}, dropSize, this.fluid);
             newDrop.create()
             return newDrop;
@@ -77,6 +129,39 @@ export default class ContainerFluidBody extends FluidBody {
     expand(amount) {
         this._volume = this._volume * amount;
     }
+
+
+    /**
+     * heat()
+     * @description heats or cools the fluid body
+     * @param {Number} amount amount to heat or cool. Use negative for cooling
+     */
+    heat(amount) {
+        this._temperature += amount;
+    }
+
+
+    /**
+     * isBoiling()
+     * @description checks whether the fluid is boiling
+     * @returns true if the fluid body is boiling,
+     *          false otherwise
+     */
+    isBoiling() {
+        return this._temperature >= this._fluid.boilingPoint;
+    }
+
+
+    /**
+     * get temperature()
+     * @description gets the temperature of the fluid body
+     * @returns {Number} temperature of the fluid body
+     */
+    get temperature() {
+        return this._temperature;
+    }
+
+
 
 
    

@@ -20,11 +20,8 @@ export default class Drop extends FluidBody {
     super(layer, position, size, size, velocity, size * size, fluid)
     this._size = size;
     this._tempature = 0;
+    this._density = this._fluid.density;
 
-    /**
-     * Will be removed in favor of velocity
-     */
-    this.direction = "" // the direction that the drop is traveling in
     this._stepAlongPath = -1;
   }
 
@@ -61,7 +58,7 @@ export default class Drop extends FluidBody {
 
     this.position = {
       x: this.position.x + this._velocity.x,
-      y: this.position.y + this._velocity.y * this.fluid.density
+      y: this.position.y + this._velocity.y * this._density
     }
 
     this._svg.rect.attr("x", this._position.x);
@@ -78,9 +75,7 @@ export default class Drop extends FluidBody {
 
   			if (
           obj instanceof Tank && 
-          obj.containsDrop(self) &&  
-          ((obj.upOpened && self.fluid.density > 0) || // tank for liquids
-          (obj.downOpened && self.fluid.density < 0)) // tank for gases
+          obj.containsDrop(self)
         ) {
           // add the drop to the tank
   				obj.addDrop(self);  
@@ -211,6 +206,43 @@ export default class Drop extends FluidBody {
    */
   get size() {
     return this._size;
+  }
+
+
+  /**
+   * set density()
+   * @description sets the density of the drop
+   * @param {Number} value the density to set the drop to
+   */
+  set density(value) {
+    this._density = value;
+  }
+
+  /**
+   * get density()
+   * @description gets the density
+   * @returns the drops density
+   */
+  get density() {
+    return this._density;
+  }
+
+  /**
+   * set velocity()
+   * @description sets the velocity of the drop
+   * @param {Number} value the velocity to set the drop to
+   */
+  set velocity(value) {
+    this._velocity = value;
+  }
+
+  /**
+   * get velocity()
+   * @description gets the velocity
+   * @returns the drops velocity
+   */
+  get velocity() {
+    return this._velocity;
   }
 
 

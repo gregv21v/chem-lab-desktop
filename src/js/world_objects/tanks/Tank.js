@@ -42,18 +42,9 @@ export default class Tank extends Snappable {
 	 * @param {Boolean} downOpen indicates whether the down side is opened
 	 */
 	constructor(
-		layer, position, interior, wallWidth, 
-		leftOpened=false, rightOpened=false, upOpened=true, downOpened=false
+		layer, position, interior, wallWidth
 	) {
 		super(layer, position, interior.width + wallWidth * 2, interior.height + wallWidth * 2); 
-
-		
-
-		// the open and closes sides
-		this._leftOpened = leftOpened;
-		this._rightOpened = rightOpened;
-		this._upOpened = upOpened;
-		this._downOpened = downOpened;
 
 		this._interior = interior;
 		this._wallWidth = wallWidth;
@@ -278,23 +269,9 @@ export default class Tank extends Snappable {
 		group.add(interiorHorizontal)
 
 
-		if(this._upOpened) {
-			interiorVertical.height += this._wallWidth 
-			interiorVertical.position.y -= this._wallWidth
+		interiorVertical.position.y -= this._wallWidth
+		interiorVertical.height += this._wallWidth
 
-			if(this._downOpened) {
-				interiorVertical.height += this._wallWidth
-			}
-		}
-
-		if(this._leftOpened) {
-			interiorHorizontal.width += this._wallWidth 
-			interiorHorizontal.position.x -= this._wallWidth
-
-			if(this._rightOpened) {
-				interiorHorizontal.width += this._wallWidth
-			}
-		}
 
 		// setup liquid svg
 		return group;
@@ -473,7 +450,16 @@ export default class Tank extends Snappable {
 	}
 
 
-	
+	/**
+	 * heatFluidBodies() 
+	 * @description heats the fluid bodies in the tank
+	 * @param {Number} amount the amount to heat the fluid bodies by
+	 */
+	heatFluidBodies(amount) { 
+		for (const fluidBody of this._fluidBodies) {
+			fluidBody.heat(amount);
+		}
+	}
 
 
 	/**
@@ -482,20 +468,25 @@ export default class Tank extends Snappable {
 	 */
 	heatLiquids(world) {
 		// whenever a liquid is heated it will sometimes produce a drop 
-		let dropX = getRandomInt(0, this.width)
+		this.heatFluidBodies(1);
+		
+		let dropX = getRandomInt(0, this.width - this._wallWidth * 2)
 		let dropSize = 5;
-		let firstFluid = this._fluidBodies[0];
-		let drop = firstFluid.removeDrop(dropSize);
+		let firstFluid = this.getFirstFluid();
+		let drop = (firstFluid && firstFluid.isBoiling()) ? firstFluid.removeDrop(dropSize) : null;
+
+
+
 
 		if(drop) {
 			this.removeVolumelessFluids()
 			this._emptyFluid.addDrop(drop.size)
 			this.updateFluidBodies();
-			drop.position.x = dropX;
-			drop.position.y = this._fluidBodies[0].position.y - dropSize - 1 
-			drop.heat(5);
-			drop.direction = "up"
-			
+			drop.position.x = this._position.x + this._wallWidth + dropX;
+			drop.position.y = firstFluid.position.y - dropSize * 2
+			drop.density = -1;
+			drop.velocity = {x: 0, y: 1};
+
 			world.addDrop(drop)
 		}
 
@@ -530,10 +521,6 @@ export default class Tank extends Snappable {
 	}
 
 
-	/**
-	 * createThumbnail() 
-	 * @description create a little image of the tank
-	 */
 
 
 	/**
@@ -569,6 +556,30 @@ export default class Tank extends Snappable {
 
 	};
 
+
+	/**
+	 * getFirstFluid()	
+	 * @description Gets the first fluid in the tank
+	 * @returns the first fluid in the tank
+	 */
+	getFirstFluid() {
+		let isDown = (this._rotation === 270);
+
+		if(isDown) {
+			for (let i = 0; i < this._fluidBodies.length; i++) {
+				if(!(this._fluidBodies[i].fluid instanceof EmptyFluid)) {
+					return this._fluidBodies[i];
+				}
+			}
+		} else {
+			for (let i = this._fluidBodies.length - 1; i > 0; i--) {
+				if(!(this._fluidBodies[i].fluid instanceof EmptyFluid)) {
+					return this._fluidBodies[i];
+				}
+			}
+		}
+	};
+
 	/**
 	 * addDrop()	
 	 * @description adds a drop to the tank
@@ -600,7 +611,12 @@ export default class Tank extends Snappable {
 				newFluid.container = this;
 				newFluid.create();
 				this._fluidBodies.push(newFluid);
-				this._fluidBodies = this._fluidBodies.sort((a, b) => a.fluid.density - b.fluid.density) 
+				if(this._rotation === 90) {
+					this._fluidBodies = this._fluidBodies.sort((a, b) => a.fluid.density - b.fluid.density)
+				} else if(this._rotation === 270) {
+					this._fluidBodies = this._fluidBodies.sort((a, b) => b.fluid.density - a.fluid.density)
+				}
+				 
 			} else { // otherwise combine the new fluid with the existing one
 				this._fluidBodies[i].volume += drop.volume				
 			}
@@ -611,48 +627,36 @@ export default class Tank extends Snappable {
 
 	/**
 		containsDrop()
-		@description Checks to see if the bottom two corners of a drop are in the liquid
-		near the bottom of the tank
-
-		TODO: convert this to be more readable and elegant.
+		@description Checks to see if the drop will enter the tank
+		@param {Drop} drop The drop to check
 	*/
 	containsDrop(drop) {
-		// Either the drop is in the bottom of the tank, or touching the
-		// liquid
-		// one or both of the bottom two corners of the drop are in the liquid
-							 // bottom left
-		var touchingLiquid = (
-								drop.position.x >= this._position.x + this._wallWidth &&
-							 	drop.position.x <= this._position.x + this._wallWidth + this._interior.width &&
-							 	drop.position.y + drop.size >= this._position.y + this._interior.height &&
-							 	drop.position.y + drop.size <= this._position.y + this._interior.height
-							 )
-								||
-							 // bottom right
-							 (
-							 	drop.position.x + drop.size >= this._position.x + this._wallWidth &&
-							 	drop.position.x + drop.size <= this._position.x + this._wallWidth + this._interior.width &&
-							 	drop.position.y + drop.size >= this._position.y + this._interior.height &&
-							 	drop.position.y + drop.size <= this._position.y + this._interior.height
-							 )
+		// the tank is empty 
+		if(this._fluidBodies.length === 1) {
+			let yPosition;
+			if(this._rotation === 90) {
+				yPosition = this._boundingBox.position.y + this._boundingBox.height - this._wallWidth - 2
+			} else if(this._rotation === 270) {
+				yPosition = this._boundingBox.position.y + 2 
+			}
 
-		// if the this is empty, we pretend it has liquid level of 10.
-							 // bottom left
-		var withNoLiquid =  (
-								drop.position.x >= this._position.x + this._wallWidth &&
-							 	drop.position.x <= this._position.x + this._wallWidth + this._interior.width &&
-							 	drop.position.y + drop.size >= this._position.y + this._interior.height - 10 &&
-							 	drop.position.y + drop.size <= this._position.y + this._interior.height
-							)
-								||
-							 // bottom right
-							(
-							 	drop.position.x + drop.size >= this._position.x + this._wallWidth &&
-							 	drop.position.x + drop.size <= this._position.x + this._wallWidth + this._interior.width &&
-							 	drop.position.y + drop.size >= this._position.y + this._interior.height - 10 &&
-							 	drop.position.y + drop.size <= this._position.y + this._interior.height
-							)
-		return touchingLiquid || withNoLiquid;
+			let bottomEdge = new Rect(
+				d3.select("[name='debug']"),
+				{
+					x: this._boundingBox.position.x, 
+					y: yPosition
+				},
+				this._boundingBox.width,
+				this._wallWidth + 1
+			)
+
+			return bottomEdge.intersect(drop)
+
+		// there is some liquid in the tank
+		} else {
+
+			return this.getFirstFluid().intersect(drop)
+		}
 	}
 
 	

@@ -42,21 +42,6 @@ export default class FluidBody extends Rect {
         this._temperature += temperature;
     }
 
-    /**
-     * mix()
-     * @description average the two fluids together.
-     */
-    static mix(fluid1, fluid2) {
-        return new Fluid(
-            Math.floor((fluid1.value + fluid2.value) / 2),
-            {
-                red: Math.floor((fluid1.color.red + fluid2.color.red) / 2),
-                green: Math.floor((fluid1.color.green + fluid2.color.green) / 2),
-                blue: Math.floor((fluid1.color.blue + fluid2.color.blue) / 2)
-            }
-        )
-    }
-
 
     /**
      * get width()

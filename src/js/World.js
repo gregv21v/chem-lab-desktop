@@ -16,8 +16,6 @@ export default class World {
 	constructor(game, player, position, width, height) {
 		this._game = game;
 		this.player = player;
-		this.snapPoint = null;
-		this.snappingTo = null;
 
 		// The side that the given object (snappingTo) is on.
 		this.objectOn = ""
