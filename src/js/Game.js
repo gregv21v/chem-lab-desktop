@@ -33,6 +33,9 @@ export default class Game {
     this._mode = mode;
     let svg = d3.select("svg")
 
+    svg.attr("width", window.innerWidth)
+    svg.attr("height", window.innerHeight)
+
     this._width = svg.attr("width")
     this._height = svg.attr("height")
 
@@ -104,7 +107,7 @@ export default class Game {
     
 
     // setup the world
-    this._world = new World(this, this._player, {x: 310, y: 20}, this._width - (310 + 400), this._height - 30)
+    this._world = new World(this, this._player, {x: this._width / 4, y: 20}, this._width * 3 / 4 - 20, this._height - 30)
     this._world.create()
 
     // setup the HUD

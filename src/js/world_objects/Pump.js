@@ -19,7 +19,6 @@ import { getRandomInt } from "../util";
 
 import * as d3 from "d3"
 import Fluid from "./fluids/Fluid";
-import FluidRegistry from "./fluids/FluidRegistry";
 import Group from "../shapes/Group";
 import Circle from "../shapes/Circle";
 import Rect from "../shapes/Rect";
@@ -35,15 +34,10 @@ export default class Pump extends GameObject {
 	constructor(layer, world, position, production) {
 		super(layer, position, {x: 0, y: 0})
 
-		this._production = production;
-		this._position = position;
+		this._production = production; // the amount the pump produces
+		this._position = position; // the position of the pump
+		this._world = world; // the world the pump is in
 
-		this._tooltip = new ToolTip(
-	    	this._position,
-	    	"Click to produce liquid"
-		);
-		this._tooltip.create();
-		this._world = world;
 		
 		this._description = [
 			"Produces liquids when clicked"
@@ -88,10 +82,12 @@ export default class Pump extends GameObject {
 		this._svg.button.attr("cy", this._position.y + this._production);
 		this._svg.button.style("fill", "red")
 			.on("mouseenter", function() {
-				self._tooltip.show();
+				//self._tooltip.update();
+				//self._tooltip.show();
 			})
 			.on("mouseleave", function() {
-				self._tooltip.hide();
+				//self._tooltip.update();
+				//self._tooltip.hide();
 			});
 
 		this._svg.spout.attr("width", this._production);

@@ -18,14 +18,14 @@ export class HUD {
         let belowLayer = game.layers[0].append("g")
         let aboveLayer = game.layers[0].append("g")
 
-        this._inventory = new Inventory(belowLayer, player, {x: 20, y: 20 + 25}, 275, game.height - 30);
+        this._inventory = new Inventory(belowLayer, player, {x: 20, y: 20 + 25}, game.width / 4 - 30, game.height - 30);
 
-        this._credits = new ValueBox(aboveLayer, {x: 20, y: 20}, 250, 25);
+        this._credits = new ValueBox(aboveLayer, {x: 20, y: 20}, game.width / 4 - 30, 25);
         this._credits.create()
         this._credits.update()
 
         this._credits.styling = {
-            color: "red",
+            color: "white",
             textColor: "black",
             strokeColor: "black",
             strokeWidth: 1
