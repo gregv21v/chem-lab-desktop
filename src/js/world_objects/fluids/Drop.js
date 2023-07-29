@@ -39,6 +39,7 @@ export default class Drop extends FluidBody {
 
     this._svg.rect.attr("name", "Drop")
     this._svg.rect.style("fill", this._fluid.getColorAsString())
+    this._svg.rect.style("fill-opacity", this._fluid.color.opacity)
     this._svg.rect.attr("x", this._position.x);
     this._svg.rect.attr("y", this._position.y);
 

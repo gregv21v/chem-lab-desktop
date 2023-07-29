@@ -145,6 +145,7 @@ export default class Game {
     this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
     this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
     this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
+
     /*this._hud.inventory.add(new ElbowPipe(
       this._layers[1],
       {x: 0, y: 0},
@@ -221,6 +222,16 @@ export default class Game {
     d3.select("body").on("keydown", (event) => {
       self.onKeyPress(event)
     })
+
+    d3.select("body").on("wheel", (event) => {
+      if(event.wheelDelta < 0) {
+        self._hud.inventory.scrollDown();
+        console.log("scrolling down");
+      } else {
+        self._hud.inventory.scrollUp();
+        console.log("scrolling up");
+      }
+    })
   }
 
 
@@ -242,8 +253,10 @@ export default class Game {
    */
   update() {
     var self = this;
+    var time = 0;
     setInterval(() => {
-      self._world.update();
+      time++;
+      self._world.update(time);
     }, 20);
   }
 

@@ -14,7 +14,7 @@ export default class Fluid {
      * @param {Color} color the color of the fluid
      */
     constructor(name, density, heatedDensityMultiplier, boilingPoint, condensationPoint, color) {
-        this._color = color; // the color of the fluid
+        this._color = color; // the color of the fluid {red, green, blue, opacity}
         this._name = name; // the name of the fluid
         this._density = density; // the density of the fluid
         this._heatedDensityMultiplier = heatedDensityMultiplier
@@ -27,7 +27,7 @@ export default class Fluid {
      * @returns the getColorAsString of the fluid
      */
     getColorAsString() {
-        return "rgba(" + this._color.red + "," + this._color.green + "," + this._color.blue + "," + this._color.alpha + ")";
+        return "rgba(" + this._color.red + "," + this._color.green + "," + this._color.blue + ")";
     }
 
     /**

@@ -90,11 +90,6 @@ export default class World {
 			}
 
 		}
-
-		console.log("Objects --------------------------------");
-		for (const obj of this.objs) {
-			console.log(obj);
-		}
 	}
 
 	/**
@@ -265,7 +260,7 @@ export default class World {
 		update()
 		@description Updates all the objects currently in the world
 	*/
-	update() {
+	update(time) {
 
 
 		for(var i = 0; i < this.drops.length; i++) {
@@ -288,7 +283,8 @@ export default class World {
 			}
 
 			if(obj instanceof Heater || obj instanceof Fan) {
-				obj.heat(this);
+				if(time % 5 === 0)
+					obj.heat(this);
 			}
 
 			

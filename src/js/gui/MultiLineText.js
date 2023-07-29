@@ -48,14 +48,12 @@ export default class MultiLineText {
     }
 
     /**
-     * set text()
-     * @description sets the text value
+     * set lines()
+     * @description sets the lines value
      * @param {Array[String]} value the text value
      */
-    set text(value) {
+    set lines(value) {
         this._lines = value;
-
-        console.log(this._lines);
 
         for (let i = 0; i < this._lines.length; i++) {
             let svgLine;
@@ -95,6 +93,40 @@ export default class MultiLineText {
             let svgLine = this._svg[i];
             svgLine.attr("x", this._position.x)
             svgLine.attr("y", this._position.y + (this.styling.textSize + 5) * i)
+        }
+    }
+
+
+    /**
+     * hide()
+     * @description hides the multiline text
+     */
+    hide() {
+        for (let i = 0; i < this._svg.length; i++) {
+            let svgLine = this._svg[i];
+            svgLine.text("");
+        }
+    }
+
+    /**
+     * show()
+     * @description shows the multiline text
+     */
+    show() {
+        for (let i = 0; i < this._svg.length; i++) {
+            let svgLine = this._svg[i];
+            svgLine.text(this._lines[i]);
+        }
+    }
+
+
+    /**
+     * destroy()
+     * @description destroys the MultiLineText object
+     */
+    destroy() {
+        for (const svg of this._svg) {
+            svg.remove();
         }
     }
 }

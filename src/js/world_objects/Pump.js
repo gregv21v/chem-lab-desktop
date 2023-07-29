@@ -50,12 +50,15 @@ export default class Pump extends GameObject {
 		]
 
 		this._possibleFluids = [
-			new Fluid("Rocks", 2, this._production * this._production, 200, -10, {red: 102, green: 102, blue: 153, alpha: 100}),
-			new Fluid("Minerals", 2, this._production * this._production, 200, -10, {red: 142, green: 140, blue: 145, alpha: 100}),
-			new Fluid("Iron", 3, this._production * this._production, 200, -10, {red: 102, green: 51, blue: 0, alpha: 100}),
-			new Fluid("Water", 2, this._production * this._production, 50, -5, {red: 0, green: 0, blue: 255, alpha: 100})
-			//new Fluid("Dust", 5, this._production * this._production, 20, {red: 173, green: 161, blue: 113, alpha: 255}),
-			//new Fluid("Lava", 1, this._production * this._production, 10, {red: 255, green: 0, blue: 0, alpha: 255}),
+			new Fluid("Rocks", 2, this._production * this._production, 200, -10, {red: 102, green: 102, blue: 153, opacity: 1}),
+			new Fluid("Minerals", 2, this._production * this._production, 200, -10, {red: 142, green: 140, blue: 145, opacity: 1}),
+			new Fluid("Iron", 3, this._production * this._production, 200, -10, {red: 102, green: 51, blue: 0, opacity: 1}),
+			new Fluid("Water", 2, this._production * this._production, 50, -5, {red: 0, green: 0, blue: 255, opacity: 0.5}),
+			new Fluid(
+				"Algea", 2, this._production * this._production, 50, -5, {red: 0, green: 200, blue: 0, opacity:0.7}
+			)
+			//new Fluid("Dust", 5, this._production * this._production, 20, {red: 173, green: 161, blue: 113, opacity: 255}),
+			//new Fluid("Lava", 1, this._production * this._production, 10, {red: 255, green: 0, blue: 0, opacity: 255}),
 		]
 	}
 

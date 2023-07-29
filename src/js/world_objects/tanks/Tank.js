@@ -468,14 +468,14 @@ export default class Tank extends Snappable {
 				fluidBody.temperature + amount >= source.minTemperature
 			) {
 				fluidBody.heat(amount);
+				fluidBody.update();
 
-				let dropX = getRandomInt(0, this.width - this._wallWidth * 2)
+				let dropX = getRandomInt(0, this.width - this._wallWidth * 2);
 				let dropSize = 5;
-				let drop;
+				let canCondense = fluidBody.isCondensing() && this.facing === "down";
+				let canEvaporate = fluidBody.isBoiling() && this.facing === "up";
+				let drop = (canCondense || canEvaporate) ? fluidBody.removeDrop(dropSize) : undefined;
 
-				if(fluidBody && (fluidBody.isCondensing() || fluidBody.isBoiling())) {
-					drop = fluidBody.removeDrop(dropSize);
-				}
 
 				// add the drop to the world
 				if(drop) {
@@ -716,6 +716,24 @@ export default class Tank extends Snappable {
 	 */
 	getDownY() {
 		return this._boundingBox.y + this._boundingBox.height - this._wallWidth;
+	}
+
+
+	/**
+	 * get facing()
+	 * @description gets the direction the opening of the tank is facing
+	 * @returns {Direction} the direction of the opening of the tank
+	 */
+	get facing() {
+		if(this._rotation === 90)
+			return "up"
+		else if(this._rotation === 180) {
+			return "right"
+		} else if(this._rotation === 270) {
+			return "down"
+		} else if(this._rotation === 0) {
+			return "left"
+		}
 	}
 
 

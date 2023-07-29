@@ -150,6 +150,62 @@ export default class Inventory extends ScrollableContainer {
 	}
 
 	/**
+     * scrollUp() 
+     * @description scrolls the container up
+     */
+    scrollUp() {
+        let newGripPosition = this._lastGripPosition - 10;
+
+        if (newGripPosition < 0) {
+            newGripPosition = 0;
+        }
+
+        if (newGripPosition > this._trackScrollAreaSize) {
+            newGripPosition = this._trackScrollAreaSize;
+        }
+
+        let newGripPositionRatio = newGripPosition / this._trackScrollAreaSize;
+        this._grip.attr("y", this._position.y + newGripPosition)
+
+        this._lastGripPosition = newGripPosition;
+
+        this._windowY = newGripPositionRatio * this._windowScrollAreaSize;
+
+		// move all the content int the container
+		for (const slot of this.slots) {
+			slot.offsetY(this._position.y - this._windowY)	
+		}
+    }
+
+    /**
+     * scrollDown() 
+     * @description scrolls the container down
+     */
+    scrollDown() {
+        let newGripPosition = this._lastGripPosition + 10;
+
+        if (newGripPosition < 0) {
+            newGripPosition = 0;
+        }
+
+        if (newGripPosition > this._trackScrollAreaSize) {
+            newGripPosition = this._trackScrollAreaSize;
+        }
+
+        let newGripPositionRatio = newGripPosition / this._trackScrollAreaSize;
+        this._grip.attr("y", this._position.y + newGripPosition)
+
+		this._lastGripPosition = newGripPosition
+
+        this._windowY = newGripPositionRatio * this._windowScrollAreaSize;
+
+		// move all the content int the container
+		for (const slot of this.slots) {
+			slot.offsetY(this._position.y - this._windowY)	
+		}
+    }
+
+	/**
      * drag() 
      * @description drag the container
      * @param {Pointer} pointer the pointer that started the drag
@@ -170,6 +226,8 @@ export default class Inventory extends ScrollableContainer {
 
         let newGripPositionRatio = newGripPosition / this._trackScrollAreaSize;
         this._grip.attr("y", this._position.y + newGripPosition)
+
+		this._lastGripPosition = newGripPosition
 
         this._windowY = newGripPositionRatio * this._windowScrollAreaSize;
 

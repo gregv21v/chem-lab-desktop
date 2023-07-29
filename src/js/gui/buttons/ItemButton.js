@@ -15,7 +15,6 @@
   Liquid: Water
 
 */
-import Pump from "../../world_objects/Pump";
 import MultiLineText from "../MultiLineText";
 import Button from "./Button"
 import * as d3 from "d3"
@@ -175,7 +174,7 @@ export default class ItemButton extends Button {
     @param {String} description description to be set to
 	*/
   set description(value) {
-    this._svg.description.text = value;
+    this._svg.description.lines = value;
     this._descriptionText = value;
   }
 

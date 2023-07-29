@@ -1,6 +1,6 @@
 import Inventory from "./gui/Inventory";
-import Slot from "./gui/Slot";
 import ValueBox from "./gui/ValueBox";
+import * as d3 from "d3";
 
 /**
  * HUD - the gui 
@@ -15,21 +15,24 @@ export class HUD {
         this._player = player;
         this._game = game;
 
-        this._inventory = new Inventory(game.layers[0], player, {x: 20, y: 20}, 275, game.height - 30);
+        let belowLayer = game.layers[0].append("g")
+        let aboveLayer = game.layers[0].append("g")
 
-        /*this._credits = new ValueBox({x: 20, y: 20}, 250, 25);
-        this._credits.create(svg)
+        this._inventory = new Inventory(belowLayer, player, {x: 20, y: 20 + 25}, 275, game.height - 30);
+
+        this._credits = new ValueBox(aboveLayer, {x: 20, y: 20}, 250, 25);
+        this._credits.create()
         this._credits.update()
 
         this._credits.styling = {
             color: "red",
             textColor: "black",
             strokeColor: "black",
-            strokeWidth: 10
+            strokeWidth: 1
         }
 
         this._credits.label = "Coins";
-        this._credits.value = 0;*/
+        this._credits.value = 0;
     }
 
 

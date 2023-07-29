@@ -5,7 +5,7 @@
 import * as d3 from "d3"
 import Drawable from "../Drawable";
 
-export default class ValueBox extends Drawable {
+export default class ValueBox {
 
 
 	/**
@@ -16,7 +16,8 @@ export default class ValueBox extends Drawable {
 	 * @param {Number} height the height of the value box
 	 */
 	constructor(layer, position, width, height) {
-		super(layer, position)
+		this._layer = layer;
+		this._position = position;
 		this._width = width;
 		this._height = height;
 		this._label = "";
@@ -44,7 +45,7 @@ export default class ValueBox extends Drawable {
 		this.height = this._height;
 		this.position = this._position
 
-		parent.append(() => this._group.node())
+		this._layer.append(() => this._group.node())
 	}
 
 	
@@ -59,7 +60,7 @@ export default class ValueBox extends Drawable {
 		this._svg.rect.attr("width", this._width);
 		this._svg.rect.attr("height", this._height);
 		this._svg.rect.style("stroke", "black");
-		this._svg.rect.style("stroke-width", 5);
+		this._svg.rect.style("stroke-width", 1);
 		this._svg.rect.attr("class", "ValueBox");
 
 		this._svg.label.attr("x", this._position.x + this._width/2 - ((this.label.length + ("" + this.value).length) * 6)/2);

@@ -20,8 +20,13 @@ export default class ContainerFluidBody extends FluidBody {
 
         this._tooltip = new ToolTip(
             {x: this._position.x + this._width / 2, y: this._position.y + this._height / 2},
-            "Temperature: " + this._temperature
+            [
+                "Name: " + this._fluid.name,  
+                "Temperature: " + this._temperature
+            ]
         )
+
+        this._stroke.opacity = 0;
         
     }
 
@@ -67,11 +72,18 @@ export default class ContainerFluidBody extends FluidBody {
 		this._svg.hoverBox.attr("stroke-opacity", 0)
 		this._svg.hoverBox.attr("fill-opacity", 0);
 
-        this._tooltip.text = "Temperature: " + this._temperature
+        this._tooltip.description = [
+            "Name: " + this._fluid.name,  
+            "Temperature: " + this._temperature
+        ]
+        this._tooltip.update();
 
         let self = this;
         this._svg.hoverBox.on("mouseenter", () => {
-            self._tooltip.text = "Temperature: " + self._temperature
+            self._tooltip.description = [
+                "Name: " + self._fluid.name,  
+                "Temperature: " + self._temperature
+            ]
             self._tooltip.position = {
                 x: self._position.x + self.width,
                 y: self._position.y
@@ -257,8 +269,6 @@ export default class ContainerFluidBody extends FluidBody {
      * @description get the volume of the fluid
      */
     get volume() {
-
-    
         return this._volume;
     }
 
