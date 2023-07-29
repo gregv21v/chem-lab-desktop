@@ -158,7 +158,7 @@ export default class ContainerFluidBody extends FluidBody {
      *          false otherwise
      */
     isCondensing() {
-        return this._temperature <= this._fluid.condensingPoint;
+        return this._temperature <= this._fluid.condensationPoint;
     }
 
 

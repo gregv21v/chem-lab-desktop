@@ -9,8 +9,7 @@ import Snappable from "../Snappable";
 import SnapPoint from "../SnapPoint";
 import Group from "../../shapes/Group";
 import Arrow from "../../shapes/Arrow";
-import { getNextSide, getOpposite } from "../../util";
-import { rotatePoint } from "../../shapes/Point";
+import { getNextSide } from "../../util";
 
 export default class Pipe extends Snappable {
 

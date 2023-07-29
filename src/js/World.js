@@ -10,8 +10,8 @@ import * as d3 from "d3"
 import GameObject from "./world_objects/GameObject";
 import Snappable from "./world_objects/Snappable";
 import Pump from "./world_objects/Pump";
-import Heater from "./world_objects/Heater";
-import Fan from "./world_objects/Fan";
+import Heater from "./world_objects/heatSources/Heater";
+import Fan from "./world_objects/heatSources/Fan";
 
 export default class World {
 	constructor(game, player, position, width, height) {

@@ -210,11 +210,14 @@ export default class Rect extends GameObject {
 
 
 	/**
-	 * rotateAroundCenter() 
-	 * @description rotates the rectangle around its center 
-	 * 
+	 * setOnClick()
+	 * @description determines what happens when this rect is clicked
+	 * @param {Function} onClickFn the function called when this rect is clicked
 	 */
-	
+	setOnClick(onClickFn) {
+		this._svg.rect.on("click", onClickFn);
+	}
+
 
 	/**
 	 * create()
@@ -531,5 +534,24 @@ export default class Rect extends GameObject {
 	 */
 	set layer(value) {
 		this._layer = value;
+	}
+
+
+	/**
+	 * hide()
+	 * @description hides the rectangle from view
+	 */
+	hide() {
+		this._svg.rect.attr("fill-opacity", 0)
+		this._svg.rect.attr("stroke-opacity", 0);
+	}
+
+	/**
+	 * show()
+	 * @description shows the rectangle
+	 */
+	show() {
+		this._svg.rect.attr("fill-opacity", this._fill.opacity);
+		this._svg.rect.attr("stroke-opacity", this._stroke.opacity);
 	}
 }

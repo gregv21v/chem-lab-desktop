@@ -63,6 +63,15 @@ export default class Fluid {
         return this._heatedDensityMultiplier
     }
 
+
+    /**
+     * get condensationPoint()
+     * @description gets the condensationPoint of the fluid
+     */
+    get condensationPoint() {
+        return this._condensationPoint;
+    }
+
     /**
      * get color()
      * @description gets the density of the fluid
