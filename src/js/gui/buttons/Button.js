@@ -24,7 +24,7 @@ export default class Button extends Drawable {
 	 * create() 
 	 * @description creates the graphics and attach it to the parent
 	 */
-	create(parent) {
+	create() {
 		this._group = d3.create("svg:g")
 		this._layer.append(() => this._group.node())
 		let self = this;

@@ -22,8 +22,8 @@ export default class Pipe extends Snappable {
 	 * @param {Number} interiorHeight the interior height of the pipe
 	 * @param {Number} wallWidth the wall width of the pipe
 	 */
-	constructor(layer, center, length, interiorHeight, wallWidth) {
-		super(layer, center)
+	constructor(world, player, layer, center, length, interiorHeight, wallWidth) {
+		super(world, player, layer, center, length, interiorHeight + wallWidth * 2);
 
 		this._diameter = interiorHeight + wallWidth * 2;
 		this._length = length;
@@ -214,7 +214,8 @@ export default class Pipe extends Snappable {
 		=============Drawing the Pipe=============
 	*/
 	create() {
-		this._group = this._layer.append("g")
+		super.create();
+
 		this._group.attr("name", "Pipe")
 
 		this._boundingBox.position = this._position;
@@ -222,8 +223,6 @@ export default class Pipe extends Snappable {
 		this._boundingBox.height = this._height
 		this._boundingBox.fill.opacity = 0
 		this._boundingBox.stroke.opacity = 0;
-		this._boundingBox.create();	
-
 
 		this._arrow = new Arrow(
 			d3.select("[name='fluids']"),
@@ -236,10 +235,7 @@ export default class Pipe extends Snappable {
 		this._arrow.fill.opacity = 0;
 		this._arrow.create();
 
-		this._graphicsGroup = this.createGraphics(this._group);
 		this._graphicsGroup.add(this._arrow);
-
-		this.createSnapPoints();
 	}
 
 

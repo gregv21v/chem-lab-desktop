@@ -16,10 +16,13 @@ export default class Fan extends HeatSource {
     /**
      * constructor()
      * @description constructs the heater
-     * @param
+     * @param {World} world the world the Fan will be placed in
+     * @param {Player} player the player that is placing the Fan
+     * @param {Point} the position of the Fan
+     * @param {Number} radius the radius of the Fan
      */
-    constructor(layer, position, radius) {
-        super(layer, position, radius, radius);
+    constructor(world, player, layer, position, radius) {
+        super(world, player, layer, position, radius, radius);
         this._radius = radius;
 
         this._isOn = true;
@@ -83,23 +86,13 @@ export default class Fan extends HeatSource {
 
 
     create() {
-		this._group = this._layer.append("g")
+        super.create();
 
         this._boundingBox.width = this._radius * 3;
         this._boundingBox.height = this._radius * 2;
 		this._boundingBox.fill.opacity = 0.0
         this._boundingBox.fill.color = "blue"
 		this._boundingBox.stroke.opacity = 0.0;
-
-		this._boundingBox.create();
-		
-
-
-		this._graphicsGroup = this.createGraphics(this._group);
-        //this._objectGroup.add(this._boundingBox);
-		this.createSnapPoints();
-
-        
 
         this.update();
 	}

@@ -25,7 +25,7 @@ export default class World {
 		this.rect.position = position;
 		this.rect.width = width;
 		this.rect.height = height;
-		this.rect.stroke.width = 10;
+		this.rect.stroke.width = 5;
 		this.rect.stroke.color = "black";
 		this.drops = [];
 		this.objs = [];
@@ -64,32 +64,7 @@ export default class World {
 		@param evnt the mouse down event
 	*/
 	mouseDownHandler(evnt) {
-		// place the object in the world
-		// when you are not in the inventory, and have selected a button
-		if(this.player.hand &&
-			!this._game.hud.inventory.contains({x: evnt.clientX, y: evnt.clientY}))
-		{
-
-			
-
-			// Move the object to the world
-			if(this.player.hand) {
-				if(this._fixedSnappable) {
-					// get the snap point on the object that is moving
-					this._snappedPair.fixed.attach(this.player.hand);
-					this._snappedPair.moving.attach(this._fixedSnappable);
-				}
-
-
-				//if(!(this.player.hand instanceof Pump))
-					//this.player.hand.showSnapAreas()
-				this.add(this.player.hand);
-				this.player.hand = null; // empty hand
-				this._fixedSnappable = null;
-				this.update();
-			}
-
-		}
+		
 	}
 
 	/**
@@ -100,21 +75,10 @@ export default class World {
 	mouseMoveHandler(evnt) {
 		var mousePos = {x: evnt.clientX, y: evnt.clientY};
 
-		if(this.player.hand != null) {
-
-			/*for (var i = 0; i < this.lines.length; i++) {
-				var objCenter = this.objs[i].center
-				this.lines[i]
-					.style("stroke", "orange")
-					.attr("x1", objCenter.x)
-					.attr("y1", objCenter.y)
-					.attr("x2", mousePos.x)
-					.attr("y2", mousePos.y)
-			}*/
-
+		if(this.player.hand) { // if there is something in the players hand
+			
 			
 			if(!(this.player.hand instanceof Pump)) {
-				console.log("Move To");
 				this.player.hand.moveTo({
 					x: mousePos.x - this.player.hand.boundingBox.width / 2,
 					y: mousePos.y - this.player.hand.boundingBox.height / 2
@@ -125,17 +89,45 @@ export default class World {
 			
 			this._fixedSnappable = this.findClosestSnappable(mousePos) // check
 		
-			
+			// snap to the closest Snappable in the world
 			if(this.player.hand instanceof Snappable && this._fixedSnappable != null) {
-				//closestSnappable.boundingBox.fill.opacity = 1;
-				//closestSnappable.boundingBox.fill.color = "orange";
-				//closestSnappable.boundingBox.update();
 				this.flexibleSnap(this._fixedSnappable, this.player.hand);
 			} 
 			this.player.hand.update()
 			
 		}
 
+	}
+
+
+	/**
+	 * place()
+	 * @description places an object in the world
+	 * @param {GameObject} object the object to place 
+	 */
+	place(object) {
+		// place the object in the world
+		// when you are not in the inventory, and have selected a button
+		if(object && this.within(object)) {
+			// Move the object to the world
+			if(object) {
+				if(this._fixedSnappable) {
+					// get the snap point on the object that is moving
+					this._snappedPair.fixed.attach(object);
+					this._snappedPair.moving.attach(this._fixedSnappable);
+				}
+
+				this.add(object);
+				this._fixedSnappable = null; // the fixed object to snap to
+				this.update();
+
+				return true;
+			}
+
+			return false;
+
+		}
+		return false;
 	}
 
 	/**
@@ -310,6 +302,15 @@ export default class World {
 			this.rect.contains({x: gameObject.position.x + gameObject.width, y: gameObject.position.y + gameObject.height})
 		);
 	};
+
+	/**
+	 * pointWithin()
+	 * @description check to see if a point is within the bounds of the world
+	 * @param {Point} point the point to check
+	 */
+	pointWithin(point) {
+		return this.rect.contains(point);
+	} 
 
 
 	/**

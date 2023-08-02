@@ -12,6 +12,11 @@ rules.push({
   use: [{ loader: 'html-loader'}],
 });
 
+rules.push({
+  test: /\.(png|svg)$/,
+  use: [{ loader: 'file-loader'}]
+})
+
 
 module.exports = {
   // Put your normal webpack config below here

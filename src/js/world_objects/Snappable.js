@@ -10,15 +10,17 @@ import SnapPoint from "./SnapPoint"
 import { getAreaOfIntersection, getOpposite } from "../util"
 
 export default class Snappable extends Rect {
-  constructor(layer, position, width, height) {
+  constructor(world, player, layer, position, width, height) {
     super(layer, position, width, height) 
 
+    this._player = player;
+    this._world = world;
     this._rotation = 0;
     this._graphicsGroup = new Group(); // the place where all the graphic objects are stored
     this._snapGroup = new Group(); // the place where the snap points are stored
 
     this._boundingBox = new Rect(
-			d3.select('[name="debug"]'),
+			d3.select('[name="clicks"]'),
 			position,
 			width,
 			height
@@ -31,13 +33,46 @@ export default class Snappable extends Rect {
 
 
   /**
+	 * createSnapPoints() 
+	 * @description creates the snap points of the tank
+	 */ 
+  createSnapPoints() {
+
+  }
+
+
+  /**
    * create() 
    * @description creates the snappable
    */
   create() {
-    this._graphicsGroup.create();
+    this._group = this._layer.append("g")
+
+    this._graphicsGroup = this.createGraphics(this._group)
     this._boundingBox.create();
+
+    this.createSnapPoints();
     this._snapGroup.create();
+
+    let self = this;
+    this._boundingBox.setOnClick(() => {
+			self.onClick();
+		})
+  }
+
+
+  /**
+   * onClick() 
+   * @description determines the on click behavior of this Snappable
+   */
+  onClick() {
+    if(this._player.hand === null && this._player.isInEditMode) {
+      this._player.hand = this;
+      this._player.hand.clearAttachments();
+      console.log(this._player.hand);
+    } else {
+      if(this._world.place(this)) this._player.hand = null;
+    }
   }
 
   /**

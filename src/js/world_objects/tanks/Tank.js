@@ -44,9 +44,9 @@ export default class Tank extends Snappable {
 	 * @param {Boolean} downOpen indicates whether the down side is opened
 	 */
 	constructor(
-		layer, position, interior, wallWidth
+		world, player, layer, position, interior, wallWidth
 	) {
-		super(layer, position, interior.width + wallWidth * 2, interior.height + wallWidth * 2); 
+		super(world, player, layer, position, interior.width + wallWidth * 2, interior.height + wallWidth * 2); 
 
 		this._interior = interior;
 		this._wallWidth = wallWidth;
@@ -75,14 +75,12 @@ export default class Tank extends Snappable {
 			"Holds fluids"
 		]
 		
-		this.createSnapPoints();
-		
 		this._temperature = 0;
 	}
 
 
 	/**
-	 * createSnapPoint() 
+	 * createSnapPoints() 
 	 * @description creates the snap points of the tank
 	 */ 
 	createSnapPoints() {
@@ -199,18 +197,15 @@ export default class Tank extends Snappable {
 	 * @description creates the Tank
 	 */
 	create() {
-		this._group = this._layer.append("g")
+		super.create();
 
 		this._emptyFluid.container = this;
 
 		this._boundingBox.stroke.color = "blue"
-		this._boundingBox.stroke.opacity = 0
+		this._boundingBox.stroke.opacity = 0.5
 		this._boundingBox.position = this._position
 		this._boundingBox.width = this._width
 		this._boundingBox.height = this._height
-		this._boundingBox.create();
-
-		this._graphicsGroup = this.createGraphics(this._group);
 
 		this._emptyFluid.stroke.opacity = 0;
 		this._emptyFluid.create();
@@ -221,7 +216,15 @@ export default class Tank extends Snappable {
 	}
 
 
-
+	/**
+	 * clearAttachments()
+	 * @description clears all attachments from the Tank
+	 */
+	clearAttachments() {
+		for (const snapPoint of this._snapPoints) {
+			snapPoint.clearAttachments();
+		}
+	}
 
 
 

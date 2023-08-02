@@ -136,15 +136,15 @@ export default class ItemButton extends Button {
   set item(value) {
     this._item = value;
 
-
     this._thumbnail = this._item.getThumbnail(
       this._position.x + 10, this._position.y + 10, .5, this._group 
     );
 
+    this.name = this._item.name;
+    console.log("Dimensions: ", this._item.width, "x", this._item.height);
+    this.setDimensions(this._item.width, this._item.height);
+
     this._thumbnail.update();
-
-    console.log(this._thumbnail);
-
   }
 
   /**

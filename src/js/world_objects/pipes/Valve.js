@@ -16,8 +16,8 @@ export default class Valve extends Pipe {
    * @param {Number} interiorHeight the interior height of the valve
    * @param {Number} wallWidth the width of the walls of the valve
    */
-  constructor(layer, position, length, interiorHeight, wallWidth) {
-    super(layer, position, length, interiorHeight, wallWidth);
+  constructor(world, player, layer, position, length, interiorHeight, wallWidth) {
+    super(world, player, layer, position, length, interiorHeight, wallWidth);
 
     this._opened = false;
 

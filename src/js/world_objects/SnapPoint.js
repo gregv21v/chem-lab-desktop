@@ -84,6 +84,14 @@ export default class SnapPoint extends Rect {
     }
 
     /**
+     * clearAttachments()
+     * @description clear attachments
+     */
+    clearAttachments() {
+        this._attachments = [];
+    }
+
+    /**
      * attach()
      * @description attachs a snappable to this snap point
      * @param {Snappable} snappable the snappable to attach

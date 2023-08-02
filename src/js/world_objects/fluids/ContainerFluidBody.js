@@ -35,8 +35,13 @@ export default class ContainerFluidBody extends FluidBody {
      * @description creates the svg for the fluid
      */
     create() {
+
+        let tempPattern = this._layer.append("pattern")
+
 		this._svg = {
 			rect: this._layer.append("rect"),
+            //pattern: tempPattern,
+            //image: tempPattern.append("image"),
             hoverBox: d3.select("[name='debug']").append("rect")
 		}
         this._tooltip.create();
@@ -54,6 +59,21 @@ export default class ContainerFluidBody extends FluidBody {
      * @description updates the ContainerFluidBody
      */
     update() {
+        /*this._svg.pattern   
+            .attr("id", "fluidPattern")
+            .attr("viewBox", "0 0 50 50")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("patternUnits", "userSpaceOnUse")
+
+
+        this._svg.image
+            .attr("href", RockTexture)
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", 50)
+            .attr("height", 50)*/
+        
 		this._svg.rect.attr("width", this.width);
 		this._svg.rect.attr("height", this.height);
 		this._svg.rect.attr("x", this._position.x);
@@ -62,7 +82,8 @@ export default class ContainerFluidBody extends FluidBody {
 		this._svg.rect.attr("stroke", this._stroke.color);
 		this._svg.rect.attr("stroke-opacity", this._stroke.opacity)
 		this._svg.rect.attr("fill", this._fill.color);
-		this._svg.rect.attr("fill-opacity", this._fill.opacity);
+		this._svg.rect.attr("fill-opacity", this._fill.opacity)
+            .attr("name", "ContainerFluidBody")
 
 
         this._svg.hoverBox.attr("width", this.width);

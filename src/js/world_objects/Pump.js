@@ -31,12 +31,13 @@ export default class Pump extends GameObject {
 	 * @param {Point} position the position of the pump
 	 * @param {Number} production 
 	 */
-	constructor(layer, world, position, production) {
+	constructor(world, player, layer, position, production) {
 		super(layer, position, {x: 0, y: 0})
 
 		this._production = production; // the amount the pump produces
 		this._position = position; // the position of the pump
 		this._world = world; // the world the pump is in
+		this._player = player; // the player
 
 		
 		this._description = [
@@ -48,9 +49,9 @@ export default class Pump extends GameObject {
 			new Fluid("Minerals", 2, this._production * this._production, 200, -10, {red: 142, green: 140, blue: 145, opacity: 1}),
 			new Fluid("Iron", 3, this._production * this._production, 200, -10, {red: 102, green: 51, blue: 0, opacity: 1}),
 			new Fluid("Water", 2, this._production * this._production, 50, -5, {red: 0, green: 0, blue: 255, opacity: 0.5}),
-			new Fluid(
+			/*new Fluid(
 				"Algea", 2, this._production * this._production, 50, -5, {red: 0, green: 200, blue: 0, opacity:0.7}
-			)
+			)*/
 			//new Fluid("Dust", 5, this._production * this._production, 20, {red: 173, green: 161, blue: 113, opacity: 255}),
 			//new Fluid("Lava", 1, this._production * this._production, 10, {red: 255, green: 0, blue: 0, opacity: 255}),
 		]
@@ -64,10 +65,15 @@ export default class Pump extends GameObject {
 
 		var self = this;
 		this._svg.button.on("mousedown", function() {
-			if(self._world)
-				self.produceDrop(self._world)
-			else 
-				console.log("You need to set the world for this pump to produce a drop.")
+			if (self._player.hand === null) {
+				if(self._player.isInEditMode) {
+					self._player.hand = self;
+				} else {
+					self.produceDrop(self._world)
+				}
+			} else {
+				if (self._world.place(self)) self._player.hand = null;
+			}
 		})
 
 		this.update();
@@ -105,6 +111,7 @@ export default class Pump extends GameObject {
 	 */
 	createGraphics(svgGroup) {
 		let group = new Group();
+
 
 		let spout = new Rect(svgGroup, {
 			x: this._position.x - this._production / 2,
@@ -169,8 +176,8 @@ export default class Pump extends GameObject {
 	 * @description moves the pump to a point
 	 */
 	moveTo(point) {
-		this._position.x = point.x - this._production
-		this._position.y = point.y - this._production
+		this._position.x = point.x - this._production/2
+		this._position.y = point.y - this._production/2
 	}
 
 	/**
@@ -196,7 +203,7 @@ export default class Pump extends GameObject {
 	 * @returns the width of the pump
 	 */
 	get width() {
-		return this._production * 4;
+		return this._production;
 	}
 
 
@@ -205,7 +212,7 @@ export default class Pump extends GameObject {
 	 * @returns the height of the Pump
 	 */
 	get height() {
-		return this._production * 4;
+		return this._production;
 	}
 
 	/**

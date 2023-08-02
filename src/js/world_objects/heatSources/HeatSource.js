@@ -20,8 +20,8 @@ export default class HeatSource extends Snappable {
      * @param {Number} width the width of the heat source
      * @param {Number} height the height of the heat source
      */
-    constructor(layer, position, width, height) {
-        super(layer, position, width, height);
+    constructor(world, player, layer, position, width, height) {
+        super(world, player, layer, position, width, height);
 
         this._isOn = true;
         // the maximum temperature the source can heat an connected object to 

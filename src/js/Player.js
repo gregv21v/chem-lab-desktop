@@ -26,6 +26,7 @@ export default class Player {
     let svg = d3.select("svg");
     let height = svg.attr("height") - 30;
 
+    this._isInEditMode = false;
     this._hand = null;
 
     
@@ -130,5 +131,24 @@ export default class Player {
   set hand(value) {
     this._hand = value;
   }
+
+
+  /**
+   * get isInEditMode()
+   * @description gets the isInEditMode value 
+   */
+  get isInEditMode() {
+    return this._isInEditMode;
+  }
+
+
+  /**
+   * set isInEditMode()
+   * @description sets the isInEditMode value
+   */
+  set isInEditMode(value) {
+    this._isInEditMode = value;
+  }
+
 
 }

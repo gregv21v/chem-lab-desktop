@@ -18,8 +18,8 @@ export default class Heater extends HeatSource {
      * @description constructs the heater
      * @param
      */
-    constructor(layer, position, width, height) {
-        super(layer, position, width, height);
+    constructor(world, player, layer, position, width, height) {
+        super(world, player, layer, position, width, height);
 
         this._isOn = true;
         this._maxTemperature = 105
@@ -67,7 +67,7 @@ export default class Heater extends HeatSource {
 
 
     create() {
-		this._group = this._layer.append("g")
+        super.create();
 
         this._boundingBox.position = this._position;
         this._boundingBox.width = this._width;
@@ -75,12 +75,6 @@ export default class Heater extends HeatSource {
 		this._boundingBox.fill.opacity = 0.0
         this._boundingBox.fill.color = "blue"
 		this._boundingBox.stroke.opacity = 0;
-
-		this._boundingBox.create();
-		
-		this._graphicsGroup = this.createGraphics(this._group);
-        //this._objectGroup.add(this._boundingBox);
-		this.createSnapPoints();
 
         this.update();
 	}

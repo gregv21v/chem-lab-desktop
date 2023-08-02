@@ -1,6 +1,8 @@
 import Inventory from "./gui/Inventory";
 import ValueBox from "./gui/ValueBox";
 import * as d3 from "d3";
+import Button from "./gui/buttons/Button";
+import EditModeButton from "./gui/buttons/EditModeButton";
 
 /**
  * HUD - the gui 
@@ -20,12 +22,24 @@ export class HUD {
 
         this._inventory = new Inventory(belowLayer, player, {x: 20, y: 20 + 25}, game.width / 4 - 30, game.height - 30);
 
+        this._editModeButton = new EditModeButton(
+            player, aboveLayer, {x: 20, y: game.height - 30}, game.width / 4 - 30, 30
+        )
+        this._editModeButton.create();
+        
+
+        this._editModeButton.styling = {
+            color: "red", 
+            textColor: "black", 
+            strokeWidth: 1
+        }
+
         this._credits = new ValueBox(aboveLayer, {x: 20, y: 20}, game.width / 4 - 30, 25);
         this._credits.create()
         this._credits.update()
 
         this._credits.styling = {
-            color: "white",
+            color: "lightblue",
             textColor: "black",
             strokeColor: "black",
             strokeWidth: 1
