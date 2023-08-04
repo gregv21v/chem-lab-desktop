@@ -1,10 +1,6 @@
-import Fire from "../../shapes/Fire";
+
 import Rect from "../../shapes/Rect";
-import SnapPoint from "../SnapPoint";
 import Snappable from "../Snappable";
-import * as d3 from "d3";
-import Tank from "../tanks/Tank";
-import Group from "../../shapes/Group";
 
 /**
  * Heater - heats the the fluid in a tank
@@ -15,13 +11,14 @@ export default class HeatSource extends Snappable {
     /**
      * constructor()
      * @description constructs the heater
+     * @param {Game} game the game this heat source is part of
      * @param {Layer} layer layer the heat source is on 
      * @param {Point} position the position of the heat source
      * @param {Number} width the width of the heat source
      * @param {Number} height the height of the heat source
      */
-    constructor(world, player, layer, position, width, height) {
-        super(world, player, layer, position, width, height);
+    constructor(game, layer, position, width, height) {
+        super(game, layer, position, width, height);
 
         this._isOn = true;
         // the maximum temperature the source can heat an connected object to 
@@ -46,7 +43,7 @@ export default class HeatSource extends Snappable {
 
 
     create() {
-		
+		super.create();
 	}
 
 

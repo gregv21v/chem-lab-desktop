@@ -16,13 +16,12 @@ export default class Fan extends HeatSource {
     /**
      * constructor()
      * @description constructs the heater
-     * @param {World} world the world the Fan will be placed in
-     * @param {Player} player the player that is placing the Fan
+     * @param {Game} game the game 
      * @param {Point} the position of the Fan
      * @param {Number} radius the radius of the Fan
      */
-    constructor(world, player, layer, position, radius) {
-        super(world, player, layer, position, radius, radius);
+    constructor(game, layer, position, radius) {
+        super(game, layer, position, radius, radius);
         this._radius = radius;
 
         this._isOn = true;
@@ -203,7 +202,7 @@ export default class Fan extends HeatSource {
      */
     get width() {
         return this._radius;
-    };
+    }
 
     /**
      * get height()
@@ -212,7 +211,7 @@ export default class Fan extends HeatSource {
      */
     get height() {
         return this._radius;
-    };
+    }
 
 
 }

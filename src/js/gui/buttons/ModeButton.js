@@ -5,7 +5,7 @@
 import Player from "../../Player";
 import Button from "./Button";
 
-export default class EditModeButton extends Button {
+export default class ModeButton extends Button {
 
     /**
      * constructor()
@@ -16,16 +16,19 @@ export default class EditModeButton extends Button {
      * @param {Number} width the width of the button
      * @param {Number} height the height of the button
      */
-    constructor(player, layer, position, width, height) {
+    constructor(layer, position, width, height, player, modeSelector, mode, name) {
         super(layer, position, width, height);
 
-        this._text = "Edit"
+        this._text = name
         this._player = player;
+        this._mode = mode;
+        this._modeSelector = modeSelector;
 
         this._styling = {
-            color: "red", 
-            textColor: "black", 
-            strokeWidth: 1
+            color: "teal", 
+            textColor: "black",
+            strokeColor: "black", 
+            strokeWidth: 2
         }
     }
 
@@ -37,19 +40,18 @@ export default class EditModeButton extends Button {
 	 * @description the function called when this button is clicked
 	 */
     onClick() {
-        if(this._player.isInEditMode) {
-            console.log("edit mode off");
-            this._player.isInEditMode = false;
-            this.styling = {
-                color: "red"
-            }
-        } else {
-            console.log("edit mode on");
-            this._player.isInEditMode = true;
-            this.styling = {
-                color: "green"
-            }
-        }
+        this._player.mode = this._mode;
+
+        this._modeSelector.update();
+    }
+
+
+    /**
+     * get mode()
+     * @description gets the mode of this button
+     */
+    get mode() {
+        return this._mode;
     }
     
 }

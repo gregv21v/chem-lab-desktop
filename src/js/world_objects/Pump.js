@@ -31,13 +31,12 @@ export default class Pump extends GameObject {
 	 * @param {Point} position the position of the pump
 	 * @param {Number} production 
 	 */
-	constructor(world, player, layer, position, production) {
+	constructor(game, layer, position, production) {
 		super(layer, position, {x: 0, y: 0})
 
 		this._production = production; // the amount the pump produces
 		this._position = position; // the position of the pump
-		this._world = world; // the world the pump is in
-		this._player = player; // the player
+		this._game = game; // the game
 
 		
 		this._description = [
@@ -45,13 +44,15 @@ export default class Pump extends GameObject {
 		]
 
 		this._possibleFluids = [
-			new Fluid("Rocks", 2, this._production * this._production, 200, -10, {red: 102, green: 102, blue: 153, opacity: 1}),
-			new Fluid("Minerals", 2, this._production * this._production, 200, -10, {red: 142, green: 140, blue: 145, opacity: 1}),
+			new Fluid("Rocks", 3, this._production * this._production, 200, -10, {red: 102, green: 102, blue: 153, opacity: 1}),
+			new Fluid("Minerals", 3, this._production * this._production, 200, -10, {red: 142, green: 140, blue: 145, opacity: 1}),
 			new Fluid("Iron", 3, this._production * this._production, 200, -10, {red: 102, green: 51, blue: 0, opacity: 1}),
 			new Fluid("Water", 2, this._production * this._production, 50, -5, {red: 0, green: 0, blue: 255, opacity: 0.5}),
-			/*new Fluid(
-				"Algea", 2, this._production * this._production, 50, -5, {red: 0, green: 200, blue: 0, opacity:0.7}
-			)*/
+			new Fluid(
+				"Algea", 1, 
+				this._production * this._production, 50, -5, 
+				{red: 0, green: 200, blue: 0, opacity:0.7}
+			)
 			//new Fluid("Dust", 5, this._production * this._production, 20, {red: 173, green: 161, blue: 113, opacity: 255}),
 			//new Fluid("Lava", 1, this._production * this._production, 10, {red: 255, green: 0, blue: 0, opacity: 255}),
 		]
@@ -65,14 +66,14 @@ export default class Pump extends GameObject {
 
 		var self = this;
 		this._svg.button.on("mousedown", function() {
-			if (self._player.hand === null) {
-				if(self._player.isInEditMode) {
-					self._player.hand = self;
+			if (self._game.player.hand === null) {
+				if(self._game.player.isInEditMode) {
+					self._game.player.hand = self;
 				} else {
-					self.produceDrop(self._world)
+					self.produceDrop(self._game.world)
 				}
 			} else {
-				if (self._world.place(self)) self._player.hand = null;
+				if (self._game.world.place(self)) self._game.player.hand = null;
 			}
 		})
 
@@ -111,7 +112,6 @@ export default class Pump extends GameObject {
 	 */
 	createGraphics(svgGroup) {
 		let group = new Group();
-
 
 		let spout = new Rect(svgGroup, {
 			x: this._position.x - this._production / 2,

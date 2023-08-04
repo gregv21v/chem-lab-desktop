@@ -1,10 +1,9 @@
 /*
-	Button - A button
+	Label - A label
 */
-import Drawable from "../../Drawable";
 import * as d3 from "d3"
 
-export default class Button extends Drawable {
+export default class Label {
 	/**
 	 * constructor()
 	 * @description constructs the Button
@@ -13,16 +12,17 @@ export default class Button extends Drawable {
 	 * @param {Number} height the height of the button
 	 */
 	constructor(layer, position, width, height) {
-		super(layer, position)
+		this._layer = layer;
+		this._position = position;
 		this._width = width;
 		this._height = height;
 		this._text = "";
 
 		this._styling = {
 			color: "blue", 
-			opacity: 0.5,
+			opacity: 1,
 			strokeColor: "black",
-			strokeWidth: 5,
+			strokeWidth: 0,
 			textColor: "black",
 			textOpacity: 1
 		}
@@ -36,23 +36,15 @@ export default class Button extends Drawable {
 	create() {
 		this._group = d3.create("svg:g")
 		this._layer.append(() => this._group.node())
-		let self = this;
 	
 		this._svg = {
 			rect: this._group.append("rect"),
-			innerRect: this._group.append("rect"),
 			label: this._group.append("text"),
-			clickBox: this._group.append("rect")
 		};
 
 		this._group.attr("name", "Button")
 		this._svg.rect.attr("name", "rect")
-		this._svg.innerRect.attr("name", "innerRect")
 		this._svg.label.attr("name", "label")
-		this._svg.clickBox.attr("name", "clickBox")
-
-		this._svg.clickBox.style("fill-opacity", 0)
-		this._svg.clickBox.on("click", () => self.onClick())
 
 		// initialize the attributes of the Button
 		this.width = this._width;
@@ -64,13 +56,6 @@ export default class Button extends Drawable {
 			
 	}
 
-	/**
-	 * onClick()
-	 * @description the function called when this button is clicked
-	 */
-	onClick() {
-		// do nothing
-	}
 
 
 	/**
@@ -116,13 +101,10 @@ export default class Button extends Drawable {
 	set position(value) {
 		this._position = value; 
 
-		this._svg.clickBox.attr("x", this._position.x);
-		this._svg.clickBox.attr("y", this._position.y);
-
 		this._svg.rect.attr("x", this._position.x);
 		this._svg.rect.attr("y", this._position.y);
 
-		this._svg.label.attr("x", this._position.x + this.width/2 - (this.text.length * 6)/2);
+		this._svg.label.attr("x", this._position.x + this.width/2 - (this.text.length * 12)/2);
 		this._svg.label.attr("y", this._position.y + this.height/2 + 5);
 	}
 
@@ -144,7 +126,6 @@ export default class Button extends Drawable {
 	set width(value) {
 		this._width = value;
 
-		this._svg.clickBox.attr("width", this._width);
 		this._svg.rect.attr("width", this._width);
 	}
 
@@ -165,7 +146,6 @@ export default class Button extends Drawable {
 	set height(value) {
 		this._height = value;
 
-		this._svg.clickBox.attr("height", this._height);
 		this._svg.rect.attr("height", this._height);
 	}
 

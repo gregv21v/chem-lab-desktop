@@ -16,6 +16,8 @@ import Heater from "./world_objects/heatSources/Heater"
 import FanShape from "./shapes/FanShape"
 import Fan from "./world_objects/heatSources/Fan"
 import Valve from "./world_objects/pipes/Valve"
+import Modal from "./gui/modals/Modal"
+import OutputTank from "./world_objects/tanks/OutputTank"
 
 
 export default class Game {
@@ -46,6 +48,7 @@ export default class Game {
     this._layers.push(svg.append("g")) // fluids
     this._layers.push(svg.append("g")) // debug
     this._layers.push(svg.append("g")) // clicks
+    this._layers.push(svg.append("g")) // modals
     
 
     this._layers[0].attr("name", "gui")
@@ -53,6 +56,10 @@ export default class Game {
     this._layers[2].attr("name", "fluids")
     this._layers[3].attr("name", "debug")
     this._layers[4].attr("name", "clicks")
+    this._layers[5].attr("name", "modals")
+
+
+    
     
 
 
@@ -111,7 +118,7 @@ export default class Game {
     this._world.create()
 
     // setup the HUD
-    this._hud = new HUD(this, this._player);
+    this._hud = new HUD(this);
     this._hud.create()
 
     // add example items to the players inventory
@@ -124,30 +131,30 @@ export default class Game {
         },
         20, 10, 5
     ));*/
-    this._hud.inventory.add(new Heater(this._world, this._player, this._layers[1], {x: 0, y: 0}, 40, 20));
-    this._hud.inventory.add(new Heater(this._world, this._player, this._layers[1], {x: 0, y: 0}, 40, 20));
-    this._hud.inventory.add(new Fan(this._world, this._player, this._layers[1], {x: 0, y: 0}, 10));
-    this._hud.inventory.add(new Tank(this._world, this._player, this._layers[1], {x: 0, y: 0}, {width: 40, height: 100}, 5));
-    this._hud.inventory.add(new Tank(this._world, this._player, this._layers[1], {x: 0, y: 0}, {width: 40, height: 100}, 5));
-    this._hud.inventory.add(new Tank(this._world, this._player, this._layers[1], {x: 0, y: 0}, {width: 50, height: 50}, 5));
+    this._hud.inventory.add(new Heater(this, this._layers[1], {x: 0, y: 0}, 40, 20));
+    this._hud.inventory.add(new Heater(this, this._layers[1], {x: 0, y: 0}, 40, 20));
+    this._hud.inventory.add(new Fan(this, this._layers[1], {x: 0, y: 0}, 10));
+    this._hud.inventory.add(new Tank(this, this._layers[1], {x: 0, y: 0}, {width: 40, height: 100}, 5));
+    this._hud.inventory.add(new Tank(this, this._layers[1], {x: 0, y: 0}, {width: 40, height: 100}, 5));
+    this._hud.inventory.add(new Tank(this, this._layers[1], {x: 0, y: 0}, {width: 50, height: 50}, 5));
     
-    //this._hud.inventory.add(new CrossPipe(this._world, this._player, this._layers[1], {x: 475, y: 540}, 10, 100, 5));
-    this._hud.inventory.add(new Tank(this._world, this._player, this._layers[1], {x: 0, y: 0}, {width: 50, height: 50}, 5))
-    this._hud.inventory.add(new Tank(this._world, this._player, this._layers[1], {x: 0, y: 0}, {width: 50, height: 100}, 5))
-    this._hud.inventory.add(new Pipe(this._world, this._player, this._layers[1], {x: 0, y: 0}, 50, 10, 5));
-    this._hud.inventory.add(new Pipe(this._world, this._player, this._layers[1], {x: 0, y: 0}, 50, 10, 5));
-    this._hud.inventory.add(new Pipe(this._world, this._player, this._layers[1], {x: 0, y: 0}, 50, 10, 5));
-    this._hud.inventory.add(new Pipe(this._world, this._player, this._layers[1], {x: 0, y: 0}, 50, 10, 5));
-    this._hud.inventory.add(new Pipe(this._world, this._player, this._layers[1], {x: 0, y: 0}, 50, 10, 5));
-    this._hud.inventory.add(new Valve(this._world, this._player, this._layers[1], {x: 0, y: 0}, 50, 10, 5));
-    this._hud.inventory.add(new Pump(this._world, this._player, this._layers[1], {x: 0, y: 0}, 6));
-    this._hud.inventory.add(new Pump(this._world, this._player, this._layers[1], {x: 0, y: 0}, 5));
-    this._hud.inventory.add(new Pump(this._world, this._player, this._layers[1], {x: 0, y: 0}, 15));
+    //this._hud.inventory.add(new CrossPipe(this, this._layers[1], {x: 475, y: 540}, 10, 100, 5));
+    this._hud.inventory.add(new OutputTank(this, this._layers[1], {x: 0, y: 0}, {width: 50, height: 50}, 5))
+    this._hud.inventory.add(new Tank(this, this._layers[1], {x: 0, y: 0}, {width: 50, height: 100}, 5))
+    this._hud.inventory.add(new Pipe(this, this._layers[1], {x: 0, y: 0}, 50, 10, 5));
+    this._hud.inventory.add(new Pipe(this, this._layers[1], {x: 0, y: 0}, 50, 10, 5));
+    this._hud.inventory.add(new Pipe(this, this._layers[1], {x: 0, y: 0}, 50, 10, 5));
+    this._hud.inventory.add(new Pipe(this, this._layers[1], {x: 0, y: 0}, 50, 10, 5));
+    this._hud.inventory.add(new Pipe(this, this._layers[1], {x: 0, y: 0}, 50, 10, 5));
+    this._hud.inventory.add(new Valve(this, this._layers[1], {x: 0, y: 0}, 50, 10, 5));
+    this._hud.inventory.add(new Pump(this, this._layers[1], {x: 0, y: 0}, 6));
+    this._hud.inventory.add(new Pump(this, this._layers[1], {x: 0, y: 0}, 5));
+    this._hud.inventory.add(new Pump(this, this._layers[1], {x: 0, y: 0}, 15));
 
-    this._hud.inventory.add(new Tank(this._world, this._player, this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
-    this._hud.inventory.add(new Tank(this._world, this._player, this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
-    this._hud.inventory.add(new Tank(this._world, this._player, this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
-    this._hud.inventory.add(new Tank(this._world, this._player, this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
+    this._hud.inventory.add(new Tank(this, this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
+    this._hud.inventory.add(new Tank(this, this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
+    this._hud.inventory.add(new Tank(this, this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
+    this._hud.inventory.add(new Tank(this, this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
 
     /*this._hud.inventory.add(new ElbowPipe(
       this._layers[1],
@@ -290,6 +297,15 @@ export default class Game {
    */
   get layers() {
     return this._layers;
+  }
+
+
+  /**
+   * get player()
+   * @description gets the player
+   */
+  get player() { 
+    return this._player;
   }
 
 

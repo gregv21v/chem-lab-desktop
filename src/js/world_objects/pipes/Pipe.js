@@ -22,8 +22,8 @@ export default class Pipe extends Snappable {
 	 * @param {Number} interiorHeight the interior height of the pipe
 	 * @param {Number} wallWidth the wall width of the pipe
 	 */
-	constructor(world, player, layer, center, length, interiorHeight, wallWidth) {
-		super(world, player, layer, center, length, interiorHeight + wallWidth * 2);
+	constructor(game, layer, center, length, interiorHeight, wallWidth) {
+		super(game, layer, center, length, interiorHeight + wallWidth * 2);
 
 		this._diameter = interiorHeight + wallWidth * 2;
 		this._length = length;

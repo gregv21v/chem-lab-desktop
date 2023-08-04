@@ -10,11 +10,10 @@ import SnapPoint from "./SnapPoint"
 import { getAreaOfIntersection, getOpposite } from "../util"
 
 export default class Snappable extends Rect {
-  constructor(world, player, layer, position, width, height) {
+  constructor(game, layer, position, width, height) {
     super(layer, position, width, height) 
 
-    this._player = player;
-    this._world = world;
+    this._game = game;
     this._rotation = 0;
     this._graphicsGroup = new Group(); // the place where all the graphic objects are stored
     this._snapGroup = new Group(); // the place where the snap points are stored
@@ -39,6 +38,16 @@ export default class Snappable extends Rect {
   createSnapPoints() {
 
   }
+
+  /**
+	 * clearAttachments()
+	 * @description clears all attachments from the Tank
+	 */
+	clearAttachments() {
+		for (const snapPoint of this._snapPoints) {
+			snapPoint.clearAttachments();
+		}
+	}
 
 
   /**
@@ -66,12 +75,23 @@ export default class Snappable extends Rect {
    * @description determines the on click behavior of this Snappable
    */
   onClick() {
-    if(this._player.hand === null && this._player.isInEditMode) {
-      this._player.hand = this;
-      this._player.hand.clearAttachments();
-      console.log(this._player.hand);
-    } else {
-      if(this._world.place(this)) this._player.hand = null;
+
+    switch(this._game.player.mode) {
+      case 0: // place mode
+        if(this._game.world.place(this)) this._game.player.hand = null;
+        break; 
+      case 1: // edit mode
+        if(this._game.player.hand === null) {
+          this._game.player.hand = this;
+          this._game.player.hand.clearAttachments();
+        } else {
+          if(this._game.world.place(this)) this._game.player.hand = null;
+        }
+        break;
+      case 2: // sell mode 
+        this._game.player.credits += 10;
+        this._game.hud.update();
+        break;    
     }
   }
 
@@ -103,6 +123,7 @@ export default class Snappable extends Rect {
 	update() {
 		this._snapGroup.update();
     this._graphicsGroup.update();
+    
     this._boundingBox.update();
 	}
 

@@ -25,7 +25,6 @@ import Snappable from "../Snappable";
 import Rect from "../../shapes/Rect";
 import * as d3 from "d3"
 import { getNextSide, getRandomInt } from "../../util";
-import { rotatePoint } from "../../shapes/Point";
 import Group from "../../shapes/Group";
 import World from "../../World";
 import HeatSource from "../heatSources/HeatSource";
@@ -44,15 +43,15 @@ export default class Tank extends Snappable {
 	 * @param {Boolean} downOpen indicates whether the down side is opened
 	 */
 	constructor(
-		world, player, layer, position, interior, wallWidth
+		game, layer, position, interior, wallWidth
 	) {
-		super(world, player, layer, position, interior.width + wallWidth * 2, interior.height + wallWidth * 2); 
+		super(game, layer, position, interior.width + wallWidth * 2, interior.height + wallWidth * 2); 
 
 		this._interior = interior;
 		this._wallWidth = wallWidth;
 		this._rotation = 90
 
-		this._wallColor = "green";
+		this._wallColor = "black";
 		this._active = false;
 		this._name = "Tank";
 		this._description = "A container to hold fluids"
@@ -242,9 +241,8 @@ export default class Tank extends Snappable {
 			this.width,
 			this.height
 		)
-		walls.fill.color = "green"
+		walls.fill.color = this._wallColor
 		walls.fill.opacity = 1
-		walls.stroke.color = "black"
 		walls.stroke.opacity = 0;
 		walls.create();
 		group.add(walls)
@@ -755,13 +753,7 @@ export default class Tank extends Snappable {
 	 * @returns gets the name of the pipe
 	 */
 	get name() {
-		let sidesOpen = "";
-		sidesOpen += (this._leftOpened) ? "left " : ""
-		sidesOpen += (this._rightOpened) ? "right " : ""
-		sidesOpen += (this._upOpened) ? "up " : ""
-		sidesOpen += (this._downOpened) ? "down " : ""
-
-		return "Tank " + sidesOpen;
+		return "Tank";
 	}
 
 	/**

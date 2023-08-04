@@ -1,8 +1,8 @@
 import Inventory from "./gui/Inventory";
 import ValueBox from "./gui/ValueBox";
-import * as d3 from "d3";
-import Button from "./gui/buttons/Button";
-import EditModeButton from "./gui/buttons/EditModeButton";
+import JobsButton from "./gui/buttons/JobsButton";
+import Modal from "./gui/modals/Modal";
+import ModeSelector from "./gui/buttons/ModeSelector";
 
 /**
  * HUD - the gui 
@@ -13,26 +13,49 @@ export class HUD {
      * @description constructs the HUD
      * @param {Player} player the player currently playing the game
      */
-    constructor(game, player) {
-        this._player = player;
+    constructor(game) {
         this._game = game;
 
         let belowLayer = game.layers[0].append("g")
         let aboveLayer = game.layers[0].append("g")
+        let buttonHeight = 30;
+        let inventoryWidth = game.width / 4 - 30 /* extra padding */
 
-        this._inventory = new Inventory(belowLayer, player, {x: 20, y: 20 + 25}, game.width / 4 - 30, game.height - 30);
+        this._inventory = new Inventory(
+            belowLayer, game.player, {x: 20, y: 20 + 25}, 
+            inventoryWidth, game.height - buttonHeight * 2
+        );
 
-        this._editModeButton = new EditModeButton(
-            player, aboveLayer, {x: 20, y: game.height - 30}, game.width / 4 - 30, 30
+       
+        this._modeSelector = new ModeSelector(
+            game.player, aboveLayer, 
+            {x: 20, y: game.height - buttonHeight * 3},
+            inventoryWidth, buttonHeight * 2
         )
-        this._editModeButton.create();
+        this._modeSelector.create();
         
 
-        this._editModeButton.styling = {
-            color: "red", 
-            textColor: "black", 
-            strokeWidth: 1
+
+        let modalWidth = 3 * game.width / 4
+        let modalHeight = 3 * game.height / 4
+        this._jobsModal = new Modal(
+            game._layers[5], 
+            {x: game.width / 2 - modalWidth / 2, y: game.height / 2 - modalHeight / 2},
+            modalWidth,
+            modalHeight 
+        )
+        this._jobsModal.styling = {
+            color: "grey"
         }
+        
+        // second row of buttons
+        this._jobsButton = new JobsButton(
+            this._jobsModal, aboveLayer, 
+            {x: 20, y: game.height - 30},
+            inventoryWidth, buttonHeight
+        )
+        this._jobsButton.create();
+        
 
         this._credits = new ValueBox(aboveLayer, {x: 20, y: 20}, game.width / 4 - 30, 25);
         this._credits.create()
@@ -45,7 +68,7 @@ export class HUD {
             strokeWidth: 1
         }
 
-        this._credits.label = "Coins";
+        this._credits.label = "Credits";
         this._credits.value = 0;
     }
 
@@ -56,6 +79,15 @@ export class HUD {
      */
     create() {
         this._inventory.create();
+    }
+
+
+    /**
+     * update() 
+     * @description updates the HUD
+     */
+    update() {
+        this._credits.value = this._player.credits;
     }
 
     /**

@@ -26,8 +26,13 @@ export default class Player {
     let svg = d3.select("svg");
     let height = svg.attr("height") - 30;
 
-    this._isInEditMode = false;
+    // Modes:
+    // 0 - Place Mode: You can place object 
+    // 1 - Edit Mode: You can edit objects 
+    // 2 - Sell Mode: You can sell objects
+    this._mode = 0;
     this._hand = null;
+    this._credits = 0;
 
     
     //this.inventory.createSlots();
@@ -115,6 +120,15 @@ export default class Player {
     
   }
 
+
+  /**
+   * get modeCount()
+   * @description returns the number of player modes
+   */
+  get modeCount() {
+    return 3;
+  }
+
   /**
    * get hand()
    * @returns the object in the players hand
@@ -134,21 +148,37 @@ export default class Player {
 
 
   /**
-   * get isInEditMode()
-   * @description gets the isInEditMode value 
+   * get mode()
+   * @description gets the mode value 
    */
-  get isInEditMode() {
-    return this._isInEditMode;
+  get mode() {
+    return this._mode;
   }
 
 
   /**
-   * set isInEditMode()
-   * @description sets the isInEditMode value
+   * set mode()
+   * @description sets the mode value
    */
-  set isInEditMode(value) {
-    this._isInEditMode = value;
+  set mode(value) {
+    this._mode = value;
   }
 
+
+  /**
+   * set credits() 
+   * @description sets the credits value 
+   */
+  set credits(value) {
+    this._credits = value;
+  }
+
+  /**
+   * get credits()
+   * @description gets the credits value
+   */
+  get credits() {
+    return this._credits;
+  }
 
 }

@@ -18,8 +18,8 @@ export default class Heater extends HeatSource {
      * @description constructs the heater
      * @param
      */
-    constructor(world, player, layer, position, width, height) {
-        super(world, player, layer, position, width, height);
+    constructor(game, layer, position, width, height) {
+        super(game, layer, position, width, height);
 
         this._isOn = true;
         this._maxTemperature = 105
@@ -44,11 +44,11 @@ export default class Heater extends HeatSource {
 			new SnapPoint(
 				{
 					x: 0,
-					y: this._boundingBox.position.y
+					y: this._position.y
 				},
 				this.width,
 				this._snapWidth,
-				{x: this._boundingBox.position.x + this._boundingBox.width, y: this._boundingBox.position.y},
+				{x: this._position.x + this._width, y: this._position.y},
 				"y",
 				"up"
 			)
@@ -71,8 +71,8 @@ export default class Heater extends HeatSource {
 
         this._boundingBox.position = this._position;
         this._boundingBox.width = this._width;
-        this._boundingBox.height = this._height + 10
-		this._boundingBox.fill.opacity = 0.0
+        this._boundingBox.height = this._height + 20;
+		this._boundingBox.fill.opacity = 0.3
         this._boundingBox.fill.color = "blue"
 		this._boundingBox.stroke.opacity = 0;
 
@@ -89,13 +89,17 @@ export default class Heater extends HeatSource {
 
         let hotPlateHeight = 10;
         let offset = 10;
+        let additionalOffset = 20
         let delta = 0// the difference in height between the orange and red flames
 
         let redMax = 20
         let group = new Group(svgGroup);
         let redFire = new Fire(
             svgGroup,
-            {x: this._boundingBox.x, y: this._boundingBox.y + this._boundingBox.height - hotPlateHeight - redMax - offset - 5},
+            {
+                x: this._position.x, 
+                y: this._position.y + this._height - hotPlateHeight - redMax - offset - 5 + additionalOffset
+            },
             this._width,
             redMax, // max
             8, // min
@@ -113,7 +117,10 @@ export default class Heater extends HeatSource {
         let orangeMax = 10
         let orangeFire = new Fire(
             svgGroup,
-            {x: this._position.x + 30 / this._width, y: this._boundingBox.y + this._boundingBox.height - hotPlateHeight - orangeMax - offset},
+            {
+                x: this._position.x + 30 / this._width, 
+                y: this._position.y + this._height - hotPlateHeight - orangeMax - offset + additionalOffset
+            },
             this._width - 60 / this._width,
             orangeMax, // max
             5, // min
@@ -129,8 +136,11 @@ export default class Heater extends HeatSource {
 
         let hotPlate = new Rect(
             svgGroup,
-            {x: this._boundingBox.x, y: this._boundingBox.y + this._boundingBox.height - hotPlateHeight},
-            this._boundingBox.width,
+            {
+                x: this._position.x, 
+                y: this._position.y + this._height - hotPlateHeight + additionalOffset
+            },
+            this._width,
             hotPlateHeight
         )
 
