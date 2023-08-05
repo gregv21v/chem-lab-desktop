@@ -78,7 +78,7 @@ export default class Valve extends Pipe {
 		walls.stroke.color = "black"
 		walls.stroke.opacity = 0;
 		walls.create();
-		group.add(walls)
+		group.add(walls, "walls")
 
 		let interior = new Rect(
 			svgGroup, 
@@ -90,7 +90,7 @@ export default class Valve extends Pipe {
 		interior.fill.color = "white"
 		interior.fill.opacity = 1
 		interior.create();
-    group.add(interior)
+    group.add(interior, "interior");
 
 
     this._latch = new Rect(
@@ -105,7 +105,7 @@ export default class Valve extends Pipe {
     this._latch.fill.color = "black"
     this._latch.stroke.color = "black"
     this._latch.create()
-    group.add(this._latch);
+    group.add(this._latch, "latch");
 
 		return group;
 	}

@@ -41,6 +41,9 @@ export default class ValueBox {
 		this._svg.rect.attr("name", "rect")
 		this._svg.label.attr("name", "label")
 
+		this._svg.label.style("text-anchor", "middle");
+		this._svg.label.style("dominant-baseline", "middle");
+
 		this.width = this._width;
 		this.height = this._height;
 		this.position = this._position
@@ -63,8 +66,9 @@ export default class ValueBox {
 		this._svg.rect.style("stroke-width", 1);
 		this._svg.rect.attr("class", "ValueBox");
 
-		this._svg.label.attr("x", this._position.x + this._width/2 - ((this.label.length + ("" + this.value).length) * 6)/2);
-		this._svg.label.attr("y", this._position.y + this._height/2 + 5);
+		this._svg.label.attr("x", this._position.x + this._width/2);
+		this._svg.label.attr("y", this._position.y + this._height/2);
+		
 	}
 
 
@@ -200,8 +204,8 @@ export default class ValueBox {
 		this._svg.rect.attr("x", this._position.x);
 		this._svg.rect.attr("y", this._position.y);
 
-		this._svg.label.attr("x", this._position.x + this._width/2 - ((this.label.length + ("" + this._value).length) * 6)/2);
-		this._svg.label.attr("y", this._position.y + this._height/2 + 5);
+		this._svg.label.attr("x", this._position.x + this._width/2);
+		this._svg.label.attr("y", this._position.y + this._height/2);
 	}
 
 

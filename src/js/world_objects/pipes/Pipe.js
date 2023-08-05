@@ -259,7 +259,7 @@ export default class Pipe extends Snappable {
 		walls.stroke.color = "black"
 		walls.stroke.opacity = 0;
 		walls.create();
-		group.add(walls)
+		group.add(walls, "walls")
 
 		let interior = new Rect(
 			svgGroup, 
@@ -271,7 +271,8 @@ export default class Pipe extends Snappable {
 		interior.fill.color = "white"
 		interior.fill.opacity = 1
 		interior.create();
-		group.add(interior)
+		group.add(interior, "interior")
+
 
 		return group;
 	}

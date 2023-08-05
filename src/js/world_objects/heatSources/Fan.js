@@ -114,7 +114,7 @@ export default class Fan extends HeatSource {
             this._radius
         )
         fan.create();
-        group.add(fan)
+        group.add(fan, "fan")
 
         return group;
     }

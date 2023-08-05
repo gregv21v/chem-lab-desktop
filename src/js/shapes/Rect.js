@@ -209,6 +209,9 @@ export default class Rect extends GameObject {
 	}
 
 
+	
+
+
 	/**
 	 * setOnClick()
 	 * @description determines what happens when this rect is clicked
@@ -382,6 +385,16 @@ export default class Rect extends GameObject {
 			x: this._position.x + this._width / 2,
 			y: this._position.y + this._height / 2
 		}
+	}
+
+
+	/**
+	 * get svg()
+	 * @description gets the svg
+	 * @returns the svg
+	 */
+	get svg() {
+		return this._svg;
 	}
 
 	/**

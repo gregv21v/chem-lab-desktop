@@ -23,7 +23,7 @@ export default class CloseButton extends Button {
         this._styling = {
             color: "black", 
             textColor: "white", 
-            strokeColor: "black",
+            strokeColor: "none",
             strokeWidth: 2
         }
     }

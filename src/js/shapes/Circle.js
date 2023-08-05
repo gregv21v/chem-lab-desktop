@@ -30,6 +30,7 @@ export default class Circle extends Shape {
 		this.update();
 	}
 
+
 	update() {
 		this._svg
 			.attr("r", this._radius)
@@ -58,6 +59,35 @@ export default class Circle extends Shape {
 		return points;
 	}
 
+	/**
+     * moveBy() 
+     * @description moves the circle by a delta x, and y
+     * @param {Number} deltaX the difference in x to move the circle
+     * @param {Number} deltaY the difference in y to move the circle
+     */
+    moveBy(deltaX, deltaY) {
+        this.center.x += deltaX;
+        this.center.y += deltaY;
+    }
+
+
+	/**
+	 * moveTo()
+	 * @description move the circle to the specified location
+	 * @param {Number} x the x coordinate to move the circle to
+	 * @param {Number} y the y coordinate to move the circle to
+	 */
+	moveTo(x, y) {
+		this._position.x = x;
+		this._position.y = y;
+	}
+
+	/**
+	 * contains()
+	 * @description checks whether the given point is within the circle
+	 * @param {Point} point the point to check for containment
+	 * @returns true if the point is within the circle, false otherwise
+	 */
 	contains (point) {
 	  return Distance(this.center, point) <= this._radius;
 	}
@@ -78,6 +108,16 @@ export default class Circle extends Shape {
 	 */
 	get center() {
 		return this._position;
+	}
+
+
+	/**
+	 * get svg()
+	 * @description gets the svg
+	 * @return {SVG} the svg
+	 */
+	get svg() {
+		return this._svg;
 	}
 
 

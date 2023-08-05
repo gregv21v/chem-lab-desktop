@@ -3,6 +3,7 @@ import ValueBox from "./gui/ValueBox";
 import JobsButton from "./gui/buttons/JobsButton";
 import Modal from "./gui/modals/Modal";
 import ModeSelector from "./gui/buttons/ModeSelector";
+import JobBoardModal from "./gui/modals/JobBoardModal";
 
 /**
  * HUD - the gui 
@@ -38,7 +39,7 @@ export class HUD {
 
         let modalWidth = 3 * game.width / 4
         let modalHeight = 3 * game.height / 4
-        this._jobsModal = new Modal(
+        this._jobsModal = new JobBoardModal(
             game._layers[5], 
             {x: game.width / 2 - modalWidth / 2, y: game.height / 2 - modalHeight / 2},
             modalWidth,

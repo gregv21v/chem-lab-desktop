@@ -174,16 +174,7 @@ export default class Snappable extends Rect {
     
   }
 
-  /**
-   * TO REMOVE
-   * move()
-   * @description moves by a certain x and y amount
-   * @param {Point} delta the distance to move in the x and y 
-   */
-  move(delta) {
-    this._position.x += delta.x;
-    this._position.y += delta.y;
-  }
+
 
 
 

@@ -35,6 +35,7 @@ export default class Modal {
                 .attr("x", this._position.x)
                 .attr("y", this._position.y)
                 .style("fill", "blue")
+                .style("stroke", "black")
 
 
         this._button = new CloseButton(this, this._group, 

@@ -72,7 +72,7 @@ export default class Heater extends HeatSource {
         this._boundingBox.position = this._position;
         this._boundingBox.width = this._width;
         this._boundingBox.height = this._height + 20;
-		this._boundingBox.fill.opacity = 0.3
+		this._boundingBox.fill.opacity = 0.0
         this._boundingBox.fill.color = "blue"
 		this._boundingBox.stroke.opacity = 0;
 
@@ -110,7 +110,8 @@ export default class Heater extends HeatSource {
         redFire.fill.color = "red"
         redFire.fill.opacity = (this._isOn ? 1 : 0)
         redFire.create();
-        group.add(redFire);
+        group.add(redFire, "redFire");
+
 
 
 
@@ -131,7 +132,8 @@ export default class Heater extends HeatSource {
         orangeFire.fill.color = "orange"
         orangeFire.fill.opacity = (this._isOn ? 1 : 0)
         orangeFire.create();
-        group.add(orangeFire);
+        group.add(orangeFire, "orangeFire");
+
 
 
         let hotPlate = new Rect(
@@ -147,7 +149,8 @@ export default class Heater extends HeatSource {
         hotPlate.fill.color = "black"
         hotPlate.fill.opacity = 1;
         hotPlate.create();
-        group.add(hotPlate)
+        group.add(hotPlate, "hotPlate")
+
 
         return group;
     }

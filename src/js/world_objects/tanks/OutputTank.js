@@ -15,13 +15,14 @@ export default class OutputTank extends Tank {
      * @param {Point} position the position of the output tank
      */
     constructor(game, layer, position) {
-        super(game, layer, position, {width: 75, height: 75}, 5)
+        super(game, layer, position, {width: 50, height: 50}, 5)
 
         this._description = [
             "Allows you to sell fluids",
             " to your client"
         ]
         this._wallColor = "grey";
+        this._isOpened = false
     }
 
 

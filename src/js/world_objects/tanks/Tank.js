@@ -55,6 +55,7 @@ export default class Tank extends Snappable {
 		this._active = false;
 		this._name = "Tank";
 		this._description = "A container to hold fluids"
+		this._isOpened = true;
 
 		
 		this._emptyFluid = new ContainerFluidBody(
@@ -201,7 +202,7 @@ export default class Tank extends Snappable {
 		this._emptyFluid.container = this;
 
 		this._boundingBox.stroke.color = "blue"
-		this._boundingBox.stroke.opacity = 0.5
+		this._boundingBox.stroke.opacity = 0.0
 		this._boundingBox.position = this._position
 		this._boundingBox.width = this._width
 		this._boundingBox.height = this._height
@@ -213,18 +214,6 @@ export default class Tank extends Snappable {
 
 		this.update()
 	}
-
-
-	/**
-	 * clearAttachments()
-	 * @description clears all attachments from the Tank
-	 */
-	clearAttachments() {
-		for (const snapPoint of this._snapPoints) {
-			snapPoint.clearAttachments();
-		}
-	}
-
 
 
 	/**
@@ -245,7 +234,7 @@ export default class Tank extends Snappable {
 		walls.fill.opacity = 1
 		walls.stroke.opacity = 0;
 		walls.create();
-		group.add(walls)
+		group.add(walls, "walls")
 
 		let interiorVertical = new Rect(
 			svgGroup, 
@@ -257,7 +246,7 @@ export default class Tank extends Snappable {
 		interiorVertical.fill.color = "white"
 		interiorVertical.fill.opacity = 1
 		interiorVertical.create();
-		group.add(interiorVertical)
+		group.add(interiorVertical, "interiorVertical")
 
 		let interiorHorizontal = new Rect(
 			svgGroup, 
@@ -269,11 +258,13 @@ export default class Tank extends Snappable {
 		interiorHorizontal.fill.color = "white"
 		interiorHorizontal.fill.opacity = 1
 		interiorHorizontal.create();
-		group.add(interiorHorizontal)
+		group.add(interiorHorizontal, "interiorHorizontal")
 
 
-		interiorVertical.position.y -= this._wallWidth
-		interiorVertical.height += this._wallWidth
+		if(this._isOpened) {
+			interiorVertical.position.y -= this._wallWidth
+			interiorVertical.height += this._wallWidth
+		}
 
 
 		// setup liquid svg
@@ -621,7 +612,17 @@ export default class Tank extends Snappable {
 
 		// add the fluid
 		if(emptyFluid.volume > 0) {
-			emptyFluid.volume -= drop.volume
+			// 400 - 100
+            let extraVolume = emptyFluid.volume - drop.volume; // the amount of extra volume removed
+            let newDropVolume = 0;
+			
+            if(extraVolume < 0) {
+                newDropVolume = emptyFluid.volume;
+            } else {
+                newDropVolume = drop.volume
+            }
+
+            emptyFluid.volume -= drop.volume
 
 			// search through the fluids to find the new fluid
 			let i = 0;
@@ -633,8 +634,8 @@ export default class Tank extends Snappable {
 			if(i >= this._fluidBodies.length) {
 				let newFluid = new ContainerFluidBody(
 					d3.select("[name='fluids']"), {x: 0, y: 0},
-					this._interior.width, drop.volume / this._interior.width, 
-					drop.volume, drop.fluid
+					this._interior.width, newDropVolume / this._interior.width, 
+					newDropVolume, drop.fluid
 				);
 				newFluid.container = this;
 				newFluid.create();
@@ -646,7 +647,7 @@ export default class Tank extends Snappable {
 				}
 				 
 			} else { // otherwise combine the new fluid with the existing one
-				this._fluidBodies[i].volume += drop.volume				
+				this._fluidBodies[i].volume += newDropVolume				
 			}
 		}
 			

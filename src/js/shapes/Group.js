@@ -6,7 +6,7 @@ export default class Group {
      */
     constructor() {
         this._position = {x: 0, y: 0};
-        this._objects = []; // shapes within the group
+        this._objects = {}; // shapes within the group
     }
 
 
@@ -18,7 +18,7 @@ export default class Group {
         // find the center
         let center = this.center;
 
-        for (const obj of this._objects) {
+        for (const obj of Object.values(this._objects)) {
             obj.rotateAroundPoint(center, angle)
         }
     }
@@ -31,7 +31,7 @@ export default class Group {
      * @param {Degrees} angle the angle to rotate by
      */
     rotateAroundPoint(point, angle) {
-        for (const obj of this._objects) {
+        for (const obj of Object.values(this._objects)) {
             obj.rotateAroundPoint(point, angle);
         }
     }
@@ -42,7 +42,7 @@ export default class Group {
      * @description updates the objects in the group
      */
     update() {
-        for (const obj of this._objects) {
+        for (const obj of Object.values(this._objects)) {
             obj.update()
         }
     }
@@ -52,7 +52,7 @@ export default class Group {
      * @description creates the objects in the group
      */
     create() {
-        for (const obj of this._objects) {
+        for (const obj of Object.values(this._objects)) {
             obj.create()
         }
     }
@@ -65,10 +65,10 @@ export default class Group {
      * @param {Number} x the local x coordinate of the shape
      * @param {Number} y the local y coordinate of the shape
      */
-    add(shape) {
+    add(shape, name) {
         //shape.x = this.position.x + x;
         //shape.y = this.position.y + y;
-        this._objects.push(shape)
+        this._objects[name] = shape;
     }
 
 
@@ -83,22 +83,22 @@ export default class Group {
         // find the closest snappable region that
         // intersects
 
-        var index = 0;
+        var closestKey = null;
         var closestDistance = Infinity;
 
 
-        for (let i = 0; i < this.objects.length; i++) {
+        for (let key of Object.keys(this._objects)) {
             let center = this.center
             let distance = Distance(center, point)
 
             // find the closest intersecting snap area
             if (distance < closestDistance) {
                 closestDistance = distance
-                index = i
+                closestKey = key
             }
         }
 
-        return this.objects[index];
+        return this._objects[closestKey];
     }
 
 
@@ -109,7 +109,7 @@ export default class Group {
      * @param {Number} deltaY the difference in y to move the group
      */
     moveBy(deltaX, deltaY) {
-        for (const obj of this._objects) {
+        for (const obj of Object.values(this._objects)) {
 			obj.moveBy(deltaX, deltaY)
 		}
     }
@@ -128,7 +128,7 @@ export default class Group {
             y: y - this.center.y 
         }
 
-        for (const obj of this._objects) {
+        for (const obj of Object.values(this._objects)) {
             obj.moveBy(delta.x, delta.y);
         }
     }
@@ -154,14 +154,14 @@ export default class Group {
             y: 0
         }
 
-        for (const obj of this._objects) {
+        for (const obj of Object.values(this._objects)) {
             total.x += obj.center.x 
             total.y += obj.center.y 
         }
 
         return {
-            x: total.x / this._objects.length,
-            y: total.y / this._objects.length
+            x: total.x / Object.keys(this._objects).length,
+            y: total.y / Object.keys(this._objects).length
         }
     }
 
@@ -176,7 +176,7 @@ export default class Group {
 	 * @param {Number} amount the amount to scale the rectangle by
 	 */
 	scale(amount) {
-        for (const obj of this._objects) {
+        for (const obj of Object.values(this._objects)) {
             //let originalPosition = obj.position;
 
             //obj.moveTo(this.center.x, this.center.y);
@@ -194,7 +194,7 @@ export default class Group {
 	 * @param {Number} amount the amount to scale the y dimension by
 	 */
 	scaleY(amount) {
-		for (const obj of this._objects) {
+		for (const obj of Object.values(this._objects)) {
             obj.scaleHeight(amount);
         }
 	}
@@ -205,7 +205,7 @@ export default class Group {
 	 * @param {Number} amount the amount to scale the x dimension by
 	 */
 	scaleX(amount) {
-		for (const obj of this._objects) {
+		for (const obj of Object.values(this._objects)) {
             obj.scaleWidth(amount);
         }
 	}
@@ -217,7 +217,7 @@ export default class Group {
      */
     getMinX() {
         let xMin = Infinity;
-        for (const obj of this._objects) {
+        for (const obj of Object.values(this._objects)) {
             let points = obj.toPoints();
             for (const point of points) {
                 if(point.x < xMin) {
@@ -235,7 +235,7 @@ export default class Group {
      */
     getMaxX() {
         let xMax = -Infinity;
-        for (const obj of this._objects) {
+        for (const obj of Object.values(this._objects)) {
             let points = obj.toPoints();
             for (const point of points) {
                 if(point.x > xMax) {
@@ -253,7 +253,7 @@ export default class Group {
      */
     getMinY() {
         let yMin = Infinity;
-        for (const obj of this._objects) {
+        for (const obj of Object.values(this._objects)) {
             let points = obj.toPoints();
             for (const point of points) {
                 if(point.y < yMin) {
@@ -271,7 +271,7 @@ export default class Group {
      */
     getMaxY() {
         let yMax = -Infinity;
-        for (const obj of this._objects) {
+        for (const obj of Object.values(this._objects)) {
             let points = obj.toPoints();
             for (const point of points) {
                 if(point.y > yMax) {
@@ -280,6 +280,17 @@ export default class Group {
             }
         }
         return yMax;
+    }
+
+
+    /**
+     * getObject()
+     * @description gets the object with the given key
+     * @param {String} key the key of the object
+     * @returns the object with the given key
+     */
+    getObject(key) {
+        return this._objects[key];
     }
 
     /**

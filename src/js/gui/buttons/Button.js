@@ -51,6 +51,9 @@ export default class Button extends Drawable {
 		this._svg.label.attr("name", "label")
 		this._svg.clickBox.attr("name", "clickBox")
 
+		this._svg.label.style("text-anchor", "middle");
+		this._svg.label.style("dominant-baseline", "middle");
+
 		this._svg.clickBox.style("fill-opacity", 0)
 		this._svg.clickBox.on("click", () => self.onClick())
 
@@ -122,8 +125,8 @@ export default class Button extends Drawable {
 		this._svg.rect.attr("x", this._position.x);
 		this._svg.rect.attr("y", this._position.y);
 
-		this._svg.label.attr("x", this._position.x + this.width/2 - (this.text.length * 6)/2);
-		this._svg.label.attr("y", this._position.y + this.height/2 + 5);
+		this._svg.label.attr("x", this._position.x + this.width/2);
+		this._svg.label.attr("y", this._position.y + this.height/2);
 	}
 
 
@@ -187,7 +190,6 @@ export default class Button extends Drawable {
 		this._text = value;
 
 		this._svg.label.text(value);
-		this._svg.label.attr("x", this._position.x + this.width/2 - (this.text.length * 6)/2);
 	}
 
 }

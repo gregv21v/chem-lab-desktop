@@ -59,21 +59,27 @@ export default class Pump extends GameObject {
 	}
 
 	create() {
-		this._svg = {
-			spout: this._layer.append("rect"), // where the liquid comes out
-			button: this._layer.append("circle") // pressed to get liquid
-		}
+		this._graphicsGroup = this.createGraphics(this._layer);
 
 		var self = this;
-		this._svg.button.on("mousedown", function() {
-			if (self._game.player.hand === null) {
-				if(self._game.player.isInEditMode) {
+		this._graphicsGroup.getObject("button").svg.on("mousedown", () => {
+
+			switch(self._game.player.mode) {
+				case 0: // place mode
+					if(self._game.player.hand === null) {
+						self.animate();
+						self.produceDrop(self._game.world)
+					} else {
+						if(self._game.world.place(self)) self._game.player.hand = null;
+					}
+					break; 
+				case 1: // edit mode
 					self._game.player.hand = self;
-				} else {
-					self.produceDrop(self._game.world)
-				}
-			} else {
-				if (self._game.world.place(self)) self._game.player.hand = null;
+					break;
+				case 2: // sell mode 
+					self._game.player.credits += 10;
+					self._game.hud.update();
+					break;    
 			}
 		})
 
@@ -81,26 +87,29 @@ export default class Pump extends GameObject {
 	};
 
 	update() {
-		var self = this;
-		//this._tooltip.createSVG();
+		this._graphicsGroup.update();
+	}
 
-		this._svg.button.attr("r", this._production);
-		this._svg.button.attr("cx", this._position.x);
-		this._svg.button.attr("cy", this._position.y + this._production);
-		this._svg.button.style("fill", "red")
-			.on("mouseenter", function() {
-				//self._tooltip.update();
-				//self._tooltip.show();
-			})
-			.on("mouseleave", function() {
-				//self._tooltip.update();
-				//self._tooltip.hide();
-			});
 
-		this._svg.spout.attr("width", this._production);
-		this._svg.spout.attr("height", this._production * 2);
-		this._svg.spout.attr("x", this._position.x - this._production/2);
-		this._svg.spout.attr("y", this._position.y + this._production);
+	/**
+	 * animate() 
+	 * @description animates the graphics of the svg 
+	 */
+	animate() {
+		let spout = this._graphicsGroup.getObject("spout");
+		let duration = 100
+		spout.svg.rect
+			.transition()
+				.duration(duration)
+				.attr("width", this._production / 20)
+				.attr("x", this._position.x + this._production / 40)
+		spout.svg.rect
+			.transition()
+				.duration(duration)
+				.delay(duration)
+				.attr("width", this._production)
+				.attr("x", this._position.x - this._production / 2)
+
 	}
 
 
@@ -121,15 +130,13 @@ export default class Pump extends GameObject {
 		spout.fill.color = "blue";
 		spout.fill.opacity = 1;
 		spout.create();
-		group.add(spout);
+		group.add(spout, "spout");
 
-		let button = new Circle(svgGroup, this._position, 10)
+		let button = new Circle(svgGroup, {...this._position}, 10)
 		button.fill.color = "red";
 		button.fill.opacity = 1;
 		button.create();
-		group.add(button);
-
-		
+		group.add(button, "button");
 
 		return group;
 	}
@@ -146,7 +153,7 @@ export default class Pump extends GameObject {
 
 		let drop = new Drop(
 			d3.select("[name='debug']"),
-			{x: this._position.x - this._production/2, y: this._position.y + this._production * 3}, // position
+			{x: this._position.x - this._production/2, y: this._position.y}, // position
 			{x: 0, y: 1}, // velocity
 			size,
 			fluid
@@ -160,25 +167,36 @@ export default class Pump extends GameObject {
 	  this._tooltip.position = this._position;
 	}
 
+
+
+
 	/**
-	 * moveRelativeToCenter()
-	 * @description moves the Snappable relative to it's center
-	 * @param point point to move to
+	 * moveBy()
+	 * @description moves the position of the Snappable by delta
+	 * @param {Point} delta the difference between the current position and the new position
 	 */
-	moveRelativeToCenter(point) {
-		this._position.x = point.x - this._production
-		this._position.y = point.y - this._production
+	moveBy(delta) {
+		this._position.x += delta.x;
+		this._position.y += delta.y;
+		this._graphicsGroup.moveBy(delta.x, delta.y)
 	}
 
 
 	/**
 	 * moveTo()
-	 * @description moves the pump to a point
-	 */
+	 * @description moves to a given point, where the center of the Snappable is
+	 *  fixed at the given point
+	 * @param point the point to center on
+	*/
 	moveTo(point) {
-		this._position.x = point.x - this._production/2
-		this._position.y = point.y - this._production/2
-	}
+
+		let delta = {
+			x: point.x - this._position.x,
+			y: point.y - this._position.y
+		}
+
+    	this.moveBy(delta);
+  	}
 
 	/**
 	 * get production()
