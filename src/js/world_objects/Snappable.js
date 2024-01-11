@@ -371,8 +371,9 @@ export default class Snappable extends Rect {
         pair.moving = point
       }
     }
+
     
-    /*console.log(pair);
+    console.log(pair);
     if(pair.fixed) {
       
       this.move({
@@ -384,9 +385,9 @@ export default class Snappable extends Rect {
         x: (pair.moving.side === "right" && pair.fixed.axis === "x") ? -this.width : 0,
         y: (pair.moving.side === "down" && pair.fixed.axis === "y") ? -this.height : 0
       })
-    }*/
+    }
 
-    //return pair.moving;
+    return pair.moving;
 
   }
 
@@ -467,7 +468,7 @@ export default class Snappable extends Rect {
    * @returns {Array[SnapPoint]} the snap points of the snappable
    */
   get snapPoints() {
-    return this._snapGroup.objects;
+    return this._snapPoints;
   }
 
   /**

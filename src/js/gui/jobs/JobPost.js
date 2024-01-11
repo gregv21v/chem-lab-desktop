@@ -59,7 +59,7 @@ export default class JobPost {
         this._description = new MultiLineText(
             this._group, 
             lines,
-            {x: this._position.x, y: this._position.y + 20} 
+            {x: this._position.x + 10, y: this._position.y + 20} 
         )
 
         this._description.create();
