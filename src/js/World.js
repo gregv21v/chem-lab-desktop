@@ -138,6 +138,7 @@ export default class World {
 	 * @param {Point} mousePos the mouse position
  	 */
 	flexibleSnap(fixedObject, movingObject) {
+		console.log(fixedObject);
 		let fixedPoints = fixedObject.snapPoints;
 		let movingPoints = movingObject.snapPoints;
 
@@ -158,6 +159,7 @@ export default class World {
 		}
 
 
+
 		// find the moving area that is closet to the fixed area 
 		for(let point of movingPoints) {
 			if(point.side === getOpposite(pair.fixed.side)) {
@@ -172,7 +174,7 @@ export default class World {
 				y: (pair.fixed.axis === "y") ? pair.fixed.point.y - movingObject.position.y: 0
 			})
 			
-			movingObject.snapAdjustments(pair);
+			//movingObject.snapAdjustments(pair);
 
 			this._snappedPair = pair;
 		}
