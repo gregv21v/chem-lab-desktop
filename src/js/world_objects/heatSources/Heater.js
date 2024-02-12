@@ -57,7 +57,7 @@ export default class Heater extends HeatSource {
 		for (const point of this._snapPoints) {
 			point.fill.color = "orange"
 			point.fill.opacity = 0.0;
-			point.stroke.opacity = 0;
+			point.stroke.opacity = 1;
 			point.create();
 			this._snapGroup.add(point);
 		}
@@ -74,7 +74,7 @@ export default class Heater extends HeatSource {
         this._boundingBox.height = this._height + 20;
 		this._boundingBox.fill.opacity = 0.0
         this._boundingBox.fill.color = "blue"
-		this._boundingBox.stroke.opacity = 0;
+		this._boundingBox.stroke.opacity = 1;
 
         this.update();
 	}

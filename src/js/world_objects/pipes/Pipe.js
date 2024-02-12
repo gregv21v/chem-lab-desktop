@@ -77,12 +77,12 @@ export default class Pipe extends Snappable {
 				"left"
 			)
 		)
-		this._snapPoints[0].stroke.opacity = 0;
+		this._snapPoints[0].stroke.opacity = 1;
 		this._snapPoints[0].stroke.color = "blue"
 		this._snapPoints[0].fill.opacity = 0;
 		this._snapPoints[0].fill.color = "orange"
 		this._snapPoints[0].create();
-		this._snapGroup.add(this._snapPoints[0]);
+		this._snapGroup.add(this._snapPoints[0], "0");
 
 		// end
 		this._snapPoints.push(
@@ -101,12 +101,12 @@ export default class Pipe extends Snappable {
 				"right"
 			)
 		)
-		this._snapPoints[1].stroke.opacity = 0;
+		this._snapPoints[1].stroke.opacity = 1;
 		this._snapPoints[1].stroke.color = "blue"
 		this._snapPoints[1].fill.opacity = 0;
 		this._snapPoints[1].fill.color = "orange"
 		this._snapPoints[1].create();
-		this._snapGroup.add(this._snapPoints[1]);
+		this._snapGroup.add(this._snapPoints[1], "1");
 
 		
 
@@ -221,7 +221,7 @@ export default class Pipe extends Snappable {
 		this._boundingBox.position = this._position;
 		this._boundingBox.width = this._width
 		this._boundingBox.height = this._height
-		this._boundingBox.fill.opacity = 0
+		this._boundingBox.fill.opacity = 0;
 		this._boundingBox.stroke.opacity = 0;
 
 		this._arrow = new Arrow(
@@ -302,7 +302,7 @@ export default class Pipe extends Snappable {
 
 		this._direction = directions[this._rotation / 90]
 
-		for (const snap of this._snapGroup.objects) {
+		for (const snap of Object.values(this._snapGroup.objects)) {
 			if(snap instanceof SnapPoint) {
 				snap.axis = (snap.axis === "x") ? "y" : "x"
 				snap.side = getNextSide(snap.side);
@@ -338,6 +338,7 @@ export default class Pipe extends Snappable {
 	 */
 	snapAdjustments(pair) {
 
+		console.log("Bounding Box: ", this.boundingBox);
 
 		
 		if(pair.fixed.side === "left" && pair.fixed.point.x < this.center.x) {

@@ -60,6 +60,7 @@ export class HUD {
 
         this._credits = new ValueBox(aboveLayer, {x: 20, y: 20}, game.width / 4 - 30, 25);
         this._credits.create()
+       
         this._credits.update()
 
         this._credits.styling = {
@@ -88,7 +89,9 @@ export class HUD {
      * @description updates the HUD
      */
     update() {
-        this._credits.value = this._player.credits;
+
+        console.log(this._credits.value);
+        this._credits.value = this._game.player.credits;
     }
 
     /**

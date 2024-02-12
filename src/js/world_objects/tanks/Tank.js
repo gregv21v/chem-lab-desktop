@@ -134,18 +134,20 @@ export default class Tank extends Snappable {
 				},
 				this.width,
 				this._snapWidth,
-				{y: this.position.y + this.height, x:  + this.width / 2},
+				{x: this.position.x + this.width / 2, y: this.position.y + this.height},
 				"y",
 				"down"
 			),
 		]
 
+		var i = 0;
 		for (const point of this._snapPoints) {
 			point.fill.color = "orange"
 			point.fill.opacity = 0;
-			point.stroke.opacity = 0;
+			point.stroke.opacity = 1;
 			point.create();
-			this._snapGroup.add(point);
+			this._snapGroup.add(point, i);
+			i++;
 		}
 
 	}
