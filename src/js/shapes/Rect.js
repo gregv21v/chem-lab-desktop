@@ -239,6 +239,14 @@ export default class Rect extends GameObject {
 	}
 
 	/**
+	 * destroy()
+	 * @description destroys the rectangle
+	 */
+	destroy() {
+		this._svg.rect.remove();
+	}
+
+	/**
 	 * update()
 	 * @description updates the attributes of the svg shape
 	 */

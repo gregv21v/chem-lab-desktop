@@ -64,6 +64,14 @@ export default class Fire extends Shape {
         this.update();
     }
 
+    /**
+	 * destroy()
+	 * @description destroys the fire
+	 */
+	destroy() {
+		this._svg.remove();
+	}
+
 
     /**
      * update() 

@@ -166,7 +166,11 @@ export default class Group {
     }
 
     destroy() {
-        
+        for (const obj of Object.values(this._objects)) {
+            obj.destroy();
+        }
+
+        this._objects = {};
     }
 
 

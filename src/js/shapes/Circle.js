@@ -30,6 +30,14 @@ export default class Circle extends Shape {
 		this.update();
 	}
 
+	/**
+	 * destroy()
+	 * @description destroys the circle
+	 */
+	destroy() {
+		this._svg.remove();
+	}
+
 
 	update() {
 		this._svg

@@ -24,7 +24,7 @@ export class HUD {
 
         this._inventory = new Inventory(
             belowLayer, game.player, {x: 20, y: 20 + 25}, 
-            inventoryWidth, game.height - buttonHeight * 2
+            inventoryWidth, game.height - buttonHeight * 5
         );
 
        

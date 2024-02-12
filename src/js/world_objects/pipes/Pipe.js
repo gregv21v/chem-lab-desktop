@@ -81,7 +81,6 @@ export default class Pipe extends Snappable {
 		this._snapPoints[0].stroke.color = "blue"
 		this._snapPoints[0].fill.opacity = 0;
 		this._snapPoints[0].fill.color = "orange"
-		this._snapPoints[0].create();
 		this._snapGroup.add(this._snapPoints[0], "0");
 
 		// end
@@ -105,7 +104,6 @@ export default class Pipe extends Snappable {
 		this._snapPoints[1].stroke.color = "blue"
 		this._snapPoints[1].fill.opacity = 0;
 		this._snapPoints[1].fill.color = "orange"
-		this._snapPoints[1].create();
 		this._snapGroup.add(this._snapPoints[1], "1");
 
 		
@@ -287,6 +285,7 @@ export default class Pipe extends Snappable {
 	destroySVG() {
 		this._group.remove()
 	}
+
 	/*
 		==========================================
 	*/

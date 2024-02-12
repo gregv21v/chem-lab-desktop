@@ -72,6 +72,17 @@ export default class Snappable extends Rect {
 
 
   /**
+   * destroy()
+   * @description destroy the snappable
+   */
+  destroy() {
+    this._graphicsGroup.destroy();
+    this._snapGroup.destroy();
+    this._boundingBox.destroy();
+  }
+
+
+  /**
    * onClick() 
    * @description determines the on click behavior of this Snappable
    */

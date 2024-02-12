@@ -76,7 +76,6 @@ export default class Fan extends HeatSource {
 			point.fill.color = "orange"
 			point.fill.opacity = 0.0;
 			point.stroke.opacity = 0.0;
-			point.create();
 			this._snapGroup.add(point);
 		}
 

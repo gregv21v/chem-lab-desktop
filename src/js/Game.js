@@ -275,7 +275,7 @@ export default class Game {
    * @description called when key is pressed
    */
   onKeyPress(event) {
-    this._hud.inventory.onKeyPress(event);
+    this._hud.inventory.onKeyPress(event, this._world);
 
     //console.log(event.key);
     if(event.key === 'r') {

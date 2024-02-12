@@ -43,6 +43,16 @@ export default class FanShape extends Shape {
 
     }
 
+
+    /**
+	 * destroy()
+	 * @description destroys the fan
+	 */
+	destroy() {
+		this._svg.blades.remove();
+        this._svg.center.remove();
+	}
+
     /**
      * update() 
      * @description updates the arrow

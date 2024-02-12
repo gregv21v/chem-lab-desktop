@@ -76,6 +76,15 @@ export default class Arrow {
     }
 
 
+	/**
+	 * destroy()
+	 * @description destroys the arrow
+	 */
+	destroy() {
+		this._svg.remove();
+	}
+
+
     /**
 	 * toPoints()
 	 * @description converts this rectangle to points

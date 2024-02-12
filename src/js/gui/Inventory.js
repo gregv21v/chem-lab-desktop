@@ -62,9 +62,10 @@ export default class Inventory extends ScrollableContainer {
 	 * onKeyPress() 
 	 * @description called when a key is pressed.
 	 */
-	onKeyPress(event) {
+	onKeyPress(event, world) {
 		if(event.key === "Escape") { 
 			this.add(this.player.hand);
+			world.removeObject(this.player.hand.id);
 			this.player.hand.destroy()
 			this.player.hand = null;
 		}

@@ -130,6 +130,18 @@ export default class World {
 		return false;
 	}
 
+
+	/**
+	 * removeObject() 
+	 * @description remove the object from the world
+	 * @param {ID} id The ID of the object to remove
+	 */
+	removeObject(id) {
+		this.objs = this.objs.filter(function(obj) {
+			return obj.id != id;
+		});
+	}
+
 	/**
 	 * flexibleSnap() 
 	 * @description allows you to flexibly snap two objects together 

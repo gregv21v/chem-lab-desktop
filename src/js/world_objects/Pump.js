@@ -86,6 +86,15 @@ export default class Pump extends GameObject {
 		this.update();
 	};
 
+
+	/**
+	 * destroy()
+	 * @description destroys the pump
+	 */
+	destroy() {
+		this._graphicsGroup.destroy();
+	}
+
 	update() {
 		this._graphicsGroup.update();
 	}

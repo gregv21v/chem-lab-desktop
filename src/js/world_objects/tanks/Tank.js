@@ -144,8 +144,8 @@ export default class Tank extends Snappable {
 		for (const point of this._snapPoints) {
 			point.fill.color = "orange"
 			point.fill.opacity = 0;
+			point.stroke.color = "magenta";
 			point.stroke.opacity = 1;
-			point.create();
 			this._snapGroup.add(point, i);
 			i++;
 		}
@@ -401,6 +401,7 @@ export default class Tank extends Snappable {
 			part.remove()
 		}
 	}
+
 
   	/**
 	 *	transferLiquid()
