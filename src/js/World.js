@@ -138,7 +138,6 @@ export default class World {
 	 * @param {Point} mousePos the mouse position
  	 */
 	flexibleSnap(fixedObject, movingObject) {
-		console.log(fixedObject);
 		let fixedPoints = fixedObject.snapPoints;
 		let movingPoints = movingObject.snapPoints;
 
@@ -167,17 +166,31 @@ export default class World {
 		  	}
 		}
 
+		console.log(pair.moving.side);
 
 		if(pair.fixed) {
+
 			movingObject.moveBy({
-				x: (pair.fixed.axis === "x") ? pair.fixed.point.x - movingObject.position.x: 0,
-				y: (pair.fixed.axis === "y") ? pair.fixed.point.y - movingObject.position.y: 0
+				x: (pair.fixed.axis === "x") ? pair.fixed.point.x - movingObject.position.x : 0,
+				y: (pair.fixed.axis === "y") ? pair.fixed.point.y - movingObject.position.y : 0
 			})
+
 			
-			//movingObject.snapAdjustments(pair);
+			// the snapAdjustments do not seem to affect the snapping to the bottom
+			// of the object
+
+			/**
+			 * Things I know:
+			 * - The bounding box moves with the rest of the object
+			 */
+			// I think the issue is the with the snapping areas not moving
+			
+			movingObject.snapAdjustments(pair);
 
 			this._snappedPair = pair;
 		}
+
+		
 
 	}
 

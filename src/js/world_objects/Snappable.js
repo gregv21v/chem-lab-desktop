@@ -24,7 +24,8 @@ export default class Snappable extends Rect {
 			width,
 			height
 		)
-		this._boundingBox.fill.opacity = 0
+    this._boundingBox.fill.color = "blue";
+		this._boundingBox.fill.opacity = 0;
 		this._boundingBox.stroke.opacity = 0;
 
     this._snapRadius = 30
@@ -88,10 +89,22 @@ export default class Snappable extends Rect {
           if(this._game.world.place(this)) this._game.player.hand = null;
         }
         break;
-      case 2: // sell mode 
+      case 2: // sell mode
         this._game.player.credits += 10;
         this._game.hud.update();
         break;    
+    }
+  }
+
+
+  /**
+   * onHover
+   * @description determines the behavior of an object when its being hovered over
+   */
+  onHover() {
+    switch(this._game.player.mode) {
+      case 3: // inspect mode: displays information about the containers content
+        break;
     }
   }
 
@@ -171,7 +184,6 @@ export default class Snappable extends Rect {
     this._position.y += delta.y;
     this._graphicsGroup.moveBy(delta.x, delta.y)
     this._snapGroup.moveBy(delta.x, delta.y)
-    
   }
 
 

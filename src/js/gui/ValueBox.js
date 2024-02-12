@@ -158,6 +158,16 @@ export default class ValueBox {
 	}
 
 
+	/**
+	 * get value()
+	 * @description gets the value of the value box
+	 * @returns the value of the value box
+	 */
+	get value() {
+		return this._value;
+	}
+
+
 
 	/**
 	 * set styling
