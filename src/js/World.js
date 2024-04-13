@@ -12,16 +12,15 @@ import Snappable from "./world_objects/Snappable";
 import Pump from "./world_objects/Pump";
 import Heater from "./world_objects/heatSources/Heater";
 import Fan from "./world_objects/heatSources/Fan";
+import { getLayers, getPlayer } from "./GameState";
 
 export default class World {
-	constructor(game, player, position, width, height) {
-		this._game = game;
-		this.player = player;
+	constructor(position, width, height) {
 
 		// The side that the given object (snappingTo) is on.
 		this.objectOn = ""
 		this.mouseObj = null; // the object centered on the mouse
-		this.rect = new Rect(this._game.layers[0]);
+		this.rect = new Rect(getLayers()[0]);
 		this.rect.position = position;
 		this.rect.width = width;
 		this.rect.height = height;
@@ -75,25 +74,25 @@ export default class World {
 	mouseMoveHandler(evnt) {
 		var mousePos = {x: evnt.clientX, y: evnt.clientY};
 
-		if(this.player.hand) { // if there is something in the players hand
+		if(getPlayer().hand) { // if there is something in the players hand
 			
 			
-			if(!(this.player.hand instanceof Pump)) {
-				this.player.hand.moveTo({
-					x: mousePos.x - this.player.hand.boundingBox.width / 2,
-					y: mousePos.y - this.player.hand.boundingBox.height / 2
+			if(!(getPlayer().hand instanceof Pump)) {
+				getPlayer().hand.moveTo({
+					x: mousePos.x - getPlayer().hand.boundingBox.width / 2,
+					y: mousePos.y - getPlayer().hand.boundingBox.height / 2
 				});
 			} else {
-				this.player.hand.moveTo(mousePos);
+				getPlayer().hand.moveTo(mousePos);
 			}
 			
 			this._fixedSnappable = this.findClosestSnappable(mousePos) // check
 		
 			// snap to the closest Snappable in the world
-			if(this.player.hand instanceof Snappable && this._fixedSnappable != null) {
-				this.flexibleSnap(this._fixedSnappable, this.player.hand);
+			if(getPlayer().hand instanceof Snappable && this._fixedSnappable != null) {
+				this.flexibleSnap(this._fixedSnappable, getPlayer().hand);
 			} 
-			this.player.hand.update()
+			getPlayer().hand.update()
 			
 		}
 

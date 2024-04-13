@@ -33,6 +33,7 @@ export default class Player {
     this._mode = 0;
     this._hand = null;
     this._credits = 0;
+    this._currentJobs = {};
 
     
     //this.inventory.createSlots();
@@ -122,6 +123,25 @@ export default class Player {
 
 
   /**
+   * removeJob()
+   * @description removes a contract from the player
+   * @param {Integer} id the id of the contract to remove
+   */
+  removeJob(id) {
+    this._currentJobs[id] = null;
+  }
+
+  /**
+   * addJob() 
+   * @description adds a job to the players list of jobs
+   * @param {Job} job job to add
+   */
+  addJob(job) {
+    this._currentJobs[job.id] = job;
+  }
+
+
+  /**
    * get modeCount()
    * @description returns the number of player modes
    */
@@ -180,5 +200,8 @@ export default class Player {
   get credits() {
     return this._credits;
   }
+
+
+  
 
 }

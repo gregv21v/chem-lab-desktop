@@ -21,7 +21,7 @@ export default class JobBoard extends ScrollableContainer {
 
 
     create() {
-        let postHeight = 120
+        let postHeight = 140
 
         // create the job posts
         this._jobPosts.push(new JobPost(
@@ -39,13 +39,25 @@ export default class JobBoard extends ScrollableContainer {
                 ],
                 new PureWaterFluid(),
                 50, 10
-            )
+            ),
+            this
         ))
+
+        console.log(this._jobPosts);
 
 
         for (const jobPost of this._jobPosts) {
             jobPost.create();
         }
+    }
+
+
+    removeJob(id) {
+        let postToRemove = this._jobPosts.find(job => job.id === id);
+
+        postToRemove.destroy();
+
+        this._jobPosts = this._jobPosts.filter(job => job.id === id);
     }
 
 

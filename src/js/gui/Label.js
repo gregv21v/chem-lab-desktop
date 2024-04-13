@@ -88,6 +88,12 @@ export default class Label {
 		
 		if(value.hasOwnProperty("strokeWidth"))
 			this._svg.rect.style("stroke-width", value.strokeWidth);
+
+		if(value.hasOwnProperty("fontSize")) 
+			this._svg.label.style("font-size", value.fontSize);
+
+		if(value.hasOwnProperty("fontWeight"))
+			this._svg.label.style("font-weight", value.fontWeight);
 		
 	}
 

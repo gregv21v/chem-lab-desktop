@@ -22,6 +22,8 @@ import Fluid from "./fluids/Fluid";
 import Group from "../shapes/Group";
 import Circle from "../shapes/Circle";
 import Rect from "../shapes/Rect";
+import { getHUD, getMode, getPlayer, getWorld, Mode } from "../GameState";
+import PureWaterFluid from "./fluids/PureWaterFluid";
 
 export default class Pump extends GameObject {
 	/**
@@ -31,12 +33,11 @@ export default class Pump extends GameObject {
 	 * @param {Point} position the position of the pump
 	 * @param {Number} production 
 	 */
-	constructor(game, layer, position, production) {
+	constructor(layer, position, production) {
 		super(layer, position, {x: 0, y: 0})
 
 		this._production = production; // the amount the pump produces
 		this._position = position; // the position of the pump
-		this._game = game; // the game
 
 		
 		this._description = [
@@ -47,12 +48,13 @@ export default class Pump extends GameObject {
 			new Fluid("Rocks", 3, this._production * this._production, 200, -10, {red: 102, green: 102, blue: 153, opacity: 1}),
 			new Fluid("Minerals", 3, this._production * this._production, 200, -10, {red: 142, green: 140, blue: 145, opacity: 1}),
 			new Fluid("Iron", 3, this._production * this._production, 200, -10, {red: 102, green: 51, blue: 0, opacity: 1}),
-			new Fluid("Water", 2, this._production * this._production, 50, -5, {red: 0, green: 0, blue: 255, opacity: 0.5}),
-			new Fluid(
+			//new Fluid("Water", 2, this._production * this._production, 50, -5, {red: 0, green: 0, blue: 255, opacity: 0.5}),
+			/*new Fluid(
 				"Algea", 1, 
 				this._production * this._production, 50, -5, 
 				{red: 0, green: 200, blue: 0, opacity:0.7}
-			)
+			),*/
+			new PureWaterFluid()
 			//new Fluid("Dust", 5, this._production * this._production, 20, {red: 173, green: 161, blue: 113, opacity: 255}),
 			//new Fluid("Lava", 1, this._production * this._production, 10, {red: 255, green: 0, blue: 0, opacity: 255}),
 		]
@@ -64,21 +66,21 @@ export default class Pump extends GameObject {
 		var self = this;
 		this._graphicsGroup.getObject("button").svg.on("mousedown", () => {
 
-			switch(self._game.player.mode) {
-				case 0: // place mode
-					if(self._game.player.hand === null) {
+			switch(getMode()) {
+				case Mode.Place: // place mode
+					if(getPlayer().hand === null) {
 						self.animate();
-						self.produceDrop(self._game.world)
+						self.produceDrop(getWorld());
 					} else {
-						if(self._game.world.place(self)) self._game.player.hand = null;
+						if(getWorld().place(self)) getPlayer().hand = null;
 					}
 					break; 
-				case 1: // edit mode
-					self._game.player.hand = self;
+				case Mode.Edit: // edit mode
+					getPlayer().hand = self;
 					break;
-				case 2: // sell mode 
-					self._game.player.credits += 10;
-					self._game.hud.update();
+				case Mode.Sell: // sell mode 
+					getPlayer().credits += 10;
+					getHUD().update();
 					break;    
 			}
 		})

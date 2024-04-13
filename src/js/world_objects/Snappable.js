@@ -8,12 +8,12 @@ import * as d3 from "d3"
 import Group from "../shapes/Group"
 import SnapPoint from "./SnapPoint"
 import { getAreaOfIntersection, getOpposite } from "../util"
+import { getMode, getPlayer, getWorld, getHUD, Mode } from "../GameState"
 
 export default class Snappable extends Rect {
-  constructor(game, layer, position, width, height) {
+  constructor(layer, position, width, height) {
     super(layer, position, width, height) 
 
-    this._game = game;
     this._rotation = 0;
     this._graphicsGroup = new Group(); // the place where all the graphic objects are stored
     this._snapGroup = new Group(); // the place where the snap points are stored
@@ -88,21 +88,21 @@ export default class Snappable extends Rect {
    */
   onClick() {
 
-    switch(this._game.player.mode) {
-      case 0: // place mode
-        if(this._game.world.place(this)) this._game.player.hand = null;
+    switch(getMode()) {
+      case Mode.Place: // place mode
+        if(getWorld().place(this)) getPlayer().hand = null;
         break; 
-      case 1: // edit mode
-        if(this._game.player.hand === null) {
-          this._game.player.hand = this;
-          this._game.player.hand.clearAttachments();
+      case Mode.Edit: // edit mode
+        if(getPlayer().hand === null) {
+          getPlayer().hand = this;
+          getPlayer().hand.clearAttachments();
         } else {
-          if(this._game.world.place(this)) this._game.player.hand = null;
+          if(getWorld().place(this)) getPlayer().hand = null;
         }
         break;
-      case 2: // sell mode
-        this._game.player.credits += 10;
-        this._game.hud.update();
+      case Mode.Sell: // sell mode
+        getPlayer().credits += 10;
+        getHUD().update();
         break;    
     }
   }
@@ -113,8 +113,8 @@ export default class Snappable extends Rect {
    * @description determines the behavior of an object when its being hovered over
    */
   onHover() {
-    switch(this._game.player.mode) {
-      case 3: // inspect mode: displays information about the containers content
+    switch(getMode()) {
+      case Mode.Inspect: // inspect mode: displays information about the containers content
         break;
     }
   }
@@ -284,7 +284,6 @@ export default class Snappable extends Rect {
       }
     }
 
-    //console.log(closestSnapPoint);
     return snappable.snapGroup.objects[closestSnapPoint];
   }
 
@@ -364,9 +363,6 @@ export default class Snappable extends Rect {
     let fixedPoints = otherSnappable.snapPoints; // check
     let movingPoints = this.snapPoints; // check
 
-    console.log(fixedPoints);
-    console.log(movingPoints);
-
     // find the two closest points
     let largestArea = -Infinity
     let pair = {
@@ -375,11 +371,8 @@ export default class Snappable extends Rect {
     }
     
     // get all the snap regions that intersect with the moving rect
-    //console.log(fixedPoints);
     for(let point of fixedPoints) {
-        console.log(this._boundingBox);
         let area = getAreaOfIntersection(point, this._boundingBox);
-        console.log(area);
         
         if(area > largestArea && point.intersect(this._boundingBox)) {
           largestArea = area;
@@ -396,7 +389,6 @@ export default class Snappable extends Rect {
     }
 
     
-    console.log(pair);
     if(pair.fixed) {
       
       this.move({
@@ -536,11 +528,9 @@ export default class Snappable extends Rect {
 	getThumbnail(x, y, amount, group) {
 		let graphics = this.createGraphics(group);
 
-    console.log(graphics);
     graphics.moveTo(x + graphics.width / 2, y + graphics.height / 2);
     graphics.scale(amount);
     graphics.update();
-		
 
 		return graphics;
 	}

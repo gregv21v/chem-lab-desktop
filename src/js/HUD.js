@@ -23,7 +23,7 @@ export class HUD {
         let inventoryWidth = game.width / 4 - 30 /* extra padding */
 
         this._inventory = new Inventory(
-            belowLayer, game.player, {x: 20, y: 20 + 25}, 
+            belowLayer, {x: 20, y: 20 + 25}, 
             inventoryWidth, game.height - buttonHeight * 5
         );
 
@@ -43,7 +43,7 @@ export class HUD {
             game._layers[5], 
             {x: game.width / 2 - modalWidth / 2, y: game.height / 2 - modalHeight / 2},
             modalWidth,
-            modalHeight 
+            modalHeight
         )
         this._jobsModal.styling = {
             color: "grey"

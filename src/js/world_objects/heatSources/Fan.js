@@ -16,12 +16,11 @@ export default class Fan extends HeatSource {
     /**
      * constructor()
      * @description constructs the heater
-     * @param {Game} game the game 
      * @param {Point} the position of the Fan
      * @param {Number} radius the radius of the Fan
      */
-    constructor(game, layer, position, radius) {
-        super(game, layer, position, radius, radius);
+    constructor(layer, position, radius) {
+        super(layer, position, radius, radius);
         this._radius = radius;
 
         this._isOn = true;

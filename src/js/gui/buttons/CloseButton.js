@@ -1,6 +1,7 @@
-/*
-	CloseButton - A button that closes a modal window
-*/
+/**
+ * CloseButton
+ * @description a button that closes a modal
+ */
 import Button from "./Button";
 
 export default class CloseButton extends Button {
@@ -28,15 +29,11 @@ export default class CloseButton extends Button {
         }
     }
 
-
-
-
     /**
 	 * onClick()
 	 * @description the function called when this button is clicked
 	 */
     onClick() {
-		console.log("Closing Window");
 		this._modal.close();
     }
     

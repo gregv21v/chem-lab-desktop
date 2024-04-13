@@ -1,10 +1,14 @@
 /**
- * JobDetails - the job details
+ * JobDetails 
+ * @description the details of a job that the player can accept or reject
  */
 export default class JobDetails {
+
+    static ID = 0;
     
     /**
-     * 
+     * constructor()
+     * @description constructs the job details object
      * @param {String} clientName the name of the client
      * @param {Array[String]} description the description of the job
      * @param {Fluid} fluid the fluid required for the job
@@ -17,8 +21,17 @@ export default class JobDetails {
         this._fluid = fluid;
         this._unitsRequired = unitsRequired;
         this._payPerUnit = payPerUnit;
+
+        this._id = JobDetails.ID;
+        JobDetails.ID++;
     }
 
+
+
+
+    /**
+     * Getters and Setters 
+     */
     /**
      * get clientName() 
      * @description gets the clients name
@@ -55,10 +68,31 @@ export default class JobDetails {
 
 
     /**
+     * set unitsRequired()
+     * @description sets the units required
+     */
+    set unitsRequired(value) {
+        this._unitsRequired = value;
+    }
+
+
+    /**
      * get payPerUnit() 
      * @description gets the amount paid per unit
      */
     get payPerUnit() {
         return this._payPerUnit;
+    }
+
+
+
+
+
+    /**
+     * get id() 
+     * @description gets the id
+     */
+    get id() {
+        return this._id;
     }
 }

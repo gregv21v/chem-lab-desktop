@@ -22,8 +22,8 @@ export default class Pipe extends Snappable {
 	 * @param {Number} interiorHeight the interior height of the pipe
 	 * @param {Number} wallWidth the wall width of the pipe
 	 */
-	constructor(game, layer, center, length, interiorHeight, wallWidth) {
-		super(game, layer, center, length, interiorHeight + wallWidth * 2);
+	constructor(layer, center, length, interiorHeight, wallWidth) {
+		super(layer, center, length, interiorHeight + wallWidth * 2);
 
 		this._diameter = interiorHeight + wallWidth * 2;
 		this._length = length;
@@ -215,6 +215,8 @@ export default class Pipe extends Snappable {
 		super.create();
 
 		this._group.attr("name", "Pipe")
+
+		//console.log(this._height);
 
 		this._boundingBox.position = this._position;
 		this._boundingBox.width = this._width

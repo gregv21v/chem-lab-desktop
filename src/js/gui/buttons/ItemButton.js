@@ -1,20 +1,18 @@
-/*
-  Button - A button for a GameObjects
+/**
+ * Button 
+ * @description a button for game objects
+ * Examples:
+ * 
+ * Tank
+ * Dimensions (w by h): 50x50
+ * 
+ * Pipe
+ * Dimensions (w by h): 50x100
+ * 
+ * Pump
+ * Liquid: Water
+ */
 
-  The button displays the stats of an item as follows:
-
-  Examples:
-
-  Tank
-  Dimensions (w by h): 50x50
-
-  Pipe
-  Dimensions (w by h): 50x100
-
-  Pump
-  Liquid: Water
-
-*/
 import MultiLineText from "../MultiLineText";
 import Button from "./Button"
 import * as d3 from "d3"
@@ -141,7 +139,6 @@ export default class ItemButton extends Button {
     );
 
     this.name = this._item.name;
-    console.log("Dimensions: ", this._item.width, "x", this._item.height);
     this.setDimensions(this._item.width, this._item.height);
 
     this._thumbnail.update();

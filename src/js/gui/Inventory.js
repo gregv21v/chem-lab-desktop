@@ -15,6 +15,7 @@
 */
 import Slot from "./Slot";
 import ScrollableContainer from "./ScrollableContainer";
+import { getPlayer, getWorld } from "../GameState";
 
 export default class Inventory extends ScrollableContainer {
 
@@ -27,10 +28,9 @@ export default class Inventory extends ScrollableContainer {
 	 * @param {Number} width the width of the inventory
 	 * @param {Number} height the height of the inventory
 	 */
-	constructor(layer, player, position, width, height) {
+	constructor(layer, position, width, height) {
 		super(layer, position, width, height)
 
-		this.player = player; // the player the inventory belongs to 
 		this.slotHeight = 100; // the height of the slots 
 
 		this.objs = []; // the GameObjects in the inventory
@@ -62,12 +62,12 @@ export default class Inventory extends ScrollableContainer {
 	 * onKeyPress() 
 	 * @description called when a key is pressed.
 	 */
-	onKeyPress(event, world) {
+	onKeyPress(event) {
 		if(event.key === "Escape") { 
-			this.add(this.player.hand);
-			world.removeObject(this.player.hand.id);
-			this.player.hand.destroy()
-			this.player.hand = null;
+			this.add(getPlayer().hand);
+			getWorld().removeObject(getPlayer().hand.id);
+			getPlayer().hand.destroy()
+			getPlayer().hand = null;
 		}
 	}
 
@@ -144,8 +144,8 @@ export default class Inventory extends ScrollableContainer {
 	 */
 	pickItem(index) {
 		// put the item in the players hand
-		this.player.hand = this.objs[index];
-		this.player.hand.create();
+		getPlayer().hand = this.objs[index];
+		getPlayer().hand.create();
 
 		this.remove(index);
 	}

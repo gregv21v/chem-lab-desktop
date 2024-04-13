@@ -43,9 +43,9 @@ export default class Tank extends Snappable {
 	 * @param {Boolean} downOpen indicates whether the down side is opened
 	 */
 	constructor(
-		game, layer, position, interior, wallWidth
+		layer, position, interior, wallWidth
 	) {
-		super(game, layer, position, interior.width + wallWidth * 2, interior.height + wallWidth * 2); 
+		super(layer, position, interior.width + wallWidth * 2, interior.height + wallWidth * 2); 
 
 		this._interior = interior;
 		this._wallWidth = wallWidth;

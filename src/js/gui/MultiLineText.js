@@ -47,6 +47,11 @@ export default class MultiLineText {
         
     }
 
+
+    destroy() {
+        this._group.remove();
+    }
+
     /**
      * set lines()
      * @description sets the lines value

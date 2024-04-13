@@ -1,7 +1,9 @@
 /**
- * EditModeButton - is the button used to change to edit mode
+ * ModeButton
+ * @description a button that selects the mode. There are three modes: place, edit, and sell
+ *  Sell sells the object you click. Place places objects. Edit allows you to move objects.
  */
-
+import { setMode } from "../../GameState";
 import Player from "../../Player";
 import Button from "./Button";
 
@@ -16,11 +18,10 @@ export default class ModeButton extends Button {
      * @param {Number} width the width of the button
      * @param {Number} height the height of the button
      */
-    constructor(layer, position, width, height, player, modeSelector, mode, name) {
+    constructor(layer, position, width, height, modeSelector, mode, name) {
         super(layer, position, width, height);
 
-        this._text = name
-        this._player = player;
+        this._text = name;
         this._mode = mode;
         this._modeSelector = modeSelector;
 
@@ -40,7 +41,7 @@ export default class ModeButton extends Button {
 	 * @description the function called when this button is clicked
 	 */
     onClick() {
-        this._player.mode = this._mode;
+        setMode(this._mode);
 
         this._modeSelector.update();
     }

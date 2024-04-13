@@ -1,4 +1,5 @@
 import JobBoard from "../jobs/JobBoard";
+import Label from "../Label";
 import Modal from "./Modal";
 
 export default class JobBoardModal extends Modal {
@@ -22,6 +23,26 @@ export default class JobBoardModal extends Modal {
     create() {
         super.create();
 
+        this._title = new Label(
+            this._group, 
+            {
+                x: this._position.x + this._width / 2 - 50, 
+                y: this._position.y + 10
+            },
+            100,
+            50
+        )
+        this._title.create();
+
+        this._title.styling = {
+            ...this._title.styling,
+            fontSize: "20px",
+            fontWeight: "bold"
+        }
+
+        this._title.text = "Job Board";
+
+
         this._jobBoard = new JobBoard(
             this._group, 
             {
@@ -33,6 +54,7 @@ export default class JobBoardModal extends Modal {
         )
 
         this._jobBoard.create();
+
     }
 
 

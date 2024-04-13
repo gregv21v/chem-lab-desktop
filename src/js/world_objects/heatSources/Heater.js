@@ -18,8 +18,8 @@ export default class Heater extends HeatSource {
      * @description constructs the heater
      * @param
      */
-    constructor(game, layer, position, width, height) {
-        super(game, layer, position, width, height);
+    constructor(layer, position, width, height) {
+        super(layer, position, width, height);
 
         this._isOn = true;
         this._maxTemperature = 105

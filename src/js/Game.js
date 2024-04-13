@@ -1,6 +1,7 @@
-/*
-  Game - This is where the game starts
-*/
+/**
+ * Game 
+ * @description the game
+ */
 
 import Player from "./Player"
 import * as d3 from "d3"
@@ -18,6 +19,9 @@ import Fan from "./world_objects/heatSources/Fan"
 import Valve from "./world_objects/pipes/Valve"
 import Modal from "./gui/modals/Modal"
 import OutputTank from "./world_objects/tanks/OutputTank"
+import { getHUD, getPlayer, getWorld, newGameState, setHUD, setLayers, setPlayer, setWorld } from "./GameState"
+import PureWaterFluid from "./world_objects/fluids/PureWaterFluid"
+
 
 
 export default class Game {
@@ -34,6 +38,8 @@ export default class Game {
   constructor(mode=0) {
     this._mode = mode;
     let svg = d3.select("svg")
+
+    newGameState();
 
     svg.attr("width", window.innerWidth)
     svg.attr("height", window.innerHeight)
@@ -58,11 +64,7 @@ export default class Game {
     this._layers[4].attr("name", "clicks")
     this._layers[5].attr("name", "modals")
 
-
-    
-    
-
-
+    setLayers(this._layers);
 
     let snapWidth = 75
     let pipeLength = 100;
@@ -101,25 +103,34 @@ export default class Game {
         .style("fill", "red")*/ 
 
     // add fluids to the fluid registery for use later
-    FluidRegistry.register(new Fluid("Water", 2, -3, 20, {red: 0, green: 0, blue: 200, alpha: 255}))
+    FluidRegistry.register(new Fluid("Pure", 2, -3, 20, {red: 0, green: 0, blue: 200, alpha: 255}))
     //FluidRegistry.register(new Fluid("Smoke", -1, {red: 142, green: 140, blue: 145, alpha: 255}))
     FluidRegistry.register(new Fluid("Dust", 5, -1, 10, {red: 173, green: 161, blue: 113, alpha: 255}))
     FluidRegistry.register(new Fluid("Magma", 1, -1, 100, {red: 255, green: 0, blue: 0, alpha: 255}))
+    FluidRegistry.register(new PureWaterFluid());
     //FluidRegistry.register(new Fluid("Nitrogen Gas", -2, {red: 0, green: 0, blue: 100, alpha: 255}))
 
     // setup the player 
     this._player = new Player(this); // contains inventory
     this._player.create()
 
+    setPlayer(this._player); 
+
     
 
     // setup the world
-    this._world = new World(this, this._player, {x: this._width / 4, y: 20}, this._width * 3 / 4 - 20, this._height - 30)
+    this._world = new World({x: this._width / 4, y: 20}, this._width * 3 / 4 - 20, this._height - 30)
     this._world.create()
+
+    setWorld(this._world);
 
     // setup the HUD
     this._hud = new HUD(this);
     this._hud.create()
+
+    setHUD(this._hud);
+
+
 
     // add example items to the players inventory
 
@@ -131,30 +142,30 @@ export default class Game {
         },
         20, 10, 5
     ));*/
-    this._hud.inventory.add(new Heater(this, this._layers[1], {x: 0, y: 0}, 40, 20));
-    this._hud.inventory.add(new Heater(this, this._layers[1], {x: 0, y: 0}, 40, 20));
-    this._hud.inventory.add(new Fan(this, this._layers[1], {x: 0, y: 0}, 10));
-    this._hud.inventory.add(new Tank(this, this._layers[1], {x: 0, y: 0}, {width: 40, height: 100}, 5));
-    this._hud.inventory.add(new Tank(this, this._layers[1], {x: 0, y: 0}, {width: 40, height: 100}, 5));
-    this._hud.inventory.add(new Tank(this, this._layers[1], {x: 0, y: 0}, {width: 50, height: 50}, 5));
+    this._hud.inventory.add(new Heater(this._layers[1], {x: 0, y: 0}, 40, 20));
+    this._hud.inventory.add(new Heater(this._layers[1], {x: 0, y: 0}, 40, 20));
+    this._hud.inventory.add(new Fan(this._layers[1], {x: 0, y: 0}, 10));
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 100}, 5));
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 100}, 5));
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 50, height: 50}, 5));
     
-    //this._hud.inventory.add(new CrossPipe(this, this._layers[1], {x: 475, y: 540}, 10, 100, 5));
-    this._hud.inventory.add(new OutputTank(this, this._layers[1], {x: 0, y: 0}, {width: 50, height: 50}, 5))
-    this._hud.inventory.add(new Tank(this, this._layers[1], {x: 0, y: 0}, {width: 50, height: 100}, 5))
-    this._hud.inventory.add(new Pipe(this, this._layers[1], {x: 0, y: 0}, 50, 10, 5));
-    this._hud.inventory.add(new Pipe(this, this._layers[1], {x: 0, y: 0}, 50, 10, 5));
-    this._hud.inventory.add(new Pipe(this, this._layers[1], {x: 0, y: 0}, 50, 10, 5));
-    this._hud.inventory.add(new Pipe(this, this._layers[1], {x: 0, y: 0}, 50, 10, 5));
-    this._hud.inventory.add(new Pipe(this, this._layers[1], {x: 0, y: 0}, 50, 10, 5));
-    this._hud.inventory.add(new Valve(this, this._layers[1], {x: 0, y: 0}, 50, 10, 5));
-    this._hud.inventory.add(new Pump(this, this._layers[1], {x: 0, y: 0}, 6));
-    this._hud.inventory.add(new Pump(this, this._layers[1], {x: 0, y: 0}, 5));
-    this._hud.inventory.add(new Pump(this, this._layers[1], {x: 0, y: 0}, 15));
+    //this._hud.inventory.add(new CrossPipe(this._layers[1], {x: 475, y: 540}, 10, 100, 5));
+    this._hud.inventory.add(new OutputTank(this._layers[1], {x: 0, y: 0}, {width: 50, height: 50}, 5))
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 50, height: 100}, 5))
+    this._hud.inventory.add(new Pipe(this._layers[1], {x: 0, y: 0}, 50, 10, 5));
+    this._hud.inventory.add(new Pipe(this._layers[1], {x: 0, y: 0}, 50, 10, 5));
+    this._hud.inventory.add(new Pipe(this._layers[1], {x: 0, y: 0}, 50, 10, 5));
+    this._hud.inventory.add(new Pipe(this._layers[1], {x: 0, y: 0}, 50, 10, 5));
+    this._hud.inventory.add(new Pipe(this._layers[1], {x: 0, y: 0}, 50, 10, 5));
+    this._hud.inventory.add(new Valve(this._layers[1], {x: 0, y: 0}, 50, 10, 5));
+    this._hud.inventory.add(new Pump(this._layers[1], {x: 0, y: 0}, 6));
+    this._hud.inventory.add(new Pump(this._layers[1], {x: 0, y: 0}, 5));
+    this._hud.inventory.add(new Pump(this._layers[1], {x: 0, y: 0}, 15));
 
-    this._hud.inventory.add(new Tank(this, this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
-    this._hud.inventory.add(new Tank(this, this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
-    this._hud.inventory.add(new Tank(this, this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
-    this._hud.inventory.add(new Tank(this, this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
+    this._hud.inventory.add(new Tank(this._layers[1], {x: 0, y: 0}, {width: 40, height: 40}, 5))
 
     /*this._hud.inventory.add(new ElbowPipe(
       this._layers[1],
@@ -251,9 +262,9 @@ export default class Game {
    * @description creates the game 
    */
   create() {
-    this._player.create()
-    this._world.create()
-    this._hud.create()
+    getPlayer().create()
+    getWorld().create()
+    getHUD().create()
     //this._shop.create()
   }
 
@@ -275,14 +286,13 @@ export default class Game {
    * @description called when key is pressed
    */
   onKeyPress(event) {
-    this._hud.inventory.onKeyPress(event, this._world);
+    this._hud.inventory.onKeyPress(event, getWorld());
 
     //console.log(event.key);
     if(event.key === 'r') {
       //console.log(this._player.hand);
-      this._player.hand.rotate();
-      this._player.hand.update();
-
+      getPlayer().hand.rotate();
+      getPlayer().hand.update();
 
       this._group.rotateAroundCenter(90);
       this._group.update()

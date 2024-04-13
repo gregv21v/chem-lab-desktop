@@ -1,6 +1,7 @@
-/*
-	Button - A button
-*/
+/**
+ * Button
+ * @description a basic button
+ */
 import Drawable from "../../Drawable";
 import * as d3 from "d3"
 
@@ -8,6 +9,7 @@ export default class Button extends Drawable {
 	/**
 	 * constructor()
 	 * @description constructs the Button
+	 * @param {SVGElement} layer the graphics layer to attach the button to
 	 * @param {Point} position the position of the button
 	 * @param {Number} width the width of the button
 	 * @param {Number} height the height of the button
@@ -65,6 +67,14 @@ export default class Button extends Drawable {
 
 		this.styling = this._styling;
 			
+	}
+
+	/**
+	 * destroy()
+	 * @description destroys the Button
+	 */
+	destroy() {
+		this._group.remove();
 	}
 
 	/**

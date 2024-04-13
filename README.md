@@ -65,6 +65,7 @@ This game is in early alpha, so expect bugs
 - Make it so that fluids enter pipes starting from the bottom, then going from left to right. The top is last.
 - Fluids should entered the pipe one drop at a time, and the drops should not overlap
 - When scrolling through the inventory make the items not within the inventory box hidden.
+- Add the ability to save and load the game
 
 
 <strong>Current Issue</strong>

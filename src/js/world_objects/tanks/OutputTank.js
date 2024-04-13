@@ -14,8 +14,8 @@ export default class OutputTank extends Tank {
      * @param {Layer} layer the layer the output tank is attached to
      * @param {Point} position the position of the output tank
      */
-    constructor(game, layer, position) {
-        super(game, layer, position, {width: 50, height: 50}, 5)
+    constructor(layer, position) {
+        super(layer, position, {width: 50, height: 50}, 5)
 
         this._description = [
             "Allows you to sell fluids",
