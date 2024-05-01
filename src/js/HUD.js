@@ -75,6 +75,11 @@ export class HUD {
     }
 
 
+    resize() {
+        
+    }
+
+
     /**
      * create()
      * @description creates the hud 
@@ -89,8 +94,6 @@ export class HUD {
      * @description updates the HUD
      */
     update() {
-
-        console.log(this._credits.value);
         this._credits.value = this._game.player.credits;
     }
 

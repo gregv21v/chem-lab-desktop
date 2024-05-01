@@ -38,14 +38,13 @@ export default class Game {
   constructor(mode=0) {
     this._mode = mode;
     let svg = d3.select("svg")
+      .attr("width", window.innerWidth)
+      .attr("height", window.innerHeight)
 
     newGameState();
 
-    svg.attr("width", window.innerWidth)
-    svg.attr("height", window.innerHeight)
-
-    this._width = svg.attr("width")
-    this._height = svg.attr("height")
+    this._width = window.innerWidth;
+    this._height = window.innerHeight;
 
     this._layers = []
 
@@ -117,7 +116,6 @@ export default class Game {
     setPlayer(this._player); 
 
     
-
     // setup the world
     this._world = new World({x: this._width / 4, y: 20}, this._width * 3 / 4 - 20, this._height - 30)
     this._world.create()
@@ -253,6 +251,18 @@ export default class Game {
         console.log("scrolling up");
       }
     })
+
+
+    
+    window.onresize = () => {
+      //svg.attr("width", window.innerWidth)
+      //svg.attr("height", window.innerHeight)
+
+      //self._width = window.innerWidth;
+      //self._height = window.innerHeight;
+      
+      //getHUD().resize();
+    };
   }
 
 

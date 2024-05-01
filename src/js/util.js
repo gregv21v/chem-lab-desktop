@@ -138,3 +138,32 @@ export function getAreaOfIntersection(rect1, rect2) {
       - Math.max(rect1.position.y, rect2.position.y)
    )
 }
+
+
+
+/**
+ * from: https://stackoverflow.com/questions/14486110/how-to-check-if-a-javascript-class-inherits-another-without-creating-an-obj
+ * Checks whether a given object is inherited from a specified superclass.
+ * 
+ * @param {Object} object - The object to check.
+ * @param {Function} superClass - The superclass to compare against.
+ * @returns {boolean} - True if the object is a subclass of the superclass, false otherwise.
+ */
+export function isInheritedFrom(object, superClass) {
+  //console.log(`Checking if ${object.constructor.name} is a subclass of ${superClass.name}`);
+  
+  let currentProto = Object.getPrototypeOf(object.constructor);
+
+  while (currentProto) {
+      if (currentProto.name === superClass.constructor.name) {
+          //console.log(`Found match for a superclass of ${object.constructor.name} with ${superClass.name}`);
+          // object is a subclass of the superclass
+          return true;
+      }
+      currentProto = Object.getPrototypeOf(currentProto);
+  }
+  
+  //console.log(`No match found for ${object.constructor.name} with ${superClass.name}`);
+  // object is not a subclass of the superclass
+  return false;
+}

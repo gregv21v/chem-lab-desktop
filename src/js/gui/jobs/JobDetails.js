@@ -28,6 +28,17 @@ export default class JobDetails {
 
 
 
+    clone() {
+        let details = new JobDetails(
+            this._clientName, this._description, this._fluid, this._unitsRequired, this._payPerUnit
+        );
+
+        details._id = this._id;
+
+        return details;
+    }
+
+
 
     /**
      * Getters and Setters 

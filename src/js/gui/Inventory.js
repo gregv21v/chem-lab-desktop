@@ -44,8 +44,6 @@ export default class Inventory extends ScrollableContainer {
 	 */
 	create() {
 		super.create();
-
-		
 	}
 
 	/**
@@ -69,6 +67,12 @@ export default class Inventory extends ScrollableContainer {
 			getPlayer().hand.destroy()
 			getPlayer().hand = null;
 		}
+	}
+
+
+	resize(width, height) {
+		this._width = width;
+		this._height = height;
 	}
 
 

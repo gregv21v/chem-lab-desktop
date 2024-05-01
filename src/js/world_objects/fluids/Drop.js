@@ -5,9 +5,12 @@
 	it enters the tank.
 */
 
-import Tank from "../tanks/Tank";
+
 import * as d3 from "d3"
 import FluidBody from "./FluidBody";
+import { getWorld } from "../../GameState";
+import { isInheritedFrom } from "../../util";
+import Tank from "../tanks/Tank";
 
 export default class Drop extends FluidBody {
   /**
@@ -54,7 +57,7 @@ export default class Drop extends FluidBody {
    * update() 
    * @description update the the drop
    */
-  update(world) {
+  update() {
     let self = this;
 
     this.position = {
@@ -67,22 +70,23 @@ export default class Drop extends FluidBody {
 
 
     // if the drop is outside the world remove it
-  	if(!world.within({position: this.position, width: this.size, height: this.size})) {
-  		world.removeDrop(this);
+  	if(!getWorld().within({position: this.position, width: this.size, height: this.size})) {
+  		getWorld().removeDrop(this);
   		this.destroy();
   	} else { // drop is inside the world
   		// if in tank, remove drop and fill tank with size of drop
-  		world.objs.forEach(function(obj) {
+  		getWorld().objs.forEach(function(obj) {
 
   			if (
-          obj instanceof Tank && 
+          (isInheritedFrom(obj, Tank) || obj instanceof Tank) && 
           obj.containsDrop(self)
         ) {
           // add the drop to the tank
   				obj.addDrop(self);  
+          obj.update();
 
   				// remove drop from world
-  				world.removeDrop(self);
+  				getWorld().removeDrop(self);
   				self.destroy();
 
   				return;

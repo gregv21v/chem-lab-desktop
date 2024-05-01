@@ -35,7 +35,7 @@ export default class JobTank extends Tank {
 
         let jobFluid = null;
 
-        console.log("Updating...");
+        console.log("Updating job tank...");
 
         // check if the job details match whats in the tank
         for (const fluidBody of this._fluidBodies) {
@@ -53,9 +53,13 @@ export default class JobTank extends Tank {
         // give the player credits for the fluid if it is enough
         if(jobFluid) {
 
+            console.log("fluid found");
+            console.log();
+
             if(this._jobDetails.unitsRequired >= jobFluid.volume) {
 
-                console.log(this._jobDetails.unitsRequired);
+                console.log(jobFluid.volume);
+                console.log("Units Required ", this._jobDetails.unitsRequired);
                 this._jobDetails.unitsRequired -= jobFluid.volume;
                 getPlayer().credits += jobFluid.volume * this._jobDetails.payPerUnit;
 
@@ -65,7 +69,7 @@ export default class JobTank extends Tank {
                 this.updateFluidBodies();
             } else {
                 console.log("less than enough fluid");
-                console.log(this._jobDetails);
+                console.log("Units Required ", this._jobDetails.unitsRequired);
 
                 getPlayer().credits += this._jobDetails.unitsRequired * this._jobDetails.payPerUnit;
 

@@ -38,7 +38,7 @@ export default class JobBoard extends ScrollableContainer {
                     "are very sensitive. Jack will give you 10 credits per unit of purified water."
                 ],
                 new PureWaterFluid(),
-                50, 10
+                400, 10
             ),
             this
         ))
